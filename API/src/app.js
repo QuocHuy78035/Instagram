@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 //init db
-require('../src/dbs/initDB.js');
+require('./dbs/initDB.js');
 
 
 
