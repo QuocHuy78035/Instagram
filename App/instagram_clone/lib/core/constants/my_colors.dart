@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 class MyColors {
   MyColors._();
 
-  static const Color primaryColor = Color(0xFF4CAF50);
+  static const Color primaryColor = Color(0xFF3797ef);
   static const Color secondaryColor = Colors.green;
-  static const Color white = Colors.white;
+  static const Color whiteColor = Colors.white;
+  static Color greyColor = Colors.grey.withOpacity(.5);
+  static const Color errorColor = Colors.red;
 }
