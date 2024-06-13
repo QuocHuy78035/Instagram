@@ -1,4 +1,4 @@
-import mongoose, { Mongoose, Schema } from "mongoose";
+import mongoose, { Mongoose, ObjectId, Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import { IUserModel } from "../interfaces/user.interface";
 const COLLECTION_NAME = "users";
@@ -73,7 +73,6 @@ const userSchema: Schema<IUserModel> = new mongoose.Schema<IUserModel>(
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 12);
-  this.passwordConfirm = undefined;
 });
 userSchema.methods.matchPassword = async function (enteredPassword: string) {
   return await bcrypt.compare(enteredPassword, this.password);

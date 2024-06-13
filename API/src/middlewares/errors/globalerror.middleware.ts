@@ -1,6 +1,6 @@
-import { ErrorResponse} from "../../data/error.class";
+import { ErrorResponse } from "../../data/error.class";
 import { NextFunction, Request, Response } from "express";
-import { formatString } from "../../utils";
+import { formatErrorString } from "../../utils";
 
 const INTERNAL_SERVER_ERROR_STATUS = 500;
 
@@ -16,6 +16,6 @@ export const GlobalErrorMiddleware = (
     status: "error",
     code: statusCode,
     err: error.stack,
-    message: formatString(error.message) || "Internal Server Error",
+    message: formatErrorString(error.message) || "Internal Server Error",
   });
 };

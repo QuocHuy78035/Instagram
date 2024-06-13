@@ -10,12 +10,12 @@ interface UserInterface {
   gender: string;
   dateOfBirth: Date;
   password: string;
-  passwordConfirm: string | undefined;
+  // passwordConfirm: string | undefined;
   passwordChangedAt: Date;
   passwordResetToken: string;
   passwordResetExpires: Date;
-  OTP: string;
-  OTPExpires: Date;
+  OTP?: string;
+  OTPExpires?: Date;
 }
 
 export interface IUserModel extends UserInterface, Document {}

@@ -11,6 +11,7 @@ class AuthenRouter {
   initialRouter() {
     this.router.post("/login", asyncHandler(authenController.logIn));
     this.router.post("/signup", asyncHandler(authenController.signUp));
+    this.router.post("/verifycode", asyncHandler(authenController.verifyCode));
   }
 }
 
