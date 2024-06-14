@@ -1,6 +1,7 @@
 import express from "express";
 import authenController from "../middlewares/controllers/authen.controller";
 import { asyncHandler } from "../helpers/asyncHandler";
+import { authentication } from "../middlewares/interceptors/authentication";
 
 class AuthenRouter {
   router = express.Router();
@@ -9,18 +10,20 @@ class AuthenRouter {
   }
 
   initialRouter() {
-    this.router.post("/login", asyncHandler(authenController.logIn));
-    this.router.post("/signup", asyncHandler(authenController.signUp));
-    this.router.post("/verifycode", asyncHandler(authenController.verifyCode));
-    this.router.post(
-      "/resetPassword/:resetToken",
-      asyncHandler(authenController.resetPassword)
-    );
-    this.router.post(
-      "/forgotPassword",
-      asyncHandler(authenController.forgotPassword)
-    );
-    this.router.post("/logout", asyncHandler(authenController.resetPassword));
+    this.router.route("/login").post(asyncHandler(authenController.logIn));
+    this.router
+      .route("/logout")
+      .post(authentication, asyncHandler(authenController.logOut));
+    this.router.route("/signup").post(asyncHandler(authenController.signUp));
+    this.router
+      .route("/verifycode")
+      .post(asyncHandler(authenController.verifyCode));
+    this.router
+      .route("/resetPassword/:resetToken")
+      .post(asyncHandler(authenController.resetPassword));
+    this.router
+      .route("/forgotPassword")
+      .post(asyncHandler(authenController.forgotPassword));
   }
 }
 

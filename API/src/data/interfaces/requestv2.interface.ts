@@ -1,17 +1,16 @@
 import { Request } from "express";
-import { FlattenMaps } from "mongoose";
+import { Document, FlattenMaps } from "mongoose";
 import { IKeyTokenModel } from "./keytoken.interface";
-import { Types } from "mongoose";
+import JwtPayloadV2 from "./jwtpayloadv2.interface";
+
 export default interface RequestV2 extends Request {
-  keyStore?: FlattenMaps<IKeyTokenModel> & {
-    _id: Types.ObjectId;
-  };
-  user?: {
-    userId: string;
-    email?: string;
-    mobile?: string;
-    username?: string;
-    role: string;
-  };
+  keyStore?:
+    | (Document<unknown, {}, IKeyTokenModel> &
+        IKeyTokenModel &
+        Required<{
+          _id: unknown;
+        }>)
+    | null;
+  user?: JwtPayloadV2;
   refreshToken?: string;
 }

@@ -450,9 +450,13 @@ class AuthenService {
   }
 
   async logOut(
-    keyStore?: FlattenMaps<IKeyTokenModel> & {
-      _id: Types.ObjectId;
-    }
+    keyStore?:
+      | (Document<unknown, {}, IKeyTokenModel> &
+          IKeyTokenModel &
+          Required<{
+            _id: unknown;
+          }>)
+      | null
   ) {
     if (!keyStore) {
       throw new UnauthorizedError("Not found keystore!");

@@ -13,6 +13,9 @@ class KeyTokenRepo {
     };
     return await Keytoken.findOneAndUpdate(filter, update, options);
   }
+  async findByUserId(userid: string) {
+    return await Keytoken.findOne({ user: userid });
+  }
   async removeKeyById(id: ObjectId) {
     await Keytoken.findByIdAndDelete(id);
   }
