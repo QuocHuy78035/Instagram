@@ -21,6 +21,10 @@ export class KeyTokenService {
     );
     return token;
   }
+
+  async removeKeyById(id: ObjectId) {
+    await keytokenRepo.removeKeyById(id);
+  }
 }
 
 export default new KeyTokenService();

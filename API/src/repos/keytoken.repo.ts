@@ -13,6 +13,9 @@ class KeyTokenRepo {
     };
     return await Keytoken.findOneAndUpdate(filter, update, options);
   }
+  async removeKeyById(id: ObjectId) {
+    await Keytoken.findByIdAndDelete(id);
+  }
 }
 
 export default new KeyTokenRepo();

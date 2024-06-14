@@ -1,24 +1,62 @@
-import { BadRequestError, InternalServerError } from "../core/error.response";
+import {
+  BadRequestError,
+  InternalServerError,
+  UnauthorizedError,
+} from "../core/error.response";
 import { IUserModel } from "../data/interfaces/user.interface";
 import userRepo from "../repos/user.repo";
-import { generateOTP, getInfoData, hashString } from "../utils";
+import {
+  convertStringToObjectId,
+  generateOTP,
+  getInfoData,
+  hashString,
+} from "../utils";
 import { Email } from "../utils/email";
 import { SMS } from "../utils/sms";
 import {
+  ForgotPasswordValidator,
+  LoginValidator,
+  ResetPasswordValidator,
   SignUpValidator,
   VerifyCodeValidator,
 } from "../validators/user.validator";
-import { Document, Types } from "mongoose";
+import {
+  Document,
+  FlattenMaps,
+  ObjectId,
+  StringExpression,
+  Types,
+} from "mongoose";
 import keytokenService from "./keytoken.service";
 import { createTokenPair } from "../auth/authUtils";
-
-const typeVerifyCode = {
-  SIGN_UP: "signup",
-  FORGOT_PWD: "forgotpwd",
-};
+import crypto from "crypto";
+import { IKeyTokenModel } from "../data/interfaces/keytoken.interface";
 
 class AuthenService {
   constructor() {}
+
+  private async getTokens(body: {
+    userId: ObjectId;
+    email?: string;
+    mobile?: string;
+    username?: string;
+    role: string;
+  }) {
+    const keytoken = await keytokenService.createKeyToken(body.userId);
+
+    if (!keytoken) {
+      throw new UnauthorizedError("Keytoken error!");
+    }
+    const tokens = await createTokenPair(
+      body,
+      keytoken.privateKey,
+      keytoken.publicKey
+    );
+    keytoken.refreshToken = tokens.refreshToken;
+    await keytoken.save({ validateBeforeSave: false });
+
+    return tokens;
+  }
 
   async signUp(body: {
     mobile?: string;
@@ -89,7 +127,7 @@ class AuthenService {
     await newUser.save({ validateBeforeSave: false });
     if (body.email) {
       try {
-        await new Email(body.email, OTP).sendEmail();
+        await new Email("OTP", body.email, OTP).sendEmail();
       } catch (err) {
         throw new InternalServerError(
           "There was an error sending the email. Try again later!"
@@ -99,7 +137,7 @@ class AuthenService {
 
     if (body.mobile) {
       try {
-        await new SMS(body.mobile, OTP).sendSMS();
+        await new SMS("OTP", body.mobile, OTP).sendSMS();
       } catch (err) {
         throw new InternalServerError(
           "There was an error sending the SMS. Try again later!" + err
@@ -111,14 +149,108 @@ class AuthenService {
       message: `OTP sent to your ${body.email ? "email" : "mobile phone"}!`,
     };
   }
-
-  async verifyOTP(
-    type: string = typeVerifyCode.SIGN_UP,
-    body: { mobile?: string; email?: string; OTP: string }
-  ) {
-    if (!Object.values(typeVerifyCode).includes(type)) {
-      throw new BadRequestError("Type is invalid!");
+  async forgotPassword(body: {
+    mobile?: string;
+    email?: string;
+    username?: string;
+  }) {
+    const { error } = ForgotPasswordValidator(body);
+    if (error) {
+      throw new BadRequestError(error.message);
     }
+    if (!body.mobile && !body.email && !body.username) {
+      throw new BadRequestError("Please fill mobile phone, email or username!");
+    }
+    let user:
+      | (Document<unknown, {}, IUserModel> &
+          IUserModel &
+          Required<{
+            _id: unknown;
+          }>)
+      | null = null;
+    if (body.mobile) {
+      user = await userRepo.findOneByMobileAndActiveUser(body.mobile);
+      if (!user) {
+        throw new BadRequestError("Mobile does not exist or is unverified!");
+      }
+    }
+
+    if (body.email) {
+      user = await userRepo.findOneByEmailAndActiveUser(body.email);
+      if (!user) {
+        throw new BadRequestError("Email does not exist or is unverified!");
+      }
+    }
+
+    if (body.username) {
+      user = await userRepo.findOneByUsernameAndActiveUser(body.username);
+      if (!user) {
+        throw new BadRequestError("Username does not exist or is unverified!");
+      }
+    }
+    if (!user) {
+      return {};
+    }
+    const EXPIRE_TIME = 10 * 60 * 1000;
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const passwordResetToken = hashString(resetToken);
+    const passwordResetExpires = new Date(Date.now() + EXPIRE_TIME);
+
+    await userRepo.updatePasswordReset(
+      user.id,
+      passwordResetToken,
+      passwordResetExpires
+    );
+    const URL = "http://localhost:8000/api/v1";
+    const resetURL = `${URL}/resetPassword/${resetToken}`;
+
+    if (body.email) {
+      try {
+        await new Email("LINK", body.email, resetURL).sendEmail();
+      } catch (err) {
+        throw new InternalServerError(
+          "There was an error sending the email. Try again later!"
+        );
+      }
+    }
+
+    if (body.mobile) {
+      try {
+        await new SMS("LINK", body.mobile, resetURL).sendSMS();
+      } catch (err) {
+        throw new InternalServerError(
+          "There was an error sending the SMS. Try again later!" + err
+        );
+      }
+    }
+
+    if (body.username) {
+      if (user.email) {
+        try {
+          await new Email("LINK", user.email, resetURL).sendEmail();
+        } catch (err) {
+          throw new InternalServerError(
+            "There was an error sending the email. Try again later!"
+          );
+        }
+      } else if (user.mobile) {
+        try {
+          await new SMS("LINK", user.mobile, resetURL).sendSMS();
+        } catch (err) {
+          throw new InternalServerError(
+            "There was an error sending the SMS. Try again later!" + err
+          );
+        }
+      }
+    }
+
+    return {
+      message: `Verification link sent to your ${
+        body.email ? "email" : "mobile phone"
+      }!`,
+    };
+  }
+  async verifyOTP(body: { mobile?: string; email?: string; OTP: string }) {
     const { error } = VerifyCodeValidator(body);
     if (error) {
       throw new BadRequestError(error.message);
@@ -140,10 +272,8 @@ class AuthenService {
           }>)
       | null = null;
     if (body.mobile) {
-      const checkMobileExists = await userRepo.findOneByMobileAndActiveUser(
-        body.mobile
-      );
-      if (checkMobileExists) {
+      user = await userRepo.findOneByMobileAndActiveUser(body.mobile);
+      if (user) {
         throw new BadRequestError("Mobile existed!");
       }
       user = await userRepo.findOneByMobileAndUnverifiedUser(body.mobile);
@@ -153,10 +283,8 @@ class AuthenService {
     }
 
     if (body.email) {
-      const checkEmailExists = await userRepo.findOneByEmailAndActiveUser(
-        body.email
-      );
-      if (checkEmailExists) {
+      user = await userRepo.findOneByEmailAndActiveUser(body.email);
+      if (user) {
         throw new BadRequestError("Email existed!");
       }
 
@@ -165,68 +293,175 @@ class AuthenService {
         throw new BadRequestError("User with this email does not exist!");
       }
     }
-    if (user) {
-      if (user.OTPExpires && user.OTPExpires.getTime() > Date.now()) {
-        throw new BadRequestError("OTP has expired! Please send code again!");
-      }
+    if (!user) {
+      return {};
+    }
+    if (user.OTPExpires && user.OTPExpires.getTime() < Date.now()) {
+      throw new BadRequestError("OTP has expired! Please send code again!");
+    }
 
-      if (user.OTP !== hashString(body.OTP)) {
-        throw new BadRequestError(
-          "Your entered OTP is invalid! Please try again!"
-        );
-      }
+    if (user.OTP !== hashString(body.OTP)) {
+      throw new BadRequestError(
+        "Your entered OTP is invalid! Please try again!"
+      );
+    }
 
-      user.OTP = undefined;
-      user.OTPExpires = undefined;
+    user.OTP = undefined;
+    user.OTPExpires = undefined;
 
-      await user.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false });
 
-      if (type === typeVerifyCode.SIGN_UP) {
-        if (body.email) {
-          await userRepo.updateUserToActiveByEmail(body.email);
-        }
+    if (body.email) {
+      await userRepo.updateUserToActiveByEmail(body.email);
+    }
 
-        if (body.mobile) {
-          await userRepo.updateUserToActiveByMobile(body.mobile);
-        }
+    if (body.mobile) {
+      await userRepo.updateUserToActiveByMobile(body.mobile);
+    }
 
-        const newKeytoken = await keytokenService.createKeyToken(user.id);
+    const tokens = await this.getTokens({
+      userId: user.id,
+      email: body.email,
+      mobile: body.mobile,
+      username: user.username,
+      role: user.role,
+    });
 
-        if (!newKeytoken) {
-          throw new BadRequestError("Keytoken Error");
-        }
+    return {
+      user: getInfoData(user, [
+        "_id",
+        "email",
+        "mobile",
+        "username",
+        "name",
+        "role",
+      ]),
+      tokens,
+    };
+  }
 
-        const { privateKey, publicKey } = newKeytoken;
+  async logIn(body: {
+    mobile?: string;
+    email?: string;
+    username?: string;
+    password: string;
+  }) {
+    const { error } = LoginValidator(body);
+    if (error) {
+      throw new BadRequestError(error.message);
+    }
 
-        const tokens = await createTokenPair(
-          {
-            userId: user.id,
-            email: body.email,
-            mobile: body.mobile,
-            role: user.role,
-          },
-          privateKey,
-          publicKey
-        );
+    if (!body.mobile && !body.email && !body.username) {
+      throw new BadRequestError("Please fill mobile phone, email or username");
+    }
 
-        return {
-          user: getInfoData(user, [
-            "_id",
-            "email",
-            "mobile",
-            "username",
-            "name",
-          ]),
-          tokens,
-        };
-      } else if (type === typeVerifyCode.FORGOT_PWD) {
+    let user:
+      | (Document<unknown, {}, IUserModel> &
+          IUserModel &
+          Required<{
+            _id: unknown;
+          }>)
+      | null = null;
+    if (body.username) {
+      user = await userRepo.findOneByUsernameAndActiveUser(body.username);
+      if (!user || !(await user.matchPassword(body.password))) {
+        throw new BadRequestError("Username or password does not exist!");
       }
     }
+    if (body.email) {
+      user = await userRepo.findOneByEmailAndActiveUser(body.email);
+      if (!user || !(await user.matchPassword(body.password))) {
+        throw new BadRequestError("Email or password does not exist!");
+      }
+    }
+    if (body.mobile) {
+      user = await userRepo.findOneByMobileAndActiveUser(body.mobile);
+      if (!user || !(await user.matchPassword(body.password))) {
+        throw new BadRequestError("Mobile or password does not exist!");
+      }
+    }
+    if (user) {
+      const tokens = await this.getTokens({
+        userId: user.id,
+        email: body.email,
+        mobile: body.mobile,
+        username: user.username,
+        role: user.role,
+      });
+      return {
+        user: getInfoData(user, [
+          "_id",
+          "email",
+          "mobile",
+          "username",
+          "name",
+          "role",
+        ]),
+        tokens,
+      };
+    }
+
     return {};
   }
 
-  logIn() {
-    return "Hello";
+  async resetPassword(
+    body: { password: string; passwordConfirm: string },
+    resetToken: string
+  ) {
+    const { error } = ResetPasswordValidator(body);
+    if (error) {
+      throw new BadRequestError(error.message);
+    }
+    const passwordResetToken = hashString(resetToken);
+    const user = await userRepo.findOneByPasswordResetToken(passwordResetToken);
+    if (!user) {
+      throw new BadRequestError("Your token is invalid or has expired!");
+    }
+
+    if (body.password !== body.passwordConfirm) {
+      throw new UnauthorizedError("Passwords does not match!");
+    }
+
+    user.passwordResetExpires = undefined;
+    user.passwordResetToken = undefined;
+    user.password = body.password;
+    user.passwordChangedAt = new Date(Date.now());
+    await user.save({ validateBeforeSave: false });
+
+    const tokens = await this.getTokens({
+      userId: user.id,
+      email: user.email,
+      mobile: user.mobile,
+      username: user.username,
+      role: user.role,
+    });
+
+    return {
+      user: getInfoData(user, [
+        "_id",
+        "email",
+        "mobile",
+        "username",
+        "name",
+        "role",
+      ]),
+      tokens,
+    };
+  }
+
+  async logOut(
+    keyStore?: FlattenMaps<IKeyTokenModel> & {
+      _id: Types.ObjectId;
+    }
+  ) {
+    if (!keyStore) {
+      throw new UnauthorizedError("Not found keystore!");
+    }
+    const delKey = await keytokenService.removeKeyById(keyStore.id);
+    console.log({ delKey });
+    return {
+      message: "Log out successfully!",
+    };
   }
 }
 

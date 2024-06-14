@@ -1,9 +1,13 @@
 import crypto from "crypto";
-import _ from "lodash"
+import _ from "lodash";
+import { Types } from "mongoose";
 
-export const getInfoData = (object: Object = {}, fields: Array<string> = []) => {
+export const getInfoData = (
+  object: Object = {},
+  fields: Array<string> = []
+) => {
   return _.pick(object, fields);
-}
+};
 
 export const formatErrorString = (str: string) => {
   const formatStr = str
@@ -25,3 +29,8 @@ export function generateOTP(num: number) {
 export const hashString = (str: string) => {
   return crypto.createHash("sha256").update(str).digest("hex");
 };
+
+export const convertStringToObjectId = (id: string) => {
+  return new Types.ObjectId(id);
+};
+

@@ -1,10 +1,18 @@
 import nodemailer from "nodemailer";
+
+const type = {
+  OTP: "OTP",
+  LINK: "LINK",
+};
+
 export class Email {
   email: string;
-  OTP: string;
-  constructor(email: string, OTP: string) {
+  content: string;
+  type: string;
+  constructor(type: string, email: string, content: string) {
     this.email = email;
-    this.OTP = OTP;
+    this.content = content;
+    this.type = type;
   }
 
   async sendEmail() {
@@ -20,12 +28,19 @@ export class Email {
     return await transporter.sendMail({
       from: process.env.AUTH_EMAIL, // sender address
       to: this.email, // list of receivers
-      subject: "Verify OTP ✅", // Subject line
-      html: `
+      subject:
+        this.type === type.OTP ? "Verify OTP ✅" : "Verification Link ✅", // Subject line
+      html:
+        this.type === type.OTP
+          ? `
             <h3>Verify OTP ✅</h3>
             <p>Welcome!</p>
-            <p>Here is your verification code: ${this.OTP} </p>
-            <p>Please use this code to complete the authentication process.</p>`, // html body
+            <p>Here is your verification code: ${this.content} </p>
+            <p>Please use this code to complete the authentication process.</p>`
+          : `<h3>Verification Link ✅</h3>
+            <p>Welcome!</p>
+            <p>Here is your verification link: ${this.content} </p>
+            <p>Please use this link to complete the authentication process.</p>`, // html body
     });
   }
 }

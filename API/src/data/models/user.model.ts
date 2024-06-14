@@ -17,11 +17,9 @@ const userSchema: Schema<IUserModel> = new mongoose.Schema<IUserModel>(
     },
     email: {
       type: String,
-      unique: true,
     },
     mobile: {
       type: String,
-      unique: true,
     },
     avatar: {
       type: String,
@@ -78,5 +76,4 @@ userSchema.methods.matchPassword = async function (enteredPassword: string) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 const User = mongoose.model<IUserModel>(DOCUMENT_NAME, userSchema);
-
 export default User;

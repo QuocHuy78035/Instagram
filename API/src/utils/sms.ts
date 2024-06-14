@@ -1,19 +1,28 @@
 import https from "https";
 import { InternalServerError } from "../core/error.response";
 
+const type = {
+  OTP: "OTP",
+  LINK: "LINK",
+};
+
 export class SMS {
   phone: string;
-  OTP: string;
-  constructor(phone: string, OTP: string) {
+  content: string;
+  type: string;
+  constructor(type: string, phone: string, content: string) {
     this.phone = phone;
-    this.OTP = OTP;
+    this.content = content;
+    this.type = type;
   }
 
   async sendSMS() {
     var url = "api.speedsms.vn";
     var params = JSON.stringify({
       to: [this.phone],
-      content: `Your OTP is ${this.OTP}`,
+      content: `Your ${
+        this.type === type.OTP ? "OTP" : "verification link"
+      } is ${this.content}. Don't share it!`,
       sms_type: 2,
       sender: process.env.SENDER_SMS,
     });
