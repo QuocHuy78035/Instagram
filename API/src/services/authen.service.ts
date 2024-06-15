@@ -22,9 +22,6 @@ import {
 } from "../validators/user.validator";
 import {
   Document,
-  FlattenMaps,
-  ObjectId,
-  StringExpression,
   Types,
 } from "mongoose";
 import keytokenService from "./keytoken.service";
@@ -36,7 +33,7 @@ class AuthenService {
   constructor() {}
 
   private async getTokens(body: {
-    userId: ObjectId;
+    userId: Types.ObjectId;
     email?: string;
     mobile?: string;
     username?: string;

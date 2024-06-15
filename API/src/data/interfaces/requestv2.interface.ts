@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { Document, FlattenMaps } from "mongoose";
+import { Document } from "mongoose";
 import { IKeyTokenModel } from "./keytoken.interface";
 import JwtPayloadV2 from "./jwtpayloadv2.interface";
 

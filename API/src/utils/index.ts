@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import _ from "lodash";
+import { SchemaTypes } from "mongoose";
 import { Types } from "mongoose";
 
 export const getInfoData = (
@@ -33,4 +34,3 @@ export const hashString = (str: string) => {
 export const convertStringToObjectId = (id: string) => {
   return new Types.ObjectId(id);
 };
-

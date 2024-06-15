@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import { Types } from "mongoose";
 import crypto from "crypto";
 import keytokenRepo from "../repos/keytoken.repo";
 import userRepo from "../repos/user.repo";
@@ -6,7 +6,7 @@ import { BadRequestError } from "../core/error.response";
 export class KeyTokenService {
   constructor() {}
 
-  async createKeyToken(user: ObjectId) {
+  async createKeyToken(user: Types.ObjectId) {
     const checkUserExists = await userRepo.findById(user);
     if (!checkUserExists) {
       throw new BadRequestError("User does not exist!");
@@ -22,7 +22,7 @@ export class KeyTokenService {
     return token;
   }
 
-  async removeKeyById(id: ObjectId) {
+  async removeKeyById(id: Types.ObjectId) {
     await keytokenRepo.removeKeyById(id);
   }
 }

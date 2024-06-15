@@ -1,10 +1,13 @@
 import { NextFunction, Response } from "express";
 import RequestV2 from "../../data/interfaces/requestv2.interface";
-import { UnauthorizedError } from "../../core/error.response";
+import { BadRequestError, UnauthorizedError } from "../../core/error.response";
 import keytokenRepo from "../../repos/keytoken.repo";
 import JWT, { JwtPayload } from "jsonwebtoken";
 import JwtPayloadV2 from "../../data/interfaces/jwtpayloadv2.interface";
 import { asyncHandler } from "../../helpers/asyncHandler";
+import userRepo from "../../repos/user.repo";
+import { isValidObjectId } from "mongoose";
+import { convertStringToObjectId } from "../../utils";
 const HEADER = {
   API_KEY: "x-api-key",
   CLIENT_ID: "x-client-id",
@@ -17,6 +20,13 @@ export const authentication = asyncHandler(
     const userId: string | undefined = req.headers[HEADER.CLIENT_ID] as string;
     if (!userId) {
       throw new UnauthorizedError("Invalid Request!");
+    }
+    if (!isValidObjectId(userId)) {
+      throw new BadRequestError("User id is invalid!");
+    }
+    const user = await userRepo.findById(convertStringToObjectId(userId));
+    if (!user) {
+      throw new UnauthorizedError("User not found!");
     }
 
     const keyStore = await keytokenRepo.findByUserId(userId);
@@ -35,7 +45,7 @@ export const authentication = asyncHandler(
           refreshToken,
           keyStore.privateKey
         ) as JwtPayloadV2;
-        if (userId !== decodedUser.userId) {
+        if (user.id !== decodedUser.userId) {
           throw new UnauthorizedError("Invalid UserId!");
         }
         req.keyStore = keyStore;
@@ -56,7 +66,7 @@ export const authentication = asyncHandler(
         accessToken,
         keyStore.publicKey
       ) as JwtPayloadV2;
-      if (userId !== decodedUser.userId) {
+      if (user.id !== decodedUser.userId) {
         throw new UnauthorizedError("Invalid UserId!");
       }
       req.keyStore = keyStore;

@@ -1,8 +1,7 @@
 import mongoose, { Mongoose, ObjectId, Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import { IUserModel } from "../interfaces/user.interface";
-const COLLECTION_NAME = "users";
-const DOCUMENT_NAME = "User";
+import { UserName } from "../../utils/globalvariables";
 
 const userSchema: Schema<IUserModel> = new mongoose.Schema<IUserModel>(
   {
@@ -65,7 +64,7 @@ const userSchema: Schema<IUserModel> = new mongoose.Schema<IUserModel>(
     OTP: String,
     OTPExpires: Date,
   },
-  { timestamps: true, collection: COLLECTION_NAME }
+  { timestamps: true, collection: UserName.COLLECTION_NAME }
 );
 
 userSchema.pre("save", async function (next) {
@@ -75,5 +74,5 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.matchPassword = async function (enteredPassword: string) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
-const User = mongoose.model<IUserModel>(DOCUMENT_NAME, userSchema);
+const User = mongoose.model<IUserModel>(UserName.DOCUMENT_NAME, userSchema);
 export default User;

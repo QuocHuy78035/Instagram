@@ -1,10 +1,10 @@
-import { ObjectId } from "mongoose";
+import { Types } from "mongoose";
 import User from "../data/models/user.model";
 
 class UserRepo {
   constructor() {}
 
-  async findById(id: ObjectId) {
+  async findById(id: Types.ObjectId) {
     return await User.findById(id);
   }
 
@@ -58,7 +58,7 @@ class UserRepo {
   }
 
   async updatePasswordReset(
-    userId: ObjectId,
+    userId: Types.ObjectId,
     passwordResetToken: string,
     passwordResetExpires: Date
   ) {

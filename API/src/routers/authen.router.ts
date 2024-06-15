@@ -1,7 +1,7 @@
 import express from "express";
 import authenController from "../middlewares/controllers/authen.controller";
 import { asyncHandler } from "../helpers/asyncHandler";
-import { authentication } from "../middlewares/interceptors/authentication";
+import { authentication } from "../middlewares/interceptors/authentication.interceptor";
 
 class AuthenRouter {
   router = express.Router();

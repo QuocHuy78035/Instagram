@@ -1,7 +1,7 @@
-import { Document, ObjectId } from "mongoose";
+import { Document, Types } from "mongoose";
 
 interface KeyTokenInterface {
-  user: ObjectId;
+  user: Types.ObjectId;
   privateKey: string;
   publicKey: string;
   refreshTokenUsed?: Array<string>;

@@ -1,10 +1,10 @@
-import { ObjectId } from "mongoose";
+import { Types } from "mongoose";
 import JWT from "jsonwebtoken";
 import { UnauthorizedError } from "../core/error.response";
 
 export const createTokenPair = async (
   payload: {
-    userId: ObjectId;
+    userId: Types.ObjectId;
     email?: string;
     mobile?: string;
     username?: string;
