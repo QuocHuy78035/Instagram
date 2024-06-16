@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 interface UserInterface {
   name: string;
   username: string;
@@ -10,12 +10,14 @@ interface UserInterface {
   gender: string;
   dateOfBirth: Date;
   password: string;
-  // passwordConfirm: string | undefined;
   passwordChangedAt: Date;
   passwordResetToken?: string;
   passwordResetExpires?: Date;
   OTP?: string;
   OTPExpires?: Date;
+  following: Array<Types.ObjectId>;
+  followers: Array<Types.ObjectId>;
+  modePrivate: string;
 }
 
 export interface IUserModel extends UserInterface, Document {

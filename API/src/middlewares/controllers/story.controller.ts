@@ -14,8 +14,7 @@ class StoryController {
     const story = await storyService.createStory(
       req.user.userId,
       req.file,
-      req.body.text,
-      req.body.sharedUserIds || []
+      req.body.text
     );
 
     new CREATED({
@@ -26,7 +25,7 @@ class StoryController {
     }).send(res);
   };
 
-  findStoriesByUser = async (
+  findStoriesOfOtherUser = async (
     req: RequestV2,
     res: Response,
     next: NextFunction
@@ -34,7 +33,10 @@ class StoryController {
     if (!req.user) {
       throw new UnauthorizedError("User not found! Please log in again!");
     }
-    const stories = await storyService.findStoriesByUser(req.user.userId);
+    const stories = await storyService.findStoriesOfOtherUser(
+      req.user.userId,
+      req.params.otherUserId
+    );
 
     new OK({
       message: "Find stories by user successfully!",

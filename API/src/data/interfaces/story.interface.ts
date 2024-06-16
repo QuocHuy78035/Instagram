@@ -5,7 +5,6 @@ interface StoryInterface {
   image?: string;
   video?: string;
   text?: string;
-  sharedUserIds: Array<Types.ObjectId>;
   posted: Date;
 }
 

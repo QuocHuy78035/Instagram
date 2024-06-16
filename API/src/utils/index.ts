@@ -4,9 +4,10 @@ import { SchemaTypes } from "mongoose";
 import { Types } from "mongoose";
 
 export const getInfoData = (
-  object: Object = {},
+  object: Object | null = {},
   fields: Array<string> = []
 ) => {
+  if (!object) return {};
   return _.pick(object, fields);
 };
 

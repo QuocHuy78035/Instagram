@@ -18,10 +18,6 @@ const storySchema: Schema<IStoryModel> = new Schema<IStoryModel>(
     text: {
       type: String,
     },
-    sharedUserIds: {
-      type: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
-      default: [],
-    },
     posted: Date,
   },
   {

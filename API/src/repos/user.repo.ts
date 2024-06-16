@@ -67,6 +67,86 @@ class UserRepo {
       passwordResetExpires,
     });
   }
+
+  async updateAddToFollowingById(
+    userId: Types.ObjectId,
+    followedUserId: Types.ObjectId
+  ) {
+    return await User.findByIdAndUpdate(
+      userId,
+      {
+        $addToSet: {
+          following: followedUserId,
+        },
+      },
+      { new: true }
+    );
+  }
+
+  async updateRemoveFromFollowingById(
+    userId: Types.ObjectId,
+    followedUserId: Types.ObjectId
+  ) {
+    return await User.findByIdAndUpdate(
+      userId,
+      {
+        $pull: {
+          following: followedUserId,
+        },
+      },
+      { new: true }
+    );
+  }
+
+  async updateAddToFollowersById(
+    userId: Types.ObjectId,
+    followedUserId: Types.ObjectId
+  ) {
+    return await User.findByIdAndUpdate(
+      followedUserId,
+      {
+        $addToSet: {
+          followers: userId,
+        },
+      },
+      { new: true }
+    );
+  }
+
+  async updateRemoveFromFollowersById(
+    userId: Types.ObjectId,
+    followedUserId: Types.ObjectId
+  ) {
+    return await User.findByIdAndUpdate(
+      followedUserId,
+      {
+        $pull: {
+          followers: userId,
+        },
+      },
+      { new: true }
+    );
+  }
+
+  async updateModePrivateToOnById(userId: Types.ObjectId) {
+    return await User.findByIdAndUpdate(
+      userId,
+      {
+        modePrivate: "on",
+      },
+      { new: true }
+    );
+  }
+
+  async updateModePrivateToOffById(userId: Types.ObjectId) {
+    return await User.findByIdAndUpdate(
+      userId,
+      {
+        modePrivate: "off",
+      },
+      { new: true }
+    );
+  }
 }
 
 export default new UserRepo();

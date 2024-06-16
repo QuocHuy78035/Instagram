@@ -1,5 +1,6 @@
 import { Types } from "mongoose";
 import Story from "../data/models/story.model";
+const UTF_TIME = 7 * 60 * 60 * 1000;
 class StoryRepo {
   constructor() {}
 
@@ -7,15 +8,14 @@ class StoryRepo {
     userId: Types.ObjectId,
     image: string | undefined,
     video: string | undefined,
-    text: string | undefined,
-    sharedUserIds: Array<Types.ObjectId>
+    text: string | undefined
   ) {
     return await Story.create({
       userId,
       image,
       video,
       text,
-      sharedUserIds,
+      posted: new Date(Date.now() + UTF_TIME),
     });
   }
 
