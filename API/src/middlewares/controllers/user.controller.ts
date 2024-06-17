@@ -1,4 +1,4 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import RequestV2 from "../../data/interfaces/requestv2.interface";
 import userService from "../../services/user.service";
 import { UnauthorizedError } from "../../core/error.response";
@@ -65,6 +65,29 @@ class UserController {
     const metadata = await userService.turnOffModePrivate(req.user.userId);
     new OK({
       message: "Turn off mode private successfully!",
+      metadata,
+    }).send(res);
+  };
+
+  findFollowingsById = async (
+    req: RequestV2,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (!req.user) {
+      throw new UnauthorizedError("User not found! Please log in again!");
+    }
+    const metadata = await userService.findFollowingsById(req.user.userId);
+    new OK({
+      message: "Find followings successfully!",
+      metadata,
+    }).send(res);
+  };
+  searchUsers = async (req: Request, res: Response, next: NextFunction) => {
+    const metadata = await userService.searchUsers(req.query.search as string);
+
+    new OK({
+      message: "Search users successfully!",
       metadata,
     }).send(res);
   };

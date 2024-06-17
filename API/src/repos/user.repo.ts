@@ -39,6 +39,14 @@ class UserRepo {
     });
   }
 
+  async findFollowingsById(userId: Types.ObjectId) {
+    const user = await User.findById(userId).populate({
+      path: "following",
+      select: { _id: 1, name: 1, avatar: 1 },
+    });
+    return user?.following;
+  }
+
   async createUser(body: {
     mobile?: string;
     email?: string;

@@ -1,7 +1,8 @@
 import { Types, isValidObjectId } from "mongoose";
-import { UnauthorizedError } from "../core/error.response";
+import { BadRequestError, UnauthorizedError } from "../core/error.response";
 import userRepo from "../repos/user.repo";
 import { convertStringToObjectId, getInfoData } from "../utils";
+import { fetchSearchURL } from "../utils/searchElastic";
 
 class UserService {
   constructor() {}
@@ -32,7 +33,7 @@ class UserService {
     );
 
     return {
-      user: getInfoData(updatedUser, ["_id", "following"]),
+      user: getInfoData(updatedUser, ["_id", "username", "following"]),
     };
   }
 
@@ -62,7 +63,7 @@ class UserService {
     );
 
     return {
-      user: getInfoData(updatedUser, ["_id", "following"]),
+      user: getInfoData(updatedUser, ["_id", "username", "following"]),
     };
   }
 
@@ -74,7 +75,7 @@ class UserService {
 
     const updatedUser = await userRepo.updateModePrivateToOnById(userId);
     return {
-      user: getInfoData(updatedUser, ["_id", "modePrivate"]),
+      user: getInfoData(updatedUser, ["_id", "username", "modePrivate"]),
     };
   }
   async turnOffModePrivate(userId: Types.ObjectId) {
@@ -85,7 +86,32 @@ class UserService {
 
     const updatedUser = await userRepo.updateModePrivateToOffById(userId);
     return {
-      user: getInfoData(updatedUser, ["_id", "modePrivate"]),
+      user: getInfoData(updatedUser, ["_id", "username", "modePrivate"]),
+    };
+  }
+
+  async findFollowingsById(userId: Types.ObjectId) {
+    const user = await userRepo.findById(userId);
+    if (!user) {
+      throw new UnauthorizedError("User not found! Please log in again!");
+    }
+
+    const followings = await userRepo.findFollowingsById(userId);
+    return {
+      followings,
+    };
+  }
+
+  async searchUsers(search: string = "") {
+    const users = await fetchSearchURL(search);
+    if (users.length === 0) {
+      throw new BadRequestError("No results found!");
+    }
+
+    return {
+      users: users.map((user) =>
+        getInfoData(user, ["_id", "username", "name", "avatar"])
+      ),
     };
   }
 }
