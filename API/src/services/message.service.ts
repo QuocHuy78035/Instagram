@@ -4,6 +4,7 @@ import { BadRequestError } from "../core/error.response";
 import conversationRepo from "../repos/conversation.repo";
 import { convertStringToObjectId } from "../utils";
 import messageRepo from "../repos/message.repo";
+import SocketConnection from "../socket/socket";
 
 class MessageService {
   constructor() {}
@@ -24,7 +25,8 @@ class MessageService {
     }
 
     const conversation = await conversationRepo.findByIdAndUser(
-      convertStringToObjectId(conversationId), userId
+      convertStringToObjectId(conversationId),
+      userId
     );
 
     if (!conversation) {
@@ -39,6 +41,19 @@ class MessageService {
       conversation.id,
       newMessage.id
     );
+
+    const receivedIds = updatedConversation.participants.filter(
+      (id) => id.toString() !== userId.toString()
+    );
+    // Socket io
+    if (receivedIds) {
+      const receiverSocketId = SocketConnection.getReceiverSocketId(
+        receivedIds[0].toString()
+      );
+      if (receiverSocketId) {
+        SocketConnection.io.to(receiverSocketId).emit("newMessage", newMessage);
+      }
+    }
     return {
       message: newMessage,
       conversation: updatedConversation,
