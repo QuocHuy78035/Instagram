@@ -44,6 +44,24 @@ class ConversationController {
       metadata,
     }).send(res);
   };
+
+  getAllConversations = async (
+    req: RequestV2,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (!req.user) {
+      throw new UnauthorizedError("User not found! Please log in again!");
+    }
+    const metadata = await conversationService.getAllConversations(
+      req.user.userId
+    );
+
+    new OK({
+      message: "Get all conversations successfully!",
+      metadata,
+    }).send(res);
+  };
 }
 
 export default new ConversationController();

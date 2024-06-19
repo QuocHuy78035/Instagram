@@ -7,6 +7,18 @@ import { OK } from "../../core/success.response";
 class UserController {
   constructor() {}
 
+  getUserById = async (req: RequestV2, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      throw new UnauthorizedError("User not found! Please log in again!");
+    }
+
+    const metadata = await userService.getUserById(req.user.userId);
+    new OK({
+      message: "Get user successfully",
+      metadata,
+    }).send(res);
+  };
+
   following = async (req: RequestV2, res: Response, next: NextFunction) => {
     if (!req.user) {
       throw new UnauthorizedError("User not found! Please log in again!");

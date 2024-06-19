@@ -14,6 +14,9 @@ class ConversationRouter {
       .route("/")
       .post(asyncHandler(conversationController.createConversation));
     this.router
+      .route("/")
+      .get(asyncHandler(conversationController.getAllConversations));
+    this.router
       .route("/:conversation")
       .get(asyncHandler(conversationController.getConversation));
   }

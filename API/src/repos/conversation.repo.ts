@@ -36,11 +36,24 @@ class ConversationRepo {
     return await Conversation.findById(conversationId)
       .populate({
         path: "messages",
+        populate: {
+          path: "senderId",
+          select: { _id: 1, name: 1, username: 1, avatar: 1 },
+        },
       })
       .populate({
         path: "participants",
         select: { _id: 1, name: 1, username: 1, avatar: 1 },
       });
+  }
+
+  async getAllConversations(userId: Types.ObjectId) {
+    return await Conversation.find({
+      participants: { $in: [userId] },
+    }).populate({
+      path: "participants",
+      select: { _id: 1, name: 1, username: 1, avatar: 1 },
+    });
   }
 }
 

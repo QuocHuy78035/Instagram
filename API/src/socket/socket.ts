@@ -35,7 +35,7 @@ class SocketConnection {
         SocketConnection.userSocketMap[userId] = socket.id;
 
       SocketConnection.io.emit(
-        "chat message",
+        "getOnlineUsers",
         Object.keys(SocketConnection.userSocketMap)
       );
 
@@ -43,7 +43,7 @@ class SocketConnection {
         console.log("user disconnected", socket.id);
         delete SocketConnection.userSocketMap[userId];
         SocketConnection.io.emit(
-          "chat message",
+          "getOnlineUsers",
           Object.keys(SocketConnection.userSocketMap)
         );
       });

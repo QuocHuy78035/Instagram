@@ -46,8 +46,27 @@ class ConversationService {
     const selectedConversation = await conversationRepo.getConversation(
       conversation.id
     );
+    if (selectedConversation)
+      selectedConversation.participants =
+        selectedConversation.participants.filter(
+          (participant) => participant._id.toString() !== userId.toString()
+        );
     return {
       conversation: selectedConversation,
+    };
+  }
+
+  async getAllConversations(userId: Types.ObjectId) {
+    let conversations = await conversationRepo.getAllConversations(userId);
+    if (conversations)
+      conversations = conversations.map((conversation) => {
+        conversation.participants = conversation.participants.filter(
+          (participant) => participant._id.toString() !== userId.toString()
+        );
+        return conversation;
+      });
+    return {
+      conversations,
     };
   }
 }

@@ -6,6 +6,13 @@ import { fetchSearchURL } from "../utils/searchElastic";
 
 class UserService {
   constructor() {}
+  async getUserById(userId: Types.ObjectId) {
+    const user = await userRepo.findById(userId);
+
+    return {
+      user,
+    };
+  }
 
   async following(userId: Types.ObjectId, followedUserId: string) {
     if (!isValidObjectId(followedUserId)) {

@@ -36,7 +36,7 @@ class UserRepo {
       passwordResetExpires: {
         $gte: Date.now(),
       },
-    });
+    }).select("+passwordChangedAt");
   }
 
   async findFollowingsById(userId: Types.ObjectId) {
