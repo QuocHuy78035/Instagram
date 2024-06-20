@@ -1,10 +1,20 @@
+import { useEffect, useState } from "react";
 import { ImInfo } from "react-icons/im";
 import { RiVideoOnLine } from "react-icons/ri";
 import { TbPhoneCall } from "react-icons/tb";
+import { useSocketContext } from "../../context/SocketContext";
 
 export default function HeaderConversation({ conversation }) {
+  const [state, setState] = useState("");
+  const { onlineUsers } = useSocketContext();
+  useEffect(() => {
+    const id = conversation.participants[0]._id;
+    if (!id) return;
+    if (onlineUsers.includes(id)) setState("🟢 Online");
+    else setState("Active 4 minutes ago");
+  }, [onlineUsers, state, conversation.participants]);
   return (
-    <div className="px-4 overflow-y-auto ">
+    <div className="top-0 px-4">
       <div className="flex justify-between border-b border-gray-200 py-4">
         <div className="flex">
           <img
@@ -16,7 +26,7 @@ export default function HeaderConversation({ conversation }) {
             <div className="text-[16px] font-bold">
               {conversation ? conversation.participants[0].name : ""}
             </div>
-            <p className="text-[13px] text-gray-500">Active 4 hours ago</p>
+            <p className="text-[13px] text-gray-500">{state}</p>
           </div>
         </div>
 

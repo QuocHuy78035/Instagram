@@ -4,11 +4,15 @@ import { GoChevronDown } from "react-icons/go";
 import { useAuthContext } from "../../context/AuthContext";
 import { useEffect, useState } from "react";
 import { getAllConversations } from "../../api";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function Conversations({ setConversationId }) {
+export default function Conversations() {
+  const param = useParams();
   const { user } = useAuthContext();
   const [conversations, setConversations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  const navigate = useNavigate();
   useEffect(() => {
     (async () => {
       setIsLoading(true);
@@ -20,11 +24,12 @@ export default function Conversations({ setConversationId }) {
     })();
   }, []);
 
+  
   return (
     <>
       {/* <!-- Conversations List --> */}
       {!isLoading ? (
-        <div className="flex flex-col w-[400px] bg-white border-r border-gray-200 overflow-y-auto pt-10">
+        <div className="flex flex-col w-[30%] h-full bg-white border-r border-gray-200 pt-10">
           <div className="flex justify-between ps-6">
             <div className="flex">
               <h2 className="font-bold text-[20px]">
@@ -47,10 +52,14 @@ export default function Conversations({ setConversationId }) {
               {conversations?.map((conversation: any) => {
                 return (
                   <div
-                    className="flex items-center space-x-4 hover:bg-[rgb(249,249,249)] ps-6 py-[6px]"
+                    className={`flex items-center space-x-4 ${
+                      param.id === conversation._id
+                        ? "bg-[rgb(239,239,239)]"
+                        : ""
+                    } hover:bg-[rgb(239,239,239)] ps-6 py-[6px]`}
                     onClick={function (e) {
                       e.preventDefault();
-                      setConversationId(conversation._id);
+                      navigate("/direct/t/" + conversation._id);
                     }}
                   >
                     <img
@@ -63,7 +72,7 @@ export default function Conversations({ setConversationId }) {
                         {conversation.participants[0].name}
                       </h4>
                       <p className="mt-[3px] text-gray-500 text-[13px]">
-                        Active 4h ago
+                        Active 4 hours ago
                       </p>
                     </div>
                   </div>

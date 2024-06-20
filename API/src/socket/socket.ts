@@ -16,7 +16,7 @@ class SocketConnection {
     });
     SocketConnection.io = new Server(this.server, {
       cors: {
-        origin: ["http://127.0.0.1:5500"],
+        origin: ["http://localhost:4173"],
         methods: ["GET", "POST"],
       },
     });

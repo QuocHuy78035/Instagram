@@ -45,17 +45,19 @@ class MessageService {
     const receivedIds = updatedConversation.participants.filter(
       (id) => id.toString() !== userId.toString()
     );
+    const messageFromNewId = await messageRepo.findById(newMessage.id);
     // Socket io
     if (receivedIds) {
       const receiverSocketId = SocketConnection.getReceiverSocketId(
         receivedIds[0].toString()
       );
       if (receiverSocketId) {
-        SocketConnection.io.to(receiverSocketId).emit("newMessage", newMessage);
+        SocketConnection.io.to(receiverSocketId).emit("newMessage", messageFromNewId);
       }
     }
+    
     return {
-      message: newMessage,
+      message: messageFromNewId,
       conversation: updatedConversation,
     };
   }

@@ -1,26 +1,17 @@
 import Sidebar from "../components/message/Sidebar";
 import Conversations from "../components/message/Conversations";
-import NoConversation from "../components/message/NoConversation";
-import { useState } from "react";
-import Conversation from "../components/message/Conversation";
 
-export default function PageMessage() {
-  const [conversationId, setConversationId] = useState(null);
-
+export default function PageMessage({ children }) {
   return (
     <>
       <div className="bg-gray-50 flex h-screen">
         <Sidebar />
         {/* <!-- Main Content --> */}
-        <div className="flex-grow flex flex-col">
+        <div className="flex-grow flex flex-col overflow-hidden h-full">
           {/* <!-- Messages Container --> */}
-          <div className="flex flex-1">
-            <Conversations setConversationId={setConversationId} />
-            {conversationId ? (
-              <Conversation conversationId={conversationId} />
-            ) : (
-              <NoConversation />
-            )}
+          <div className="flex flex-1 h-full">
+            <Conversations />
+            {children}
           </div>
         </div>
       </div>
