@@ -11,7 +11,7 @@ export default function Conversations() {
   const { user } = useAuthContext();
   const [conversations, setConversations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const navigate = useNavigate();
   useEffect(() => {
     (async () => {
@@ -24,12 +24,11 @@ export default function Conversations() {
     })();
   }, []);
 
-  
   return (
     <>
       {/* <!-- Conversations List --> */}
       {!isLoading ? (
-        <div className="flex flex-col w-[30%] h-full bg-white border-r border-gray-200 pt-10">
+        <div className="flex flex-col w-[27%] h-full bg-white border-r border-gray-200 pt-10">
           <div className="flex justify-between ps-6">
             <div className="flex">
               <h2 className="font-bold text-[20px]">

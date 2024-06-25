@@ -20,12 +20,17 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [userId, setUserId] = useState<string | null>(getCookie("user"));
   const [user, setUser] = useState<User | null>(null);
   useEffect(() => {
+    setUserId(getCookie("user"));
+  }, []);
+  useEffect(() => {
     (async () => {
       const data = await getUser();
+      console.log("Data", data);
       if (data.status === 200) {
         setUser(data.metadata.user);
       }
     })();
+    console.log(userId, user);
   }, [userId]);
   return (
     <AuthContext.Provider value={{ userId, setUserId, user }}>

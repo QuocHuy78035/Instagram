@@ -13,10 +13,10 @@ export default function PageLogin() {
     e.preventDefault();
     const data = await LoginAPI({ username, password });
     if (data.status === 200) {
-      setCookies("jwt", data.metadata.tokens.accessToken);
-      setCookies("user", data.metadata.user._id);
+      setCookies("jwt", data.metadata.tokens.accessToken, { path: "/" });
+      setCookies("user", data.metadata.user._id, { path: "/" });
     }
-    setUserId(data.metadata.user);
+    setUserId(data.metadata.user._id);
   };
   return (
     <div className="bg-gray-50 flex flex-col items-center justify-center h-screen">

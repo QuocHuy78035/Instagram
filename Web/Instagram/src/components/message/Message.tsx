@@ -1,8 +1,10 @@
-import { useAuthContext } from "../../context/AuthContext";
+import { useEffect, useState } from "react";
 
-export default function Message({ message }) {
-  const { userId } = useAuthContext();
-  const rightUser = userId === message.senderId._id ? true : false;
+export default function Message({ message, userId }) {
+  const [rightUser, setRightUser] = useState(true);
+  useEffect(() => {
+    setRightUser(userId === message.senderId._id ? true : false);
+  }, [userId, message]);
   return (
     <>
       <div

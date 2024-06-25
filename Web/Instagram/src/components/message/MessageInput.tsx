@@ -25,10 +25,10 @@ export default function MessageInput({ messages, setMessages }) {
     <>
       {/* <!-- Message Input --> */}
       {/* border-t border-gray-200 */}
-      <div
+      <div  
         className="fixed bottom-0 h-[70px] border-t border-gray-200 bg-white px-4 py-3 flex"
         style={{
-          width: "67%",
+          width: "70%",
         }}
       >
         <button className="mr-4 w-8 h-8 my-auto">

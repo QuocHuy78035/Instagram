@@ -2,9 +2,11 @@ import { useEffect, useRef } from "react";
 import { useSocketContext } from "../../context/SocketContext";
 import HeaderMessages from "./HeaderMessages";
 import Message from "./Message";
+import { useAuthContext } from "../../context/AuthContext";
 
 export default function Messages({ conversation, messages, setMessages }) {
   const { socket } = useSocketContext();
+  const { userId } = useAuthContext();
   useEffect(() => {
     socket?.on("newMessage", (newMessage) => {
       newMessage.shouldShake = true;
@@ -32,7 +34,7 @@ export default function Messages({ conversation, messages, setMessages }) {
         {messages.map((message) => {
           return (
             <div className="w-full" ref={lastMessageRef}>
-              <Message message={message}/>
+              <Message message={message} userId={userId} />
             </div>
           );
         })}
