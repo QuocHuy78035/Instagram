@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:instagram_clone/core/theme/app_assets.dart';
 import 'package:instagram_clone/src/modules/profile/presentation/views/profile_screen.dart';
 
+import '../../../../../core/local_db_config/init_local_db.dart';
 import '../../../home/presentation/views/home_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -23,6 +24,8 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(SharedPreferencesRepository.getString('accessToken'));
+
     return Scaffold(
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),

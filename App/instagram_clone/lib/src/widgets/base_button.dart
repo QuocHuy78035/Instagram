@@ -15,14 +15,14 @@ class BaseButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColor.primaryColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(25),
         ),
         minimumSize: Size(MediaQuery.of(context).size.width, height!),
       ),
       onPressed: onPressed,
       child: Text(
         title,
-        style: const TextStyle(fontSize: 16, color: AppColor.whiteColor),
+        style: const TextStyle(fontSize: 18, color: AppColor.whiteColor),
       ),
     );
   }

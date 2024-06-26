@@ -21,4 +21,5 @@ class AppAssets{
 
   //images
   static const instagramTextLogo = 'assets/images/insta_logo.png';
+  static const instagramImageLogo = 'assets/images/meta_logo.png';
 }
