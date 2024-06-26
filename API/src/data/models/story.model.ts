@@ -9,6 +9,10 @@ const storySchema: Schema<IStoryModel> = new Schema<IStoryModel>(
       ref: "User",
       required: true,
     },
+    usersViewed: {
+      type: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
+      default: [],
+    },
     image: {
       type: String,
     },

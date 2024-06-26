@@ -3,6 +3,7 @@ import { BadRequestError, UnauthorizedError } from "../core/error.response";
 import userRepo from "../repos/user.repo";
 import { convertStringToObjectId, getInfoData } from "../utils";
 import { fetchSearchURL } from "../utils/searchElastic";
+import storyRepo from "../repos/story.repo";
 
 class UserService {
   constructor() {}
@@ -104,6 +105,42 @@ class UserService {
     }
 
     const followings = await userRepo.findFollowingsById(userId);
+    return {
+      followings,
+    };
+  }
+
+  async findFollowingsByIdAndHaveStories(userId: Types.ObjectId) {
+    const user = await userRepo.findById(userId);
+    if (!user) {
+      throw new UnauthorizedError("User not found! Please log in again!");
+    }
+    let followings: Array<any> | undefined = await userRepo.findFollowingsById(
+      userId
+    );
+    if (!followings) {
+      throw new BadRequestError("Following is not found!");
+    }
+    followings = await Promise.all(
+      followings.map(async function (following: any) {
+        following.stories = await storyRepo.findStoriesByUser(following._id);
+
+        return following;
+      })
+    );
+    // have story
+    followings = followings.filter(
+      (following) => following.stories.length !== 0
+    );
+    followings = followings.map((following) => {
+      const viewed: boolean = Boolean(
+        following.stories.find((story: any) => {
+          return story.usersViewed.includes(userId);
+        })
+      );
+      following.viewed = viewed;
+      return following;
+    });
     return {
       followings,
     };

@@ -18,6 +18,9 @@ class StoryRouter {
     this.router
       .route("/:otherUserId")
       .get(asyncHandler(storyController.findStoriesOfOtherUser));
+    this.router
+      .route("/:id/userViewed")
+      .patch(asyncHandler(storyController.updateUserViewedById));
   }
 }
 

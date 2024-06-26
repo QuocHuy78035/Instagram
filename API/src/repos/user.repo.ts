@@ -40,10 +40,12 @@ class UserRepo {
   }
 
   async findFollowingsById(userId: Types.ObjectId) {
-    const user = await User.findById(userId).populate({
-      path: "following",
-      select: { _id: 1, name: 1, avatar: 1 },
-    });
+    const user = await User.findById(userId)
+      .populate({
+        path: "following",
+        select: { _id: 1, name: 1, avatar: 1, username: 1 },
+      })
+      .lean();
     return user?.following;
   }
 

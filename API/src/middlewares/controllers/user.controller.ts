@@ -95,6 +95,20 @@ class UserController {
       metadata,
     }).send(res);
   };
+  findFollowingsByIdAndHaveStories = async (
+    req: RequestV2,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (!req.user) {
+      throw new UnauthorizedError("User not found! Please log in again!");
+    }
+    const metadata = await userService.findFollowingsByIdAndHaveStories(req.user.userId);
+    new OK({
+      message: "Find followings by user id and have stories successfully!",
+      metadata,
+    }).send(res);
+  };
   searchUsers = async (req: Request, res: Response, next: NextFunction) => {
     const metadata = await userService.searchUsers(req.query.search as string);
 
