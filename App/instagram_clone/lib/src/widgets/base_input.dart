@@ -10,6 +10,7 @@ class BaseInput extends StatefulWidget {
   final bool? isPass;
   final TextInputAction? action;
   final TextInputType? keyBoardType;
+  final TextEditingController? controller;
 
   const BaseInput({
     super.key,
@@ -17,6 +18,7 @@ class BaseInput extends StatefulWidget {
     this.onChanged,
     this.validator,
     this.icon,
+    this.controller,
     this.action,
     this.keyBoardType,
     this.isPass = false,
@@ -32,20 +34,14 @@ class _BaseInputState extends State<BaseInput> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 50,
+      height: 60,
       decoration: BoxDecoration(
-        color: const Color(0x00fafafa),
+        color: Colors.white.withOpacity(.3),
         borderRadius: BorderRadius.circular(5),
-        // boxShadow: [
-        //   BoxShadow(
-        //     color: Colors.grey.withOpacity(0.1),
-        //     spreadRadius: 4,
-        //     blurRadius: 7,
-        //     offset: const Offset(0, 3), // changes position of shadow
-        //   ),
-        // ],
       ),
       child: TextFormField(
+
+        controller: widget.controller,
         keyboardType: widget.keyBoardType,
         textInputAction: widget.action,
         onChanged: widget.onChanged,
@@ -65,7 +61,9 @@ class _BaseInputState extends State<BaseInput> {
             borderRadius: BorderRadius.circular(5),
           ),
           errorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: AppColor.errorColor),
+            borderSide: const BorderSide(
+              color: AppColor.errorColor,
+            ),
             borderRadius: BorderRadius.circular(5),
           ),
           focusedBorder: OutlineInputBorder(
