@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/core/theme/app_assets.dart';
+import 'package:instagram_clone/src/modules/main/presentation/bloc/main_bloc.dart';
 import 'package:instagram_clone/src/modules/profile/presentation/views/profile_screen.dart';
-
 import '../../../../../core/local_db_config/init_local_db.dart';
 import '../../../home/presentation/views/home_screen.dart';
 
@@ -15,6 +16,17 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final PageController _pageController = PageController(initialPage: 0);
 
+  getInfo() {
+    context.read<MainBloc>().add(GetUserInfoEvent());
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getInfo();
+  }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -24,8 +36,6 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(SharedPreferencesRepository.getString('accessToken'));
-
     return Scaffold(
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),
@@ -59,6 +69,7 @@ class _BottomNavigationBarState extends State<_BottomNavigationBar> {
 
   @override
   Widget build(BuildContext context) {
+    final avt = SharedPreferencesRepository.getString('avt');
     return BottomNavigationBar(
       selectedItemColor: Colors.black,
       unselectedItemColor: Colors.grey,
@@ -74,55 +85,82 @@ class _BottomNavigationBarState extends State<_BottomNavigationBar> {
       },
       items: [
         BottomNavigationBarItem(
-          icon: _currentIndex == 0 ? Image.asset(
-            AppAssets.homeSelectedIcon,
-            height: 22,
-            width: 24,
-          ) : Image.asset(
-            AppAssets.homeIcon,
-            height: 22,
-            width: 24,
-          ),
+          icon: _currentIndex == 0
+              ? Image.asset(
+                  AppAssets.homeSelectedIcon,
+                  height: 22,
+                  width: 24,
+                )
+              : Image.asset(
+                  AppAssets.homeIcon,
+                  height: 22,
+                  width: 24,
+                ),
           label: "",
         ),
         BottomNavigationBarItem(
-          icon: _currentIndex == 1 ? Image.asset(
-            AppAssets.searchSelectedIcon,
-            height: 22,
-            width: 24,
-          ) : Image.asset(
-            AppAssets.searchIcon,
-            height: 22,
-            width: 24,
-          ),
+          icon: _currentIndex == 1
+              ? Image.asset(
+                  AppAssets.searchSelectedIcon,
+                  height: 22,
+                  width: 24,
+                )
+              : Image.asset(
+                  AppAssets.searchIcon,
+                  height: 22,
+                  width: 24,
+                ),
           label: "",
         ),
         BottomNavigationBarItem(
-          icon: _currentIndex == 2 ? Image.asset(
-            AppAssets.createIcon,
-            height: 22,
-            width: 24,
-          ) : Image.asset(
-            AppAssets.createIcon,
-            height: 22,
-            width: 24,
-          ),
+          icon: _currentIndex == 2
+              ? Image.asset(
+                  AppAssets.createIcon,
+                  height: 22,
+                  width: 24,
+                )
+              : Image.asset(
+                  AppAssets.createIcon,
+                  height: 22,
+                  width: 24,
+                ),
           label: "",
         ),
         BottomNavigationBarItem(
-          icon: _currentIndex == 3 ? Image.asset(
-            AppAssets.heartSelectedIcon,
-            height: 22,
-            width: 24,
-          ) : Image.asset(
-            AppAssets.heartIcon,
-            height: 22,
-            width: 24,
-          ),
+          icon: _currentIndex == 3
+              ? Image.asset(
+                  AppAssets.heartSelectedIcon,
+                  height: 22,
+                  width: 24,
+                )
+              : Image.asset(
+                  AppAssets.heartIcon,
+                  height: 22,
+                  width: 24,
+                ),
           label: "",
         ),
         BottomNavigationBarItem(
-          icon: _currentIndex == 4 ? const Icon(Icons.perm_identity_rounded) : const Icon(Icons.person),
+          icon: _currentIndex == 4
+              ? Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 2
+                    )
+                  ),
+                  child: Image.network(
+                    avt,
+                    height: 26,
+                    width: 26,
+                  ),
+                )
+              : Image.network(
+                  avt,
+                  height: 26,
+                  width: 26,
+                ),
           label: "",
         ),
       ],

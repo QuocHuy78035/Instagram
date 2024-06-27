@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/core/theme/app_assets.dart';
 
+import '../../../../../core/local_db_config/init_local_db.dart';
 import '../../../../widgets/base_button.dart';
 import '../../../home/presentation/views/widgets/story_item.dart';
 
@@ -14,6 +15,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
+    final avt = SharedPreferencesRepository.getString('avt');
 
     return Scaffold(
       appBar: AppBar(

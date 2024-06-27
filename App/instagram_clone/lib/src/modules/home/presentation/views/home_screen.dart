@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/core/local_db_config/init_local_db.dart';
 import 'package:instagram_clone/core/theme/app_assets.dart';
 import 'package:instagram_clone/src/modules/home/presentation/views/widgets/story_item.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -15,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
+  final avt = SharedPreferencesRepository.getString('avt');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,21 +115,22 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            height: 32,
-                            width: 32,
+                            height: 36,
+                            width: 36,
                             decoration: const BoxDecoration(shape: BoxShape.circle),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(50),
-                              child: Image.asset("assets/images/Rectangle.png"),
+                              //child: Image.asset("assets/images/Rectangle.png"),
+                              child: Image.network(avt),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
                           Text(
                             "Quoc Huy",
                             style: TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 15),
+                                fontWeight: FontWeight.w600, fontSize: 16),
                           )
                         ],
                       ),

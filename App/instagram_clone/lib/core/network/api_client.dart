@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/core/local_db_config/init_local_db.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'api_constant.dart';
 import 'api_exception.dart';
@@ -13,7 +14,7 @@ class ApiClient {
     dio = Dio(baseOptions);
     dio.interceptors.add(
       PrettyDioLogger(
-         requestBody: true,
+        requestBody: true,
       ),
     );
   }
@@ -23,11 +24,15 @@ class ApiClient {
   /// GET REQUEST
   Future<Response> getRequest(
       {required String path, bool isTokenRequired = false}) async {
-    // if (isTokenRequired == true) {
-    //   var token = await Utils.getToken();
-    //   options.headers = baseOptions.headers
-    //     ..addAll({"Authorization": "Bearer $token"});
-    // }
+    if (isTokenRequired == true) {
+      var token = SharedPreferencesRepository.getString('accessToken');
+      var userId = SharedPreferencesRepository.getString('userId');
+      options.headers = baseOptions.headers
+        ..addAll({
+          "authorization": token,
+          'x-client-id': userId,
+        });
+    }
     try {
       var response = await dio.get(path, options: options);
       return response;
@@ -38,7 +43,6 @@ class ApiClient {
         debugPrint(e.response!.requestOptions.toString());
         throw ApiException(message: e.response!.statusMessage);
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
         debugPrint(e.requestOptions.toString());
         debugPrint(e.message);
         throw ApiException(message: e.message);
@@ -51,11 +55,15 @@ class ApiClient {
       {required String path,
       dynamic body,
       bool isTokenRequired = false}) async {
-    // if (isTokenRequired == true) {
-    //   var token = await Utils.getToken();
-    //   options.headers = baseOptions.headers
-    //     ..addAll({"Authorization": "Bearer $token"});
-    // }
+    if (isTokenRequired == true) {
+      var token = SharedPreferencesRepository.getString('accessToken');
+      var userId = SharedPreferencesRepository.getString('userId');
+      options.headers = baseOptions.headers
+        ..addAll({
+          "authorization": token,
+          'x-client-id': userId,
+        });
+    }
 
     try {
       var response = await dio.post(path, data: body, options: options);

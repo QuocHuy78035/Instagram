@@ -14,7 +14,6 @@ class AuthRepoImpl implements AuthRepo {
     required String emailOrPhone,
     required String password,
   }) async{
-
     try {
       final user = await _authRemoteDataSrc.login(
         emailOrPhone: emailOrPhone,
