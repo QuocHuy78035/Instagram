@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import { IUserModel } from "../interfaces/user.interface";
 import { UserName } from "../../utils/globalvariables";
 const DEFAULT_IMAGE =
-  "https://firebasestorage.googleapis.com/v0/b/insta-ebedc.appspot.com/o/users%2Fimages%2F44884218_345707102882519_2446069589734326272_n.jpg?alt=media&token=48e26f45-171f-4db8-b4fe-d89abae281d0";
+  "https://firebasestorage.googleapis.com/v0/b/insta-ebedc.appspot.com/o/users%2Fimages%2F143086968_2856368904622192_1959732218791162458_n.png?alt=media&token=77e45ba1-a6c1-444d-bbaf-05c13e01cf43";
 const userSchema: Schema<IUserModel> = new Schema<IUserModel>(
   {
     name: {

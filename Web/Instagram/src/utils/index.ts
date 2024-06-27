@@ -16,11 +16,11 @@ export function getCookie(cname: string) {
 export function distanceBetweenTwoDates(date1: Date, date2: Date): string {
   const seconds = Math.abs(date1.getTime() - date2.getTime()) / 1000;
   if (seconds > 86400) {
-    return Math.floor(seconds / 86400) + " days ago";
+    return Math.floor(seconds / 86400) + "d ago";
   } else if (seconds > 3600) {
-    return Math.floor(seconds / 3600) + " hours ago";
+    return Math.floor(seconds / 3600) + "h ago";
   } else if (seconds > 60) {
-    return Math.floor(seconds / 60) + " minutes ago";
+    return Math.floor(seconds / 60) + "m ago";
   }
   return Math.floor(seconds) + " seconds ago";
 }

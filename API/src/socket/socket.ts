@@ -34,20 +34,20 @@ class SocketConnection {
       const userId = socket.handshake.query.userId;
       if (userId !== undefined)
         SocketConnection.userSocketMap[userId] = socket.id;
-
+      console.log(SocketConnection.userSocketMap);
       SocketConnection.io.emit(
         "getOnlineUsers",
         Object.keys(SocketConnection.userSocketMap)
       );
 
-      socket.on("disconnect", async () => {
+      socket.on("disconnect", () => {
         console.log("user disconnected", socket.id);
-        await userService.updateLatestOnlineAt(userId);
         delete SocketConnection.userSocketMap[userId];
         SocketConnection.io.emit(
           "getOnlineUsers",
           Object.keys(SocketConnection.userSocketMap)
         );
+        userService.updateLatestOnlineAt(userId);
       });
     });
 

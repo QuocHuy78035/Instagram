@@ -20,10 +20,7 @@ import {
   SignUpValidator,
   VerifyCodeValidator,
 } from "../validators/user.validator";
-import {
-  Document,
-  Types,
-} from "mongoose";
+import { Document, Types } from "mongoose";
 import keytokenService from "./keytoken.service";
 import { createTokenPair } from "../auth/authUtils";
 import crypto from "crypto";
@@ -393,6 +390,7 @@ class AuthenService {
           "username",
           "name",
           "role",
+          "avatar",
         ]),
         tokens,
       };

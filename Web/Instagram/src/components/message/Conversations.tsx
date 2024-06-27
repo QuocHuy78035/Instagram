@@ -6,13 +6,15 @@ import { getAllConversations } from "../../api";
 import { useNavigate, useParams } from "react-router-dom";
 import useConversations from "../../zustand/useConversations";
 import { distanceBetweenTwoDates } from "../../utils";
+import { useSocketContext } from "../../context/SocketContext";
+import useOpenConversation from "../../zustand/useOpenConversation";
 
 export default function Conversations() {
   const param = useParams();
   const { user } = useAuthContext();
   const { conversations, setConversations } = useConversations();
   const [isLoading, setIsLoading] = useState(true);
-
+  const { onlineUsers } = useSocketContext();
   const navigate = useNavigate();
   useEffect(() => {
     (async () => {
@@ -24,22 +26,25 @@ export default function Conversations() {
       }
     })();
   }, []);
-
+  const { setIsOpenConversation } = useOpenConversation();
+  function openForm() {
+    setIsOpenConversation(true);
+  }
   return (
     <>
       {/* <!-- Conversations List --> */}
       {!isLoading ? (
         <div className="flex flex-col w-[27%] h-full bg-white border-r border-gray-200 pt-10">
           <div className="flex justify-between ps-6">
-            <div className="flex">
+            <div className="flex py-2">
               <h2 className="font-bold text-[20px]">
                 {user ? user.username : ""}
               </h2>
               <GoChevronDown className="ms-1 my-auto" />
             </div>
-            <div className="flex me-8 my-auto">
+            <button className="flex me-8 my-auto px-2 py-2" onClick={openForm}>
               <FaRegEdit className="w-[24px] h-[24px]" />
-            </div>
+            </button>
           </div>
           <div className="pt-5 flex flex-col flex-grow">
             <div className="flex justify-between ps-6">
@@ -72,7 +77,9 @@ export default function Conversations() {
                         {conversation.participants[0].name}
                       </h4>
                       <p className="mt-[3px] text-gray-500 text-[13px]">
-                        {conversation.participants[0].latestOnlineAt
+                        {onlineUsers.includes(conversation.participants[0]._id)
+                          ? "🟢 Online"
+                          : conversation.participants[0].latestOnlineAt
                           ? `Active ${distanceBetweenTwoDates(
                               new Date(Date.now()),
                               new Date(

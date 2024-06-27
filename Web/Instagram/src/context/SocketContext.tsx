@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useAuthContext } from "./AuthContext";
 import * as io from "socket.io-client";
+import { useRoutes } from "react-router-dom";
 interface SocketContextProps {
   socket: io.Socket<any, any> | null;
   onlineUsers: Array<string>;
@@ -18,7 +19,7 @@ export const useSocketContext = () => {
 export const SocketContextProvider = ({ children }) => {
   const [socket, setSocket] = useState<io.Socket<any, any> | null>(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
-  const { userId } = useAuthContext();
+  const { userId, user } = useAuthContext();
 
   useEffect(() => {
     if (userId) {
@@ -40,7 +41,7 @@ export const SocketContextProvider = ({ children }) => {
         setSocket(null);
       }
     }
-  }, [userId]);
+  }, [userId, user]);
 
   return (
     <SocketContext.Provider value={{ socket, onlineUsers }}>

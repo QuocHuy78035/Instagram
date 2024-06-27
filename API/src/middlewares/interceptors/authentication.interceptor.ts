@@ -24,12 +24,13 @@ export const authentication = asyncHandler(
     if (!isValidObjectId(userId)) {
       throw new BadRequestError("User id is invalid!");
     }
-    const user = await userRepo.findById(convertStringToObjectId(userId));
+    const [user, keyStore] = await Promise.all([
+      userRepo.findById(convertStringToObjectId(userId)),
+      keytokenRepo.findByUserId(userId),
+    ]);
     if (!user) {
       throw new UnauthorizedError("User not found!");
     }
-
-    const keyStore = await keytokenRepo.findByUserId(userId);
     if (!keyStore) {
       throw new UnauthorizedError("Not found KeyStore!");
     }
