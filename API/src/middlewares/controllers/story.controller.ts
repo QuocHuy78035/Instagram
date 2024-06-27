@@ -45,6 +45,24 @@ class StoryController {
       },
     }).send(res);
   };
+
+  updateUserViewedById = async (
+    req: RequestV2,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (!req.user) {
+      throw new UnauthorizedError("User not found! Please log in again!");
+    }
+    const metadata = await storyService.updateUserViewedById(
+      req.user.userId,
+      req.params.id
+    );
+    new OK({
+      message: "Update user viewed by id successfully!",
+      metadata,
+    }).send(res);
+  };
 }
 
 export default new StoryController();

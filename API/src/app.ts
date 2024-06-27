@@ -3,6 +3,8 @@ dotenv.config();
 import * as express from "express";
 import morgan from "morgan";
 import helmet from "helmet";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 import { DBConnection } from "./dbs/initDB";
 import { NotFoundMiddleware } from "./middlewares/errors/notfound.middlewares";
 import { GlobalErrorMiddleware } from "./middlewares/errors/globalerror.middleware";
@@ -17,8 +19,10 @@ export default class Server {
     app.use(express.json());
     app.use(morgan("dev"));
     app.use(helmet());
+    app.use(cors());
     app.use(router);
-
+    app.use(express.urlencoded({ extended: true }));
+    app.use(cookieParser());
     // handling error
     app.use(NotFoundMiddleware);
     app.use(GlobalErrorMiddleware);

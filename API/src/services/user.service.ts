@@ -3,9 +3,17 @@ import { BadRequestError, UnauthorizedError } from "../core/error.response";
 import userRepo from "../repos/user.repo";
 import { convertStringToObjectId, getInfoData } from "../utils";
 import { fetchSearchURL } from "../utils/searchElastic";
+import storyRepo from "../repos/story.repo";
 
 class UserService {
   constructor() {}
+  async getUserById(userId: Types.ObjectId) {
+    const user = await userRepo.findById(userId);
+
+    return {
+      user,
+    };
+  }
 
   async following(userId: Types.ObjectId, followedUserId: string) {
     if (!isValidObjectId(followedUserId)) {
@@ -102,8 +110,44 @@ class UserService {
     };
   }
 
+  async findFollowingsByIdAndHaveStories(userId: Types.ObjectId) {
+    const user = await userRepo.findById(userId);
+    if (!user) {
+      throw new UnauthorizedError("User not found! Please log in again!");
+    }
+    let followings: Array<any> | undefined = await userRepo.findFollowingsById(
+      userId
+    );
+    if (!followings) {
+      throw new BadRequestError("Following is not found!");
+    }
+    followings = await Promise.all(
+      followings.map(async function (following: any) {
+        following.stories = await storyRepo.findStoriesByUser(following._id);
+
+        return following;
+      })
+    );
+    // have story
+    followings = followings.filter(
+      (following) => following.stories.length !== 0
+    );
+    followings = followings.map((following) => {
+      const viewed: boolean = Boolean(
+        following.stories.find((story: any) => {
+          return story.usersViewed.includes(userId);
+        })
+      );
+      following.viewed = viewed;
+      return following;
+    });
+    return {
+      followings,
+    };
+  }
+
   async searchUsers(search: string = "") {
-    const users = await fetchSearchURL(search);
+    const users = await userRepo.searchUsers(search);
     if (users.length === 0) {
       throw new BadRequestError("No results found!");
     }
@@ -113,6 +157,17 @@ class UserService {
         getInfoData(user, ["_id", "username", "name", "avatar"])
       ),
     };
+  }
+  async updateLatestOnlineAt(userId: string) {
+    if (!isValidObjectId(userId)) {
+      throw new UnauthorizedError("Invalid user id");
+    }
+    const user = await userRepo.findById(convertStringToObjectId(userId));
+    if (!user) {
+      throw new BadRequestError(`User with id ${userId} is not found!`);
+    }
+
+    return await userRepo.updateLatestOnlineAt(user.id);
   }
 }
 

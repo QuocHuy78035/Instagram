@@ -2,7 +2,8 @@ import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import { IUserModel } from "../interfaces/user.interface";
 import { UserName } from "../../utils/globalvariables";
-
+const DEFAULT_IMAGE =
+  "https://firebasestorage.googleapis.com/v0/b/insta-ebedc.appspot.com/o/users%2Fimages%2F44884218_345707102882519_2446069589734326272_n.jpg?alt=media&token=48e26f45-171f-4db8-b4fe-d89abae281d0";
 const userSchema: Schema<IUserModel> = new Schema<IUserModel>(
   {
     name: {
@@ -22,7 +23,7 @@ const userSchema: Schema<IUserModel> = new Schema<IUserModel>(
     },
     avatar: {
       type: String,
-      default: "",
+      default: DEFAULT_IMAGE,
     },
     status: {
       type: String,
@@ -47,7 +48,7 @@ const userSchema: Schema<IUserModel> = new Schema<IUserModel>(
       required: [true, "Please provide your password!"],
       select: false,
     },
-    passwordChangedAt: Date,
+    passwordChangedAt: { type: Date, select: false },
     passwordResetToken: String,
     passwordResetExpires: Date,
     OTP: String,
@@ -65,6 +66,7 @@ const userSchema: Schema<IUserModel> = new Schema<IUserModel>(
       enum: ["on", "off"],
       default: "off",
     },
+    latestOnlineAt: Date,
   },
   { timestamps: true, collection: UserName.COLLECTION_NAME }
 );

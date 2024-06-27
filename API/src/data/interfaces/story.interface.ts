@@ -2,6 +2,7 @@ import { Document, Types } from "mongoose";
 
 interface StoryInterface {
   userId: Types.ObjectId;
+  usersViewed: Types.ObjectId[];
   image?: string;
   video?: string;
   text?: string;
