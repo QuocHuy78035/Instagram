@@ -38,12 +38,18 @@ class ConversationRepo {
         path: "messages",
         populate: {
           path: "senderId",
-          select: { _id: 1, name: 1, username: 1, avatar: 1 },
+          select: {
+            _id: 1,
+            name: 1,
+            username: 1,
+            avatar: 1,
+            latestOnlineAt: 1,
+          },
         },
       })
       .populate({
         path: "participants",
-        select: { _id: 1, name: 1, username: 1, avatar: 1 },
+        select: { _id: 1, name: 1, username: 1, avatar: 1, latestOnlineAt: 1 },
       });
   }
 
@@ -52,7 +58,7 @@ class ConversationRepo {
       participants: { $in: [userId] },
     }).populate({
       path: "participants",
-      select: { _id: 1, name: 1, username: 1, avatar: 1 },
+      select: { _id: 1, name: 1, username: 1, avatar: 1, latestOnlineAt: 1 },
     });
   }
 }

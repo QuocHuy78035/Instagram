@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getAllConversations } from "../../api";
 import { useNavigate, useParams } from "react-router-dom";
 import useConversations from "../../zustand/useConversations";
+import { distanceBetweenTwoDates } from "../../utils";
 
 export default function Conversations() {
   const param = useParams();
@@ -71,7 +72,14 @@ export default function Conversations() {
                         {conversation.participants[0].name}
                       </h4>
                       <p className="mt-[3px] text-gray-500 text-[13px]">
-                        Active 4 hours ago
+                        {conversation.participants[0].latestOnlineAt
+                          ? `Active ${distanceBetweenTwoDates(
+                              new Date(Date.now()),
+                              new Date(
+                                conversation.participants[0].latestOnlineAt
+                              )
+                            )}`
+                          : " "}
                       </p>
                     </div>
                   </div>

@@ -3,6 +3,7 @@ import { ImInfo } from "react-icons/im";
 import { RiVideoOnLine } from "react-icons/ri";
 import { TbPhoneCall } from "react-icons/tb";
 import { useSocketContext } from "../../context/SocketContext";
+import { distanceBetweenTwoDates } from "../../utils";
 
 export default function HeaderConversation({ conversation }) {
   const [state, setState] = useState("");
@@ -11,7 +12,15 @@ export default function HeaderConversation({ conversation }) {
     const id = conversation.participants[0]._id;
     if (!id) return;
     if (onlineUsers.includes(id)) setState("🟢 Online");
-    else setState("Active 4 minutes ago");
+    else
+      setState(
+        conversation.participants[0].latestOnlineAt
+          ? `Active ${distanceBetweenTwoDates(
+              new Date(Date.now()),
+              new Date(conversation.participants[0].latestOnlineAt)
+            )}`
+          : " "
+      );
   }, [onlineUsers, state, conversation.participants]);
   return (
     <div className="top-0 px-4">
