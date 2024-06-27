@@ -52,10 +52,12 @@ class MessageService {
         receivedIds[0].toString()
       );
       if (receiverSocketId) {
-        SocketConnection.io.to(receiverSocketId).emit("newMessage", messageFromNewId);
+        SocketConnection.io
+          .to(receiverSocketId)
+          .emit("newMessage", messageFromNewId);
       }
     }
-    
+
     return {
       message: messageFromNewId,
       conversation: updatedConversation,

@@ -15,10 +15,10 @@ class ConversationController {
     if (!req.user) {
       throw new UnauthorizedError("User not found! Please log in again!");
     }
-    const metadata = await conversationService.createConversation([
+    const metadata = await conversationService.createConversation(
       req.user.userId.toString(),
-      ...req.body.participants,
-    ]);
+      req.body.participants
+    );
 
     new OK({
       message: "Create conversation successfully!",

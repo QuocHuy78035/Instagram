@@ -66,6 +66,7 @@ const userSchema: Schema<IUserModel> = new Schema<IUserModel>(
       enum: ["on", "off"],
       default: "off",
     },
+    latestOnlineAt: Date,
   },
   { timestamps: true, collection: UserName.COLLECTION_NAME }
 );

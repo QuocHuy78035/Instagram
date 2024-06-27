@@ -7,7 +7,13 @@ import { convertStringToObjectId } from "../utils";
 class ConversationService {
   constructor() {}
 
-  async createConversation(participantIds: Array<string>) {
+  async createConversation(userId: string, participantIds: Array<string>) {
+    if (participantIds.length === 0) {
+      throw new BadRequestError("Please add at least 1 participants.");
+    }
+    if (!participantIds.includes(userId)) {
+      participantIds = [userId, ...participantIds];
+    }
     const participantObjectIds = await Promise.all(
       participantIds.map(async (id) => {
         if (!isValidObjectId(id)) {
@@ -21,10 +27,14 @@ class ConversationService {
       })
     );
 
-    const conversations = await conversationRepo.createConversation(
+    let conversation: any = await conversationRepo.createConversation(
       participantObjectIds
     );
-    return { conversations };
+    conversation = await conversationRepo.getConversation(conversation._id);
+    conversation.participants = conversation.participants.filter(
+      (participant: any) => participant._id.toString() !== userId.toString()
+    );
+    return { conversation };
   }
 
   async getConversation(userId: Types.ObjectId, conversationId: string) {

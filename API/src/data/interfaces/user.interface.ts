@@ -18,6 +18,7 @@ interface UserInterface {
   following: Array<Types.ObjectId>;
   followers: Array<Types.ObjectId>;
   modePrivate: string;
+  latestOnlineAt: Date;
 }
 
 export interface IUserModel extends UserInterface, Document {

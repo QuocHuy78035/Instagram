@@ -157,6 +157,52 @@ class UserRepo {
       { new: true }
     );
   }
+
+  async updateLatestOnlineAt(userId: Types.ObjectId) {
+    return await User.findByIdAndUpdate(
+      userId,
+      {
+        latestOnlineAt: new Date(Date.now()),
+      },
+      { new: true }
+    );
+  }
+
+  async searchUsers(search: string) {
+    const users = await User.aggregate([
+      {
+        $search: {
+          index: "default",
+          compound: {
+            should: [
+              {
+                autocomplete: {
+                  query: search || " ",
+                  path: "username",
+                  tokenOrder: "sequential",
+                  fuzzy: { maxEdits: 2, prefixLength: 0 },
+                },
+              },
+              {
+                autocomplete: {
+                  query: search || " ",
+                  path: "name",
+                  tokenOrder: "sequential",
+                  fuzzy: { maxEdits: 2, prefixLength: 0 },
+                },
+              },
+            ],
+          },
+        },
+      },
+      {
+        $match: {
+          status: "active",
+        },
+      },
+    ]);
+    return users;
+  }
 }
 
 export default new UserRepo();

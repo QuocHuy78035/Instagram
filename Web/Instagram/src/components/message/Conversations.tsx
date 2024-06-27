@@ -1,15 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FaRegEdit } from "react-icons/fa";
 import { GoChevronDown } from "react-icons/go";
 import { useAuthContext } from "../../context/AuthContext";
 import { useEffect, useState } from "react";
 import { getAllConversations } from "../../api";
 import { useNavigate, useParams } from "react-router-dom";
+import useConversations from "../../zustand/useConversations";
 
 export default function Conversations() {
   const param = useParams();
   const { user } = useAuthContext();
-  const [conversations, setConversations] = useState([]);
+  const { conversations, setConversations } = useConversations();
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();

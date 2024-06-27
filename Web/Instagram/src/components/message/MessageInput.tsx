@@ -8,10 +8,12 @@ import { useParams } from "react-router-dom";
 export default function MessageInput({ messages, setMessages }) {
   const param = useParams();
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!param.id) return;
     if (message === "") return;
+    setIsLoading(true);
     const data = await createMessage({
       conversation: param.id,
       message,
@@ -19,13 +21,14 @@ export default function MessageInput({ messages, setMessages }) {
     if (data.status === 201) {
       setMessages([...messages, data.metadata.message]);
       setMessage("");
+      setIsLoading(false);
     }
   };
   return (
     <>
       {/* <!-- Message Input --> */}
       {/* border-t border-gray-200 */}
-      <div  
+      <div
         className="fixed bottom-0 h-[70px] border-t border-gray-200 bg-white px-4 py-3 flex"
         style={{
           width: "70%",
@@ -42,8 +45,12 @@ export default function MessageInput({ messages, setMessages }) {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
-          <button className="absolute right-3 top-[2px] text-[15px] font-semibold text-blue-600 py-1 px-3">
-            Send
+          <button
+            className={`absolute right-3 ${
+              !isLoading ? "top-[2px]" : "top-[4px]"
+            } text-[15px] font-semibold text-blue-600 py-1 px-3`}
+          >
+            {isLoading ? <div className="loader"></div> : "Send"}
           </button>
         </form>
         <button className="ml-4 w-8 h-8 my-auto">

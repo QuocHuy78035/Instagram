@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
+import userService from "../services/user.service";
 
 class SocketConnection {
   server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
@@ -39,8 +40,9 @@ class SocketConnection {
         Object.keys(SocketConnection.userSocketMap)
       );
 
-      socket.on("disconnect", () => {
+      socket.on("disconnect", async () => {
         console.log("user disconnected", socket.id);
+        await userService.updateLatestOnlineAt(userId);
         delete SocketConnection.userSocketMap[userId];
         SocketConnection.io.emit(
           "getOnlineUsers",

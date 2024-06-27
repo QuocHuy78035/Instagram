@@ -147,7 +147,7 @@ class UserService {
   }
 
   async searchUsers(search: string = "") {
-    const users = await fetchSearchURL(search);
+    const users = await userRepo.searchUsers(search);
     if (users.length === 0) {
       throw new BadRequestError("No results found!");
     }
@@ -157,6 +157,17 @@ class UserService {
         getInfoData(user, ["_id", "username", "name", "avatar"])
       ),
     };
+  }
+  async updateLatestOnlineAt(userId: string) {
+    if (!isValidObjectId(userId)) {
+      throw new UnauthorizedError("Invalid user id");
+    }
+    const user = await userRepo.findById(convertStringToObjectId(userId));
+    if (!user) {
+      throw new BadRequestError(`User with id ${userId} is not found!`);
+    }
+
+    return await userRepo.updateLatestOnlineAt(user.id);
   }
 }
 

@@ -2,7 +2,7 @@ import useOpenConversation from "../../zustand/useOpenConversation";
 
 export default function NoConversation() {
   const { setIsOpenConversation } = useOpenConversation();
-  function openForm(e) {
+  function openForm() {
     setIsOpenConversation(true);
   }
 
