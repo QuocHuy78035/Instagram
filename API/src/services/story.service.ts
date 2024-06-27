@@ -78,6 +78,17 @@ class StoryService {
 
     return await storyRepo.findStoriesByUser(otherUserObjectId);
   }
+
+  async updateUserViewedById(userId: Types.ObjectId, storyId: string) {
+    if (!isValidObjectId(storyId)) {
+      throw new BadRequestError("Story id is invalid!");
+    }
+    const story = await storyRepo.findById(convertStringToObjectId(storyId));
+    if (!story) {
+      throw new BadRequestError(`Story with id ${storyId} is not found!`);
+    }
+    return { story: await storyRepo.updateUserViewedById(userId, story.id) };
+  }
 }
 
 export default new StoryService();

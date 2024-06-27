@@ -13,6 +13,10 @@ class UserRouter {
   initialRouter() {
     this.router.route("/search").get(asyncHandler(userController.searchUsers));
     this.router.use(authentication);
+    this.router.route("/me").get(asyncHandler(userController.getUserById));
+    this.router
+      .route("/followingAndHaveStories")
+      .get(asyncHandler(userController.findFollowingsByIdAndHaveStories));
     this.router
       .route("/following")
       .get(asyncHandler(userController.findFollowingsById));

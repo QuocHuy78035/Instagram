@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import http from "http";
 import express from "express";
+import userService from "../services/user.service";
 
 class SocketConnection {
   server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
@@ -16,7 +17,7 @@ class SocketConnection {
     });
     SocketConnection.io = new Server(this.server, {
       cors: {
-        origin: ["http://127.0.0.1:5500"],
+        origin: ["http://localhost:4173"],
         methods: ["GET", "POST"],
       },
     });
@@ -35,15 +36,16 @@ class SocketConnection {
         SocketConnection.userSocketMap[userId] = socket.id;
 
       SocketConnection.io.emit(
-        "chat message",
+        "getOnlineUsers",
         Object.keys(SocketConnection.userSocketMap)
       );
 
-      socket.on("disconnect", () => {
+      socket.on("disconnect", async () => {
         console.log("user disconnected", socket.id);
+        await userService.updateLatestOnlineAt(userId);
         delete SocketConnection.userSocketMap[userId];
         SocketConnection.io.emit(
-          "chat message",
+          "getOnlineUsers",
           Object.keys(SocketConnection.userSocketMap)
         );
       });
