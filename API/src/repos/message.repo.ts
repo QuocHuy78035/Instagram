@@ -9,10 +9,19 @@ class MessageRepo {
       select: { _id: 1, name: 1, username: 1, avatar: 1 },
     });
   }
-  async createMessage(senderId: Types.ObjectId, message: string) {
+
+  async findByConversation(conversation: Types.ObjectId) {
+    return await Message.find({ conversation });
+  }
+  async createMessage(
+    senderId: Types.ObjectId,
+    message: string,
+    conversation: Types.ObjectId
+  ) {
     return await Message.create({
       senderId,
       message,
+      conversation,
     });
   }
 }

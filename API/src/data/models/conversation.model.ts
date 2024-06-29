@@ -7,21 +7,12 @@ const COLLECTION_NAME = "conversations";
 const conversationSchema: Schema<IConversationModel> =
   new Schema<IConversationModel>(
     {
+      name: String,
       participants: {
         type: [
           {
             type: Schema.Types.ObjectId,
             ref: "User",
-            required: true,
-          },
-        ],
-        default: [],
-      },
-      messages: {
-        type: [
-          {
-            type: Schema.Types.ObjectId,
-            ref: "Message",
             required: true,
           },
         ],

@@ -17,7 +17,7 @@ class ConversationController {
     }
     const metadata = await conversationService.createConversation(
       req.user.userId.toString(),
-      req.body.participants
+      req.body.participants,
     );
 
     new OK({

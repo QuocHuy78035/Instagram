@@ -22,12 +22,19 @@ export default function Conversation() {
       }
     })();
   }, [setMessages, param.id]);
+  useEffect(() => {
+    if (isLoading) return;
+    const scrollMessage = document.querySelector(".scroll__messages");
+    if (scrollMessage) {
+      scrollMessage.scrollTo(0, scrollMessage.scrollHeight + 20);
+    }
+  }, [isLoading]);
   return (
     <>
       {!isLoading ? (
         <div className="flex-grow flex flex-col overflow-y-hidden h-full">
           <HeaderConversation conversation={conversation} />
-          <div className="relative w-full flex-grow overflow-y-scroll">
+          <div className="scroll__messages relative w-full flex-grow overflow-y-scroll">
             <Messages
               conversation={conversation}
               messages={messages}

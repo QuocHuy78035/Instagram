@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 import { useSocketContext } from "../../context/SocketContext";
 import HeaderMessages from "./HeaderMessages";
-import Message from "./Message";
 import { useAuthContext } from "../../context/AuthContext";
+import MessageWithDays from "./MessagesWithDays";
+import { changeMessageToMessageWithDay } from "../../utils";
 
 export default function Messages({ conversation, messages, setMessages }) {
   const { socket } = useSocketContext();
@@ -10,7 +11,7 @@ export default function Messages({ conversation, messages, setMessages }) {
   useEffect(() => {
     socket?.on("newMessage", (newMessage) => {
       newMessage.shouldShake = true;
-      setMessages([...messages, newMessage]);
+      setMessages(changeMessageToMessageWithDay(newMessage, messages));
     });
 
     return () => {
@@ -22,8 +23,9 @@ export default function Messages({ conversation, messages, setMessages }) {
 
   useEffect(() => {
     setTimeout(() => {
-      if (lastMessageRef)
+      if (lastMessageRef) {
         lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
     }, 100);
   }, [messages]);
 
@@ -33,9 +35,12 @@ export default function Messages({ conversation, messages, setMessages }) {
       <div className="mb-[90px] flex flex-col">
         {messages.map((message) => {
           return (
-            <div className="w-full" ref={lastMessageRef}>
-              <Message message={message} userId={userId} />
-            </div>
+            <MessageWithDays
+              messageWithDays={message}
+              lastMessageRef={lastMessageRef}
+              userId={userId}
+              conversation={conversation}
+            />
           );
         })}
       </div>

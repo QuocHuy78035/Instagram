@@ -24,3 +24,36 @@ export function distanceBetweenTwoDates(date1: Date, date2: Date): string {
   }
   return Math.floor(seconds) + " seconds ago";
 }
+
+export function changeMessageToMessageWithDay(
+  message: any,
+  messages: any
+): Array<any> {
+  const date = new Date(message.createdAt);
+  if (
+    new Date(messages[messages.length - 1].fullDate).getHours() ===
+    date.getHours()
+  ) {
+    return [
+      ...messages.slice(0, messages.length - 1),
+      {
+        date: messages[messages.length - 1].date,
+        fullDate: messages[messages.length - 1].fullDate,
+        messages: [...messages[messages.length - 1].messages, message],
+      },
+    ];
+  } else {
+    return [
+      ...messages,
+      {
+        date: new Date(Date.now())
+          .toTimeString()
+          .split(":")
+          .slice(0, 2)
+          .join(":"),
+        fullDate: new Date(Date.now()),
+        messages: [message],
+      },
+    ];
+  }
+}

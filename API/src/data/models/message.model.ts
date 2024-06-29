@@ -19,6 +19,11 @@ const messageSchema: Schema<IMessageModel> = new Schema<IMessageModel>(
       type: String,
       required: true,
     },
+    conversation: {
+      type: Schema.Types.ObjectId,
+      ref: "Conversation",
+      required: true,
+    },
   },
   {
     timestamps: true,

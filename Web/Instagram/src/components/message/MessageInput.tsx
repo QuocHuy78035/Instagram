@@ -4,6 +4,7 @@ import { FiHeart } from "react-icons/fi";
 import { GrImage, GrMicrophone } from "react-icons/gr";
 import { createMessage } from "../../api";
 import { useParams } from "react-router-dom";
+import { changeMessageToMessageWithDay } from "../../utils";
 
 export default function MessageInput({ messages, setMessages }) {
   const param = useParams();
@@ -19,7 +20,8 @@ export default function MessageInput({ messages, setMessages }) {
       message,
     });
     if (data.status === 201) {
-      setMessages([...messages, data.metadata.message]);
+      const message = data.metadata.message;
+      setMessages(changeMessageToMessageWithDay(message, messages));
       setMessage("");
       setIsLoading(false);
     }

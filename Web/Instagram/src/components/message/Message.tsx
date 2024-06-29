@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 
-export default function Message({ message, userId }) {
+export default function Message({ message, userId, participants }) {
   const [rightUser, setRightUser] = useState(true);
+  const [sender, setSender] = useState<any>({});
   useEffect(() => {
-    setRightUser(userId === message.senderId._id ? true : false);
+    setRightUser(userId === message.senderId ? true : false);
   }, [userId, message]);
+  useEffect(() => {
+    setSender(participants.find((participant) => participant._id === userId));
+  }, []);
   return (
     <>
       <div
@@ -14,7 +18,7 @@ export default function Message({ message, userId }) {
       >
         {!rightUser ? (
           <img
-            src={message.senderId.avatar}
+            src={sender.avatar}
             className="w-7 h-7 m-3 rounded-full my-auto"
           />
         ) : (

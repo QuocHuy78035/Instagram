@@ -13,6 +13,7 @@ export default function FormCreateConversation() {
   const [selectedUsers, setSelectedUsers] = useState<
     Array<{ _id: string; name: string }>
   >([]);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     console.log(selectedUsers);
   }, [selectedUsers]);
@@ -31,12 +32,14 @@ export default function FormCreateConversation() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setIsLoading(true);
     const data = await createConversation(
       selectedUsers.map((user) => user._id)
     );
     if (data.status === 200) {
       setConversations([...conversations, data.metadata.conversation]);
       setIsOpenConversation(false);
+      setIsLoading(false);
     }
   }
   return (
@@ -148,7 +151,7 @@ export default function FormCreateConversation() {
               onClick={handleSubmit}
               disabled={selectedUsers.length === 0}
             >
-              Chat
+              {isLoading ? <div className="loader"></div> : "Chat"}
             </button>
           </div>
         </form>

@@ -14,7 +14,6 @@ class MessageService {
     conversationId: string,
     message: string
   ) {
-    console.log(Date.now());
     if (!isValidObjectId(conversationId)) {
       throw new BadRequestError("Conversation id is invalid!");
     }
@@ -35,33 +34,31 @@ class MessageService {
         `Conversation with id ${conversationId} is not found!`
       );
     }
-    console.log(Date.now());
-    const newMessage = await messageRepo.createMessage(userId, message);
-    console.log(Date.now());
-    const [updatedConversation, messageFromNewId] = await Promise.all([
-      conversationRepo.addMessageToConversation(conversation.id, newMessage.id),
-      messageRepo.findById(newMessage.id),
-    ]);
-
-    const receivedIds = updatedConversation.participants.filter(
+    const newMessage = await messageRepo.createMessage(
+      userId,
+      message,
+      conversation.id
+    );
+    // const updatedConversation = await conversationRepo.addMessageToConversation(
+    //   conversation.id,
+    //   newMessage.id
+    // );
+    const receivedIds = conversation.participants.filter(
       (id) => id.toString() !== userId.toString()
     );
-    console.log(Date.now());
     // Socket io
     if (receivedIds) {
       const receiverSocketId = SocketConnection.getReceiverSocketId(
         receivedIds[0].toString()
       );
       if (receiverSocketId) {
-        SocketConnection.io
-          .to(receiverSocketId)
-          .emit("newMessage", messageFromNewId);
+        SocketConnection.io.to(receiverSocketId).emit("newMessage", newMessage);
       }
     }
 
     return {
-      message: messageFromNewId,
-      conversation: updatedConversation,
+      message: newMessage,
+      // conversation: updatedConversation,
     };
   }
 }

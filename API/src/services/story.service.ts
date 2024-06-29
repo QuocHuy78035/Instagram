@@ -44,18 +44,20 @@ class StoryService {
   }
 
   async findStoriesOfOtherUser(userId: Types.ObjectId, otherUserId: string) {
-    const user = await userRepo.findById(userId);
-    if (!user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
-    }
-
     if (!isValidObjectId(otherUserId)) {
       throw new UnauthorizedError("Invalid followed user id");
     }
     const otherUserObjectId: Types.ObjectId =
       convertStringToObjectId(otherUserId);
 
-    const otherUser = await userRepo.findById(otherUserObjectId);
+    const [user, otherUser] = await Promise.all([
+      userRepo.findById(userId),
+      userRepo.findById(otherUserObjectId),
+    ]);
+    if (!user) {
+      throw new UnauthorizedError("User not found! Please log in again!");
+    }
+
     if (!otherUser) {
       throw new UnauthorizedError(
         `User with id ${otherUserId} not found! Please try again!`
