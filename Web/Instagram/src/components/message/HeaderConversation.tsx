@@ -2,10 +2,13 @@ import { ImInfo } from "react-icons/im";
 import { RiVideoOnLine } from "react-icons/ri";
 import { TbPhoneCall } from "react-icons/tb";
 import useHeaderConversation from "../../hooks/useHeaderConversation";
+import useOpenConversationInformation from "../../zustand/useOpenConversationInformation";
+import { FaCircleInfo } from "react-icons/fa6";
 
 export default function HeaderConversation({ conversation }) {
   const { state, name, avatar1, avatar2 } = useHeaderConversation(conversation);
-
+  const { setIsOpenConversationInformation, isOpenConversationInformation } =
+    useOpenConversationInformation();
   return (
     <div className="top-0 px-4">
       <div
@@ -41,14 +44,23 @@ export default function HeaderConversation({ conversation }) {
         </div>
 
         <div className="flex">
-          <button className="mr-4 w-8 h-8 my-auto">
+          <button className="w-12 h-12 my-auto px-2 py-2">
             <TbPhoneCall className="w-6 h-6 mx-auto" />
           </button>
-          <button className="mr-4 w-8 h-8 my-auto">
+          <button className="w-12 h-12 my-auto px-2 py-2">
             <RiVideoOnLine className="w-6 h-6 mx-auto font-bold" />
           </button>
-          <button className="mr-4 w-8 h-8 my-auto">
-            <ImInfo className="w-6 h-6 mx-auto" />
+          <button
+            className="w-12 h-12 my-auto px-2 py-2"
+            onClick={() => {
+              setIsOpenConversationInformation(!isOpenConversationInformation);
+            }}
+          >
+            {!isOpenConversationInformation ? (
+              <ImInfo className="w-6 h-6 mx-auto" />
+            ) : (
+              <FaCircleInfo className="w-6 h-6 mx-auto" />
+            )}
           </button>
         </div>
       </div>

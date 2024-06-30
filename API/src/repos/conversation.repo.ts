@@ -50,6 +50,10 @@ class ConversationRepo {
       select: { _id: 1, name: 1, username: 1, avatar: 1, latestOnlineAt: 1 },
     });
   }
+
+  async deleteConversation(conversationId: Types.ObjectId) {
+    return await Conversation.findByIdAndDelete(conversationId);
+  }
 }
 
 export default new ConversationRepo();

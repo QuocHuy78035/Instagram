@@ -39,20 +39,20 @@ class MessageService {
       message,
       conversation.id
     );
-    // const updatedConversation = await conversationRepo.addMessageToConversation(
-    //   conversation.id,
-    //   newMessage.id
-    // );
     const receivedIds = conversation.participants.filter(
       (id) => id.toString() !== userId.toString()
     );
     // Socket io
-    if (receivedIds) {
-      const receiverSocketId = SocketConnection.getReceiverSocketId(
-        receivedIds[0].toString()
-      );
-      if (receiverSocketId) {
-        SocketConnection.io.to(receiverSocketId).emit("newMessage", newMessage);
+    if (receivedIds.length !== 0) {
+      for (let i = 0; i < receivedIds.length; i++) {
+        const receiverSocketId = SocketConnection.getReceiverSocketId(
+          receivedIds[i].toString()
+        );
+        if (receiverSocketId) {
+          SocketConnection.io
+            .to(receiverSocketId)
+            .emit("newMessage", newMessage);
+        }
       }
     }
 

@@ -24,6 +24,10 @@ class MessageRepo {
       conversation,
     });
   }
+
+  async deleteMessagesByConversation(conversationId: Types.ObjectId) {
+    return await Message.deleteMany({ conversation: conversationId });
+  }
 }
 
 export default new MessageRepo();

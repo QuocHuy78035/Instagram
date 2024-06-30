@@ -30,6 +30,19 @@ export function changeMessageToMessageWithDay(
   messages: any
 ): Array<any> {
   const date = new Date(message.createdAt);
+  if (messages.length === 0) {
+    return [
+      {
+        date: new Date(Date.now())
+          .toTimeString()
+          .split(":")
+          .slice(0, 2)
+          .join(":"),
+        fullDate: new Date(Date.now()),
+        messages: [message],
+      },
+    ];
+  }
   if (
     new Date(messages[messages.length - 1].fullDate).getHours() ===
     date.getHours()

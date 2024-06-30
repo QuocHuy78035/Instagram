@@ -76,6 +76,24 @@ class ConversationService {
       conversations,
     };
   }
+
+  async deleteConversation(userId: Types.ObjectId, conversationId: string) {
+    if (!isValidObjectId(conversationId)) {
+      throw new BadRequestError("Conversation id is invalid!");
+    }
+    const conversation = await conversationRepo.findByIdAndUser(
+      convertStringToObjectId(conversationId),
+      userId
+    );
+
+    if (!conversation) {
+      throw new BadRequestError(
+        `Conversation with id ${conversationId} is not found!`
+      );
+    }
+    await messageRepo.deleteMessagesByConversation(conversation.id);
+    await conversationRepo.deleteConversation(conversation.id);
+  }
 }
 
 export default new ConversationService();

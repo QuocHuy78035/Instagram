@@ -18,7 +18,8 @@ class ConversationRouter {
       .get(asyncHandler(conversationController.getAllConversations));
     this.router
       .route("/:conversation")
-      .get(asyncHandler(conversationController.getConversation));
+      .get(asyncHandler(conversationController.getConversation))
+      .delete(asyncHandler(conversationController.deleteConversation));
   }
 }
 

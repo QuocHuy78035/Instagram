@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MessageInput from "./MessageInput";
 import { getConversation } from "../../api";
 import HeaderConversation from "./HeaderConversation";
 import Messages from "./Messages";
 import { useParams } from "react-router-dom";
+import useConversation from "../../zustand/useConversation";
 
 export default function Conversation() {
   const param = useParams();
-  const [conversation, setConversation] = useState<any>(null);
+  const { conversation, setConversation } = useConversation();
   const [isLoading, setIsLoading] = useState(true);
   const [messages, setMessages] = useState([]);
   useEffect(() => {
@@ -29,10 +30,15 @@ export default function Conversation() {
       scrollMessage.scrollTo(0, scrollMessage.scrollHeight + 20);
     }
   }, [isLoading]);
+  const conversationRef = useRef<any>(null);
   return (
     <>
       {!isLoading ? (
-        <div className="flex-grow flex flex-col overflow-y-hidden h-full">
+        <div
+          id="conversation"
+          className="flex-grow flex flex-col overflow-y-hidden h-full"
+          ref={conversationRef}
+        >
           <HeaderConversation conversation={conversation} />
           <div className="scroll__messages relative w-full flex-grow overflow-y-scroll">
             <Messages
@@ -41,7 +47,11 @@ export default function Conversation() {
               setMessages={setMessages}
             />
           </div>
-          <MessageInput messages={messages} setMessages={setMessages} />
+          <MessageInput
+            messages={messages}
+            setMessages={setMessages}
+            conversationRef={conversationRef}
+          />
         </div>
       ) : (
         ""

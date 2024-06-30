@@ -24,18 +24,29 @@ export default function Message({ message, userId, participants }) {
         ) : (
           ""
         )}
-        <div
-          className={`text-[15px] py-2 px-[12px] my-auto ${
-            rightUser
-              ? "bg-blue-600 text-white"
-              : "bg-[rgb(239,239,239)] text-black"
-          } rounded-lg max-w-[300px]`}
-          style={{
-            marginRight: rightUser ? "12px" : "0px",
-          }}
-        >
-          {message.message}
-        </div>
+        {message.message === "❤️" ? (
+          <div
+            className="text-[60px]"
+            style={{
+              marginRight: rightUser ? "12px" : "0px",
+            }}
+          >
+            ❤️
+          </div>
+        ) : (
+          <div
+            className={`text-[15px] py-2 px-[12px] my-auto ${
+              rightUser
+                ? "bg-blue-600 text-white"
+                : "bg-[rgb(239,239,239)] text-black"
+            } rounded-lg max-w-[300px]`}
+            style={{
+              marginRight: rightUser ? "12px" : "0px",
+            }}
+          >
+            {message.message}
+          </div>
+        )}
       </div>
     </>
   );

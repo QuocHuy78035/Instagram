@@ -1,45 +1,69 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BsEmojiSmile } from "react-icons/bs";
 import { FiHeart } from "react-icons/fi";
 import { GrImage, GrMicrophone } from "react-icons/gr";
 import { createMessage } from "../../api";
 import { useParams } from "react-router-dom";
 import { changeMessageToMessageWithDay } from "../../utils";
+import useOpenConversationInformation from "../../zustand/useOpenConversationInformation";
 
-export default function MessageInput({ messages, setMessages }) {
+export default function MessageInput({
+  messages,
+  setMessages,
+  conversationRef,
+}) {
+  const { isOpenConversationInformation } = useOpenConversationInformation();
   const param = useParams();
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!param.id) return;
-    if (message === "") return;
-    setIsLoading(true);
+
+  async function sendMessage(conversation: string, message: string) {
     const data = await createMessage({
-      conversation: param.id,
+      conversation,
       message,
     });
     if (data.status === 201) {
       const message = data.metadata.message;
       setMessages(changeMessageToMessageWithDay(message, messages));
       setMessage("");
-      setIsLoading(false);
     }
+  }
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    if (!param.id) return;
+    if (message === "") return;
+    setIsLoading(true);
+    await sendMessage(param.id, message);
+    setIsLoading(false);
   };
+
+  async function createHeartMessage() {
+    if (!param.id) return;
+    await sendMessage(param.id, "❤️");
+  }
+  useEffect(() => {
+    const messageInput = document.getElementById("message__input");
+    if (messageInput && conversationRef.current)
+      messageInput.style.width = `${
+        conversationRef.current.getBoundingClientRect().width
+      }px`;
+  }, [isOpenConversationInformation, conversationRef]);
   return (
     <>
       {/* <!-- Message Input --> */}
       {/* border-t border-gray-200 */}
       <div
+        id="message__input"
         className="fixed bottom-0 h-[70px] border-t border-gray-200 bg-white px-4 py-3 flex"
-        style={{
-          width: "70%",
-        }}
+        // style={{
+        //   width: "70%",
+        // }}
       >
         <button className="mr-4 w-8 h-8 my-auto">
           <BsEmojiSmile className="w-6 h-6 mx-auto" />
         </button>
-        <form className="grow relative my-auto" onSubmit={handleSubmit}>
+        <form className="grow relative my-auto me-1" onSubmit={handleSubmit}>
           <input
             type="text"
             placeholder="Message..."
@@ -55,13 +79,16 @@ export default function MessageInput({ messages, setMessages }) {
             {isLoading ? <div className="loader"></div> : "Send"}
           </button>
         </form>
-        <button className="ml-4 w-8 h-8 my-auto">
+        <button className="w-12 h-12 my-auto px-2 py-2">
           <GrMicrophone className="w-6 h-6 mx-auto" />
         </button>
-        <button className="ml-4 w-8 h-8 my-auto">
+        <button className="w-12 h-12 my-auto px-2 py-2">
           <GrImage className="w-6 h-6 mx-auto" />
         </button>
-        <button className="ml-4 w-8 h-8 my-auto">
+        <button
+          className="w-12 h-12 my-auto px-2 py-2"
+          onClick={createHeartMessage}
+        >
           <FiHeart className="w-6 h-6 mx-auto" />
         </button>
       </div>
