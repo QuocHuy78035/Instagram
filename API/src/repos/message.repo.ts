@@ -13,16 +13,15 @@ class MessageRepo {
   async findByConversation(conversation: Types.ObjectId) {
     return await Message.find({ conversation });
   }
-  async createMessage(
-    senderId: Types.ObjectId,
-    message: string,
-    conversation: Types.ObjectId
-  ) {
-    return await Message.create({
-      senderId,
-      message,
-      conversation,
-    });
+  async createMessage(body: {
+    senderId: Types.ObjectId;
+    message?: string;
+    image?: string;
+    replyMessage?: Types.ObjectId;
+    react?: string;
+    conversation: Types.ObjectId;
+  }) {
+    return await Message.create(body);
   }
 
   async deleteMessagesByConversation(conversationId: Types.ObjectId) {

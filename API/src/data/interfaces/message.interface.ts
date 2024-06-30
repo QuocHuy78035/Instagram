@@ -2,8 +2,10 @@ import { Types } from "mongoose";
 
 interface MessageInterface {
   senderId: Types.ObjectId;
-  receiverId?: Types.ObjectId;
-  message: string;
+  message?: string;
+  image?: string;
+  replyMessage?: Types.ObjectId;
+  react?: string;
   conversation: Types.ObjectId;
 }
 
