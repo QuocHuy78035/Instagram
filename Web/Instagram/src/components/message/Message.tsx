@@ -25,7 +25,14 @@ export default function Message({ message, userId, participants }) {
           ""
         )}
         {message.image ? (
-          <img src={message.image} alt="Message Image" className="w-60 h-60" />
+          <img
+            src={message.image}
+            alt="Message Image"
+            className=""
+            style={{
+              marginRight: rightUser ? "12px" : "0px",
+            }}
+          />
         ) : message.message === "❤️" ? (
           <div
             className="text-[60px]"

@@ -11,17 +11,19 @@ export default function MessageWithDays({
       <div className="mx-auto my-3 text-[12px] text-gray-700 font-semibold">
         {messageWithDays.date}
       </div>
-      {messageWithDays.messages.map((message) => {
-        return (
-          <div className="w-full" ref={lastMessageRef}>
-            <Message
-              message={message}
-              userId={userId}
-              participants={conversation.participants}
-            />
-          </div>
-        );
-      })}
+      <div className="my-4">
+        {messageWithDays.messages.map((message) => {
+          return (
+            <div className="w-full" ref={lastMessageRef}>
+              <Message
+                message={message}
+                userId={userId}
+                participants={conversation.participants}
+              />
+            </div>
+          );
+        })}
+      </div>
     </>
   );
 }

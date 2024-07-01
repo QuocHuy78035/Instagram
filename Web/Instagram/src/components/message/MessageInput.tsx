@@ -20,33 +20,46 @@ export default function MessageInput({
   const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState<Array<File>>([]);
   const [images, setImages] = useState<Array<string | ArrayBuffer | null>>([]);
-  async function sendMessage(conversation: string, message: string) {
+  async function sendMessage(body: {
+    conversation: string;
+    message?: string;
+    file?: File;
+  }) {
     const data = await createMessage({
-      conversation,
-      message,
+      conversation: body.conversation,
+      message: body.message,
+      file: body.file,
     });
     if (data.status === 201) {
       const message = data.metadata.message;
       setMessages(changeMessageToMessageWithDay(message, messages));
-      setMessage("");
     }
   }
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (!param.id) return;
-
     setIsLoading(true);
-    if (message !== "") await sendMessage(param.id, message);
+    if (message !== "") {
+      await sendMessage({ conversation: param.id, message });
+      setMessage("");
+    }
     if (files.length !== 0) {
-      for (let i = 0; i < files.length; i++) {}
+      await Promise.all(
+        files.map(async (file) => {
+          if (!param.id) return;
+          await sendMessage({ conversation: param.id, file });
+        })
+      );
+      setFiles([]);
+      setImages([]);
     }
     setIsLoading(false);
   };
 
   async function createHeartMessage() {
     if (!param.id) return;
-    await sendMessage(param.id, "❤️");
+    await sendMessage({ conversation: param.id, message: "❤️" });
   }
   useEffect(() => {
     const messageInput = document.getElementById("message__input");
@@ -54,12 +67,6 @@ export default function MessageInput({
       messageInput.style.width = `${dimensions.width}px`;
   }, [isOpenConversationInformation, dimensions.width]);
 
-  useEffect(() => {
-    console.log("Files", files);
-  }, [files]);
-  useEffect(() => {
-    console.log("Images", images);
-  }, [images]);
   return (
     <>
       {/* <!-- Message Input --> */}

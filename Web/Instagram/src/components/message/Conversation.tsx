@@ -26,10 +26,11 @@ export default function Conversation() {
   useEffect(() => {
     if (isLoading) return;
     const scrollMessage = document.querySelector(".scroll__messages");
-    if (scrollMessage) {
-      scrollMessage.scrollTo(0, scrollMessage.scrollHeight + 20);
+    const messagesEle = document.getElementById("messages");
+    if (scrollMessage && messagesEle) {
+      scrollMessage.scrollTo(0, messagesEle.scrollHeight);
     }
-  }, [isLoading]);
+  }, [isLoading, messages]);
   const conversationRef = createRef<any>();
   const useRefDimensions = (ref) => {
     const [dimensions, setDimensions] = useState({ width: 1, height: 2 });

@@ -26,11 +26,11 @@ export default function Messages({ conversation, messages, setMessages }) {
       if (lastMessageRef) {
         lastMessageRef.current?.scrollIntoView({ behavior: "smooth" });
       }
-    }, 100);
-  }, [messages]);
+    }, 500);
+  }, [messages, lastMessageRef]);
 
   return (
-    <div className="w-full">
+    <div id="messages" className="w-full">
       <HeaderMessages conversation={conversation} />
       <div className="mb-[90px] flex flex-col">
         {messages.map((message) => {
