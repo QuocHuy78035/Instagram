@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/core/local_db_config/init_local_db.dart';
 import 'package:instagram_clone/core/theme/app_assets.dart';
-import 'package:instagram_clone/src/modules/home/presentation/views/widgets/story_item.dart';
+import 'package:instagram_clone/src/modules/home/presentation/bloc/home_bloc.dart';
+import 'package:instagram_clone/src/modules/home/presentation/views/widgets/story_item_circle.dart';
+import 'package:instagram_clone/src/modules/home/presentation/views/widgets/story_user_item.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
 import '../../../../../core/theme/app_color.dart';
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,6 +18,18 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
   final avt = SharedPreferencesRepository.getString('avt');
+
+  getStories() {
+    context.read<HomeBloc>().add(GetAllAnotherStory());
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getStories();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   AppAssets.heartIcon,
                   height: 24,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
                 Image.asset(
@@ -53,13 +66,14 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 children: [
                   StoryItem(
-                    imageUrl: "",
+                    imageUrl: avt,
                     onPostYourStoryPressed: () {
                       print("post story");
                     },
@@ -73,27 +87,84 @@ class _HomeScreenState extends State<HomeScreen> {
                     isYourStoryPost: false,
                     isOtherUserPostStory: false,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 20,
                   ),
-                  StoryItem(
-                    ownerStory: "",
-                    imageUrl: "",
-                    isOtherUserPostStory: true,
-                    onPostYourStoryPressed: () {
-                      print("post story");
-                    },
-                    onWatchOtherUserStoryPressed: () {
-                      print("watch another user story");
-                    },
-                    onWatchYourStoryPressed: () {
-                      print("watch your story");
-                    },
+                  Expanded(
+                    child: BlocConsumer<HomeBloc, HomeState>(
+                      builder: (context, state) {
+                        if (state is GetAllAnotherStorySuccess) {
+                          return SizedBox(
+                            height: 96,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              itemCount: state.stories.length,
+                              itemBuilder: (context, index) {
+                                return Row(
+                                  children: [
+                                    StoryItem(
+                                      isWatched: state.stories[index].viewed,
+                                      onPostYourStoryPressed: () {
+                                        print("post story");
+                                      },
+                                      onWatchOtherUserStoryPressed: () {
+                                        List<String> caption = [];
+                                        List<String> storyUrl = [];
+                                        List<String> timeOver = ["2h", "6h"];
+                                        print("watch another user story");
+                                        for (int i = 0;
+                                            i <
+                                                state.stories[index].stories
+                                                    .length;
+                                            i++) {
+                                          caption.add(state
+                                              .stories[index].stories[i].text);
+                                          storyUrl.add(state
+                                              .stories[index].stories[i].image);
+                                        }
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => StoryUserItem(
+                                              caption: caption,
+                                              storyUrl: storyUrl,
+                                              total: state.stories[index]
+                                                  .stories.length,
+                                              avtUrl:
+                                                  state.stories[index].avatar,
+                                              timeOver: timeOver,
+                                              nameUser:
+                                                  state.stories[index].username,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      onWatchYourStoryPressed: () {
+                                        print("watch your story");
+                                      },
+                                      ownerStory: state.stories[index].username,
+                                      imageUrl: state.stories[index].avatar,
+                                    ),
+                                    const SizedBox(
+                                      width: 20,
+                                    )
+                                  ],
+                                );
+                              },
+                            ),
+                          );
+                        } else {
+                          return Container();
+                        }
+                      },
+                      listener: (context, state) {},
+                    ),
                   )
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Container(
@@ -101,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: MediaQuery.of(context).size.width,
               color: AppColor.greyColor,
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Column(
@@ -117,7 +188,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           Container(
                             height: 36,
                             width: 36,
-                            decoration: const BoxDecoration(shape: BoxShape.circle),
+                            decoration:
+                                const BoxDecoration(shape: BoxShape.circle),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(50),
                               //child: Image.asset("assets/images/Rectangle.png"),
@@ -128,8 +200,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             width: 10,
                           ),
                           Text(
-                            "Quoc Huy",
-                            style: TextStyle(
+                            'userName',
+                            style: const TextStyle(
                                 fontWeight: FontWeight.w600, fontSize: 16),
                           )
                         ],
@@ -260,7 +332,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text("100 Likes", style: TextStyle(fontWeight: FontWeight.bold),),
+                      Text(
+                        "100 Likes",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                 )
@@ -272,4 +347,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

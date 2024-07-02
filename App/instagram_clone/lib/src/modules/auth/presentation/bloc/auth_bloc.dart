@@ -29,11 +29,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     response.fold(
       (failure) => emit(
-          AuthErrorState(errorMessage: "Email or password does not exist!")),
+          AuthErrorState(errorMessage: "Email or password does not correct!")),
       (authModel)  {
          SharedPreferencesRepository.putString("accessToken", authModel.tokens['accessToken']);
          SharedPreferencesRepository.putString("refreshToken", authModel.tokens['refreshToken']);
          SharedPreferencesRepository.putString("userId", authModel.user['_id']);
+         SharedPreferencesRepository.putString('userName', authModel.user['username']);
+         SharedPreferencesRepository.putString('name', authModel.user['name']);
+         SharedPreferencesRepository.putString("avt", authModel.user['avatar']);
+
+
+         SharedPreferencesRepository.putString('emailOrPhone', event.emailOrPhone);
+         SharedPreferencesRepository.putString('password', event.password);
 
          emit(
           LoggedInState(authModel: authModel),

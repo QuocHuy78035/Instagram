@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/core/theme/app_assets.dart';
-import 'package:instagram_clone/src/modules/main/presentation/bloc/main_bloc.dart';
 import 'package:instagram_clone/src/modules/profile/presentation/views/profile_screen.dart';
 import '../../../../../core/local_db_config/init_local_db.dart';
 import '../../../home/presentation/views/home_screen.dart';
@@ -16,15 +14,10 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final PageController _pageController = PageController(initialPage: 0);
 
-  getInfo() {
-    context.read<MainBloc>().add(GetUserInfoEvent());
-  }
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getInfo();
   }
 
   @override

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/core/theme/app_assets.dart';
-
 import '../../../../../core/local_db_config/init_local_db.dart';
 import '../../../../widgets/base_button.dart';
-import '../../../home/presentation/views/widgets/story_item.dart';
+import '../../../home/presentation/views/widgets/story_item_circle.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -16,7 +15,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final avt = SharedPreferencesRepository.getString('avt');
-
+    final userName = SharedPreferencesRepository.getString('userName');
+    final name = SharedPreferencesRepository.getString('name');
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -30,7 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: 8,
             ),
             Text(
-              "User name",
+              userName,
               style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
             ),
             Icon(Icons.arrow_drop_down_rounded)
@@ -62,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onWatchOtherUserStoryPressed: () {},
                   onPostYourStoryPressed: () {},
                   ownerStory: "",
-                  imageUrl: "",
+                  imageUrl: avt,
                   isOtherUserPostStory: false,
                   //isYourStoryPost: true,
                   //isWatched: false,
@@ -103,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               height: 10,
             ),
             Text(
-              "User Name",
+              name,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             Text("Try hard plssss"),
