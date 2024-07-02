@@ -11,12 +11,22 @@ const messageSchema: Schema<IMessageModel> = new Schema<IMessageModel>(
       ref: "User",
       required: true,
     },
-    receiverId: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
     message: {
       type: String,
+    },
+    image: {
+      type: String,
+    },
+    replyMessage: {
+      type: Schema.Types.ObjectId,
+      ref: "Message",
+    },
+    react: {
+      type: String,
+    },
+    conversation: {
+      type: Schema.Types.ObjectId,
+      ref: "Conversation",
       required: true,
     },
   },

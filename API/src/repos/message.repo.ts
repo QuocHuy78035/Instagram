@@ -9,11 +9,23 @@ class MessageRepo {
       select: { _id: 1, name: 1, username: 1, avatar: 1 },
     });
   }
-  async createMessage(senderId: Types.ObjectId, message: string) {
-    return await Message.create({
-      senderId,
-      message,
-    });
+
+  async findByConversation(conversation: Types.ObjectId) {
+    return await Message.find({ conversation });
+  }
+  async createMessage(body: {
+    senderId: Types.ObjectId;
+    message?: string;
+    image?: string;
+    replyMessage?: Types.ObjectId;
+    react?: string;
+    conversation: Types.ObjectId;
+  }) {
+    return await Message.create(body);
+  }
+
+  async deleteMessagesByConversation(conversationId: Types.ObjectId) {
+    return await Message.deleteMany({ conversation: conversationId });
   }
 }
 

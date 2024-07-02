@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useAuthContext } from "./AuthContext";
 import * as io from "socket.io-client";
-import { useRoutes } from "react-router-dom";
 interface SocketContextProps {
   socket: io.Socket<any, any> | null;
   onlineUsers: Array<string>;

@@ -62,6 +62,24 @@ class ConversationController {
       metadata,
     }).send(res);
   };
+
+  deleteConversation = async (
+    req: RequestV2,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (!req.user) {
+      throw new UnauthorizedError("User not found! Please log in again!");
+    }
+    await conversationService.deleteConversation(
+      req.user.userId,
+      req.params.conversation
+    );
+
+    new OK({
+      message: "Delete conversation successfully!",
+    }).send(res);
+  };
 }
 
 export default new ConversationController();

@@ -33,3 +33,15 @@ export const getConversation = async (id: string) => {
     if (err) return err.response?.data;
   }
 };
+
+export const deleteConversation = async (id: string) => {
+  try {
+    const res = await axios.delete(
+      `http://localhost:8000/api/v1/conversation/${id}`
+    );
+    return res.data;
+  } catch (err: any) {
+    console.log(err);
+    if (err) return err.response?.data;
+  }
+};

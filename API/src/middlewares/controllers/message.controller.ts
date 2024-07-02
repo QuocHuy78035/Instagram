@@ -11,11 +11,14 @@ class MessageController {
     if (!req.user) {
       throw new UnauthorizedError("User not found! Please log in again!");
     }
-    const metadata = await messageService.sendMessage(
-      req.user?.userId,
-      req.body.conversation,
-      req.body.message
-    );
+    const metadata = await messageService.sendMessage({
+      userId: req.user?.userId,
+      conversationId: req.body.conversation,
+      message: req.body.message,
+      file: req.file,
+      replyMessageId: req.body.replyMessage,
+      react: req.body.react,
+    });
 
     new CREATED({
       message: "Send message successfully!",

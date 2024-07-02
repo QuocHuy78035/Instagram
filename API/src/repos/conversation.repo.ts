@@ -33,24 +33,13 @@ class ConversationRepo {
   }
 
   async getConversation(conversationId: Types.ObjectId) {
-    return await Conversation.findById(conversationId)
-      .populate({
-        path: "messages",
-        populate: {
-          path: "senderId",
-          select: {
-            _id: 1,
-            name: 1,
-            username: 1,
-            avatar: 1,
-            latestOnlineAt: 1,
-          },
-        },
-      })
+    const conversation = await Conversation.findById(conversationId)
       .populate({
         path: "participants",
         select: { _id: 1, name: 1, username: 1, avatar: 1, latestOnlineAt: 1 },
-      });
+      })
+      .lean();
+    return conversation;
   }
 
   async getAllConversations(userId: Types.ObjectId) {
@@ -60,6 +49,10 @@ class ConversationRepo {
       path: "participants",
       select: { _id: 1, name: 1, username: 1, avatar: 1, latestOnlineAt: 1 },
     });
+  }
+
+  async deleteConversation(conversationId: Types.ObjectId) {
+    return await Conversation.findByIdAndDelete(conversationId);
   }
 }
 

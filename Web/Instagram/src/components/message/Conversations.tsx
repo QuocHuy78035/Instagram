@@ -30,11 +30,20 @@ export default function Conversations() {
   function openForm() {
     setIsOpenConversation(true);
   }
+
+  function checkSomeParticipantsIsOnline(conversation: any) {
+    for (let i = 0; i < conversation.participants.length; i++) {
+      if (onlineUsers.includes(conversation.participants[i]._id)) {
+        return true;
+      }
+    }
+    return false;
+  }
   return (
     <>
       {/* <!-- Conversations List --> */}
       {!isLoading ? (
-        <div className="flex flex-col w-[27%] h-full bg-white border-r border-gray-200 pt-10">
+        <div className="flex flex-col w-[396px] h-full bg-white border-r border-gray-200 pt-7">
           <div className="flex justify-between ps-6">
             <div className="flex py-2">
               <h2 className="font-bold text-[20px]">
@@ -67,17 +76,35 @@ export default function Conversations() {
                       navigate("/direct/t/" + conversation._id);
                     }}
                   >
-                    <img
-                      src={conversation.participants[0].avatar}
-                      alt="Profile Picture"
-                      className="w-14 h-14 rounded-full"
-                    />
+                    <div className="relative w-14 h-14">
+                      <img
+                        src={conversation.participants[0]?.avatar}
+                        alt="Profile Picture"
+                        className={`rounded-full z-10 ${
+                          conversation.participants.length >= 2
+                            ? "absolute top-3 left-2 w-11 h-11"
+                            : "w-14 h-14"
+                        }`}
+                      />{" "}
+                      {conversation.participants[1]?.avatar ? (
+                        <img
+                          src={conversation.participants[1].avatar}
+                          alt="Profile Picture"
+                          className={`absolute top-0 z-[2] -left-2 w-11 h-11 rounded-full`}
+                        />
+                      ) : (
+                        ""
+                      )}
+                    </div>
                     <div>
                       <h4 className="font-medium text-[14px]">
-                        {conversation.participants[0].name}
+                        {conversation.participants[0].name +
+                          (conversation.participants[1]?.name
+                            ? `, ${conversation.participants[1].name}`
+                            : "")}
                       </h4>
                       <p className="mt-[3px] text-gray-500 text-[13px]">
-                        {onlineUsers.includes(conversation.participants[0]._id)
+                        {checkSomeParticipantsIsOnline(conversation)
                           ? "🟢 Online"
                           : conversation.participants[0].latestOnlineAt
                           ? `Active ${distanceBetweenTwoDates(

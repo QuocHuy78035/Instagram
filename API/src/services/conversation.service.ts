@@ -1,8 +1,10 @@
-import { Types, isValidObjectId } from "mongoose";
+import { Document, Types, isValidObjectId } from "mongoose";
 import userRepo from "../repos/user.repo";
 import { BadRequestError } from "../core/error.response";
 import conversationRepo from "../repos/conversation.repo";
-import { convertStringToObjectId } from "../utils";
+import { convertStringToObjectId, messagesWithDays } from "../utils";
+import { IUserModel } from "../data/interfaces/user.interface";
+import messageRepo from "../repos/message.repo";
 
 class ConversationService {
   constructor() {}
@@ -14,7 +16,7 @@ class ConversationService {
     if (!participantIds.includes(userId)) {
       participantIds = [userId, ...participantIds];
     }
-    const participantObjectIds = await Promise.all(
+    const participantObjectIds: Types.ObjectId[] = await Promise.all(
       participantIds.map(async (id) => {
         if (!isValidObjectId(id)) {
           return new BadRequestError("User id is invalid!");
@@ -26,7 +28,6 @@ class ConversationService {
         return user.id;
       })
     );
-
     let conversation: any = await conversationRepo.createConversation(
       participantObjectIds
     );
@@ -41,7 +42,6 @@ class ConversationService {
     if (!isValidObjectId(conversationId)) {
       throw new BadRequestError("Conversation id is invalid!");
     }
-
     const conversation = await conversationRepo.findByIdAndUser(
       convertStringToObjectId(conversationId),
       userId
@@ -52,15 +52,12 @@ class ConversationService {
         `Conversation with id ${conversationId} is not found!`
       );
     }
-
-    const selectedConversation = await conversationRepo.getConversation(
+    const selectedConversation: any = await conversationRepo.getConversation(
       conversation.id
     );
-    if (selectedConversation)
-      selectedConversation.participants =
-        selectedConversation.participants.filter(
-          (participant) => participant._id.toString() !== userId.toString()
-        );
+    const messages = await messageRepo.findByConversation(conversation.id);
+    selectedConversation.messages = messagesWithDays(messages);
+
     return {
       conversation: selectedConversation,
     };
@@ -78,6 +75,24 @@ class ConversationService {
     return {
       conversations,
     };
+  }
+
+  async deleteConversation(userId: Types.ObjectId, conversationId: string) {
+    if (!isValidObjectId(conversationId)) {
+      throw new BadRequestError("Conversation id is invalid!");
+    }
+    const conversation = await conversationRepo.findByIdAndUser(
+      convertStringToObjectId(conversationId),
+      userId
+    );
+
+    if (!conversation) {
+      throw new BadRequestError(
+        `Conversation with id ${conversationId} is not found!`
+      );
+    }
+    await messageRepo.deleteMessagesByConversation(conversation.id);
+    await conversationRepo.deleteConversation(conversation.id);
   }
 }
 
