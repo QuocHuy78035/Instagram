@@ -16,5 +16,4 @@ class GetStoryRepoImpl implements GetStoryRepo{
       return Left(Failure(e.toString()));
     }
   }
-
 }
