@@ -30,7 +30,6 @@ class StoryUserItem extends StatefulWidget {
 
 class _StoryUserItemState extends State<StoryUserItem> {
   final StoryController storyController = StoryController();
-  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -82,9 +81,6 @@ class _StoryUserItemState extends State<StoryUserItem> {
               onStoryShow: (storyItem, index) {
                 if (kDebugMode) {
                   print("Showing a story at $index");
-                }
-                if(index == 1){
-                  _currentIndex = index;
                 }
               },
               onComplete: () {
@@ -159,7 +155,7 @@ class _StoryUserItemState extends State<StoryUserItem> {
                     width: 10,
                   ),
                   Text(
-                    widget.timeOver[_currentIndex],
+                    widget.timeOver[0],
                     style: const TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ],

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/core/local_db_config/init_local_db.dart';
@@ -18,9 +19,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
   final avt = SharedPreferencesRepository.getString('avt');
+  late bool isViewed;
 
   getStories() {
     context.read<HomeBloc>().add(GetAllAnotherStory());
+  }
+
+  patchViewedStory(String storyId){
+
+    context.read<HomeBloc>().add(PatchViewedStory(storyId: storyId));
+
   }
 
   @override
@@ -75,13 +83,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   StoryItem(
                     imageUrl: avt,
                     onPostYourStoryPressed: () {
-                      print("post story");
+                      if (kDebugMode) {
+                        print("post story");
+                      }
                     },
                     onWatchOtherUserStoryPressed: () {
-                      print("watch another user story");
+                      if (kDebugMode) {
+                        print("watch another user story");
+                      }
                     },
                     onWatchYourStoryPressed: () {
-                      print("watch your story");
+                      if (kDebugMode) {
+                        print("watch your story");
+                      }
                     },
                     ownerStory: "",
                     isYourStoryPost: false,
@@ -101,18 +115,30 @@ class _HomeScreenState extends State<HomeScreen> {
                               scrollDirection: Axis.horizontal,
                               itemCount: state.stories.length,
                               itemBuilder: (context, index) {
+                                isViewed = state.stories[index].viewed;
                                 return Row(
                                   children: [
                                     StoryItem(
-                                      isWatched: state.stories[index].viewed,
+                                      isWatched: isViewed,
                                       onPostYourStoryPressed: () {
-                                        print("post story");
+                                        if (kDebugMode) {
+                                          print("post story");
+                                        }
                                       },
                                       onWatchOtherUserStoryPressed: () {
                                         List<String> caption = [];
                                         List<String> storyUrl = [];
                                         List<String> timeOver = ["2h", "6h"];
-                                        print("watch another user story");
+                                        //patchViewedStory(state.stories[index].stories[0].id);
+
+                                        if(state.stories[index].viewed == false){
+                                          patchViewedStory(state.stories[index].stories[0].id);
+                                          getStories();
+                                        }
+
+                                        if (kDebugMode) {
+                                          print("watch another user story");
+                                        }
                                         for (int i = 0;
                                             i <
                                                 state.stories[index].stories
@@ -141,7 +167,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         );
                                       },
                                       onWatchYourStoryPressed: () {
-                                        print("watch your story");
+                                        if (kDebugMode) {
+                                          print("watch your story");
+                                        }
                                       },
                                       ownerStory: state.stories[index].username,
                                       imageUrl: state.stories[index].avatar,
@@ -199,9 +227,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           const SizedBox(
                             width: 10,
                           ),
-                          Text(
+                          const Text(
                             'userName',
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontWeight: FontWeight.w600, fontSize: 16),
                           )
                         ],
@@ -214,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 14,
                 ),
                 SizedBox(
@@ -242,11 +270,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               width: 36,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
-                                  color: Color(0xff424242)),
+                                  color: const Color(0xff424242)),
                               child: Center(
                                 child: Text(
                                   "${index + 1}/3",
-                                  style: TextStyle(color: AppColor.whiteColor),
+                                  style: const TextStyle(color: AppColor.whiteColor),
                                 ),
                               ),
                             ),
@@ -256,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 14,
                 ),
                 Padding(
@@ -274,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               height: 21,
                               width: 24,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 18,
                             ),
                             Image.asset(
@@ -282,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               height: 23,
                               width: 22,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 18,
                             ),
                             Image.asset(
@@ -327,8 +355,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [

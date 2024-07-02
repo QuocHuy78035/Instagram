@@ -16,3 +16,6 @@ class GetAllAnotherStoryFailure extends HomeState{
   final String message;
   GetAllAnotherStoryFailure({required this.message});
 }
+
+class PatchViewStorySuccess extends HomeState{}
+class PatchViewStoryFailure extends HomeState{}

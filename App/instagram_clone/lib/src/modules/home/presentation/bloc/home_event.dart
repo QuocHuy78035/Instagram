@@ -9,3 +9,12 @@ abstract class HomeEvent extends Equatable{
 }
 
 class GetAllAnotherStory extends HomeEvent{}
+
+class PatchViewedStory extends HomeEvent{
+  final String storyId;
+  const PatchViewedStory({required this.storyId});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [storyId];
+}
