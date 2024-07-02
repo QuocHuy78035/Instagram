@@ -37,7 +37,7 @@ class MessageController {
     if (!req.query.page) {
       throw new BadRequestError("Please fill the page query!");
     }
-    if (typeof parseInt(req.query.page as string) === "number") {
+    if (typeof parseInt(req.query.page as string) !== "number") {
       throw new BadRequestError("Page query is invalid!");
     }
     const metadata = await messageService.findByConversation(

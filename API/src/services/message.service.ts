@@ -2,7 +2,7 @@ import { Types, isValidObjectId } from "mongoose";
 import userRepo from "../repos/user.repo";
 import { BadRequestError } from "../core/error.response";
 import conversationRepo from "../repos/conversation.repo";
-import { convertStringToObjectId } from "../utils";
+import { convertStringToObjectId, messagesWithDays } from "../utils";
 import messageRepo from "../repos/message.repo";
 import SocketConnection from "../socket/socket";
 import { UploadFiles } from "../utils/uploadFiles";
@@ -131,7 +131,7 @@ class MessageService {
         `Conversation with id ${conversationId} is not found!`
       );
     }
-    const messages = await messageRepo.findByConversation(conversation.id, page);
+    const messages = messagesWithDays(await messageRepo.findByConversation(conversation.id, page));
     return {
       messages,
     };
