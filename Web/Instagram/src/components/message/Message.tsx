@@ -9,9 +9,6 @@ export default function Message({ message, userId, participants }) {
   useEffect(() => {
     setSender(participants.find((participant) => participant._id === userId));
   }, []);
-  // useEffect(() => {
-    
-  // }, []);
   return (
     <>
       <div
@@ -33,6 +30,7 @@ export default function Message({ message, userId, participants }) {
           <img
             src={message.image}
             alt="Message Image"
+            className="rounded-lg"
             style={{
               marginRight: rightUser ? "12px" : "0px",
             }}

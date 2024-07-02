@@ -7,9 +7,4 @@ export default defineConfig({
       include: "**/*.tsx",
     }),
   ],
-  server: {
-    watch: {
-      usePolling: true,
-    },
-  },
 });

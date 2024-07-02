@@ -52,11 +52,12 @@ class ConversationService {
         `Conversation with id ${conversationId} is not found!`
       );
     }
-    const selectedConversation: any = await conversationRepo.getConversation(
-      conversation.id
-    );
-    const messages = await messageRepo.findByConversation(conversation.id);
-    selectedConversation.messages = messagesWithDays(messages);
+    const [selectedConversation, messages]: [any, any] = await Promise.all([
+      conversationRepo.getConversation(conversation.id),
+      messageRepo.findByConversation(conversation.id, 1),
+    ]);
+    if (selectedConversation)
+      selectedConversation.messages = messagesWithDays(messages);
 
     return {
       conversation: selectedConversation,

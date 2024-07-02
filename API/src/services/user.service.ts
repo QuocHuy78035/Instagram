@@ -141,6 +141,17 @@ class UserService {
       following.viewed = viewed;
       return following;
     });
+
+    const viewedFollowings: Array<any> = [];
+    const unviewedFollowings: Array<any> = [];
+    for (let i = 0; i < followings.length; i++) {
+      if (followings[i].viewed) {
+        viewedFollowings.push(followings[i]);
+      } else {
+        unviewedFollowings.push(followings[i]);
+      }
+    }
+    followings = [...viewedFollowings, ...unviewedFollowings];
     return {
       followings,
     };

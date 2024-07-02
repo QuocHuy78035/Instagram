@@ -14,6 +14,7 @@ class MessageRouter {
     this.router
       .route("/")
       .post(upload.single("file"), asyncHandler(messageController.sendMessage));
+    this.router.route("/:conversation").get(asyncHandler(messageController.findByConversation));
   }
 }
 
