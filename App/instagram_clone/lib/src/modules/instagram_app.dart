@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:instagram_clone/src/modules/auth/presentation/bloc/auth_bloc.dart';
+import 'package:instagram_clone/src/modules/home/presentation/bloc/home_bloc.dart';
 import 'package:instagram_clone/src/modules/main/presentation/bloc/main_bloc.dart';
-import 'package:instagram_clone/src/routes/app_router_config.dart';
-import 'package:instagram_localization/strings.g.dart';
+import 'package:instagram_clone/src/modules/splash/presentation/views/splash_screen.dart';
 import '../../di/di_config.dart' as di;
 
 class InstagramApp extends StatefulWidget {
@@ -16,14 +15,6 @@ class InstagramApp extends StatefulWidget {
 }
 
 class _InstagramAppState extends State<InstagramApp> {
-  final _appRouterConfig = AppRouterConfig();
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    _appRouterConfig.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,18 +26,14 @@ class _InstagramAppState extends State<InstagramApp> {
         BlocProvider(
           create: (_) => di.sl<MainBloc>(),
         ),
+        BlocProvider(
+          create: (_) => di.sl<HomeBloc>(),
+        ),
       ],
-      child: MaterialApp.router(
+      child: MaterialApp(
         builder: EasyLoading.init(),
         debugShowCheckedModeBanner: false,
-        routerConfig: _appRouterConfig.router,
-        locale: TranslationProvider.of(context).flutterLocale,
-        supportedLocales: AppLocaleUtils.supportedLocales,
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate
-        ],
+        home: const SplashScreen(),
       ),
     );
   }
