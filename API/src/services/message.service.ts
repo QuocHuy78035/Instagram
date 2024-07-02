@@ -15,7 +15,7 @@ class MessageService {
     conversationId: string;
     message?: string;
     file?: Express.Multer.File;
-    replyMessageId?: Types.ObjectId;
+    replyMessageId?: string;
     react?: string;
   }) {
     if ((body.message === "" || !body.message) && !body.file) {
@@ -31,6 +31,8 @@ class MessageService {
         `Conversation with id ${body.conversationId} is invalid!`
       );
     }
+
+    
     let image: string | undefined = undefined;
     if (body.file) {
       body.file.buffer = await resizeImage(body.file.buffer);
@@ -44,13 +46,18 @@ class MessageService {
     let conversation: any = undefined;
     let replyMessage: any = undefined;
     if (body.replyMessageId) {
+      if (!isValidObjectId(body.replyMessageId)) {
+        throw new BadRequestError(
+          `Reply message with id ${body.replyMessageId} is invalid!`
+        );
+      }
       [user, conversation, replyMessage] = await Promise.all([
         userRepo.findById(body.userId),
         conversationRepo.findByIdAndUser(
           convertStringToObjectId(body.conversationId),
           body.userId
         ),
-        messageRepo.findById(body.replyMessageId),
+        messageRepo.findById(convertStringToObjectId(body.replyMessageId)),
       ]);
 
       if (!replyMessage) {
@@ -81,7 +88,7 @@ class MessageService {
       senderId: body.userId,
       message: body.message,
       image,
-      replyMessage: body.replyMessageId,
+      replyMessage: replyMessage?.id,
       react: body.react,
       conversation: conversation.id,
     });
@@ -105,6 +112,28 @@ class MessageService {
     return {
       message: newMessage,
       // conversation: updatedConversation,
+    };
+  }
+
+  async findByConversation(userId: Types.ObjectId, conversationId: string, page: number) {
+    if (!isValidObjectId(conversationId)) {
+      throw new BadRequestError(
+        `Reply message with id ${conversationId} is invalid!`
+      );
+    }
+    const conversation = await conversationRepo.findByIdAndUser(
+      convertStringToObjectId(conversationId),
+      userId
+    );
+
+    if (!conversation) {
+      throw new BadRequestError(
+        `Conversation with id ${conversationId} is not found!`
+      );
+    }
+    const messages = await messageRepo.findByConversation(conversation.id, page);
+    return {
+      messages,
     };
   }
 }

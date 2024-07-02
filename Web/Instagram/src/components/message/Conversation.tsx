@@ -23,14 +23,15 @@ export default function Conversation() {
       }
     })();
   }, [setMessages, param.id]);
-  useEffect(() => {
-    if (isLoading) return;
-    const scrollMessage = document.querySelector(".scroll__messages");
-    const messagesEle = document.getElementById("messages");
-    if (scrollMessage && messagesEle) {
-      scrollMessage.scrollTo(0, messagesEle.scrollHeight);
-    }
-  }, [isLoading, messages]);
+  // useEffect(() => {
+  //   // if (isLoading) return;
+  //   const scrollMessage = document.querySelector(".scroll__messages");
+  //   const messagesEle = document.getElementById("messages");
+  //   if (scrollMessage && messagesEle) {
+  //     console.log(messagesEle.offsetHeight, messagesEle.scrollHeight);
+  //     scrollMessage.scrollTo(0, messagesEle.offsetHeight);
+  //   }
+  // }, [isLoading, messages]);
   const conversationRef = createRef<any>();
   const useRefDimensions = (ref) => {
     const [dimensions, setDimensions] = useState({ width: 1, height: 2 });

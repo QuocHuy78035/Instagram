@@ -1,8 +1,8 @@
 import { NextFunction, Response } from "express";
 import RequestV2 from "../../data/interfaces/requestv2.interface";
 import messageService from "../../services/message.service";
-import { UnauthorizedError } from "../../core/error.response";
-import { CREATED } from "../../core/success.response";
+import { BadRequestError, UnauthorizedError } from "../../core/error.response";
+import { CREATED, OK } from "../../core/success.response";
 
 class MessageController {
   constructor() {}
@@ -22,6 +22,32 @@ class MessageController {
 
     new CREATED({
       message: "Send message successfully!",
+      metadata,
+    }).send(res);
+  };
+
+  findByConversation = async (
+    req: RequestV2,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (!req.user) {
+      throw new UnauthorizedError("User not found! Please log in again!");
+    }
+    if (!req.query.page) {
+      throw new BadRequestError("Please fill the page query!");
+    }
+    if (typeof parseInt(req.query.page as string) === "number") {
+      throw new BadRequestError("Page query is invalid!");
+    }
+    const metadata = await messageService.findByConversation(
+      req.user.userId,
+      req.params.conversation,
+      parseInt(req.query.page as string)
+    );
+
+    new OK({
+      message: "Find messages by conversation successfully!",
       metadata,
     }).send(res);
   };

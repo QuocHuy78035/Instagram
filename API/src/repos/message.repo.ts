@@ -10,8 +10,15 @@ class MessageRepo {
     });
   }
 
-  async findByConversation(conversation: Types.ObjectId) {
-    return await Message.find({ conversation });
+  async findByConversation(conversation: Types.ObjectId, page: number) {
+    const perPage = 20;
+    return (
+      await Message.find({ conversation })
+        .sort({ createdAt: -1 })
+        .skip(perPage * (page - 1))
+        .limit(perPage)
+        .lean()
+    ).reverse();
   }
   async createMessage(body: {
     senderId: Types.ObjectId;
