@@ -9,26 +9,9 @@ export default function Message({ message, userId, participants }) {
   useEffect(() => {
     setSender(participants.find((participant) => participant._id === userId));
   }, []);
-  useEffect(() => {
-    const messageEle = document.getElementById(`message__${message._id}`);
-    if (messageEle) {
-      const image = messageEle.querySelectorAll("img")[!rightUser ? 1 : 0];
-      if (image) {
-        if (!image.naturalWidth) return;
-        if (image.naturalHeight >= 300) {
-          image.style.height = `${Math.floor(image.naturalHeight * 0.6)}px`;
-          image.style.width = "auto";
-        } else {
-          image.style.width = `${
-            image.naturalWidth >= 300
-              ? Math.floor(image.naturalWidth * 0.6)
-              : image.naturalWidth
-          }px `;
-          image.style.height = "auto";
-        }
-      }
-    }
-  }, []);
+  // useEffect(() => {
+    
+  // }, []);
   return (
     <>
       <div
