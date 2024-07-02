@@ -1,6 +1,6 @@
 import { createRef, useEffect, useState } from "react";
 import MessageInput from "./MessageInput";
-import { getConversation } from "../../api";
+import { findByConversation, getConversation } from "../../api";
 import HeaderConversation from "./HeaderConversation";
 import Messages from "./Messages";
 import { useParams } from "react-router-dom";
@@ -11,27 +11,35 @@ export default function Conversation() {
   const { conversation, setConversation } = useConversation();
   const [isLoading, setIsLoading] = useState(true);
   const [messages, setMessages] = useState([]);
+  const [page, setPage] = useState(1);
   useEffect(() => {
     (async () => {
       if (!param.id) return;
       setIsLoading(true);
-      const data = await getConversation(param.id);
-      if (data.status === 200) {
-        setConversation(data.metadata.conversation);
-        setMessages(data.metadata.conversation.messages);
-        setIsLoading(false);
+      const dataConversation = await getConversation(param.id);
+      if (dataConversation.status === 200) {
+        setConversation(dataConversation.metadata.conversation);
+      }
+      setIsLoading(false);
+    })();
+  }, [setConversation, setMessages, param.id]);
+  useEffect(() => {
+    (async () => {
+      if (!param.id) return;
+      const dataMessages = await findByConversation(param.id, page);
+      if (dataMessages.status === 200) {
+        setMessages(dataMessages.metadata.messages);
       }
     })();
-  }, [setMessages, param.id]);
-  // useEffect(() => {
-  //   // if (isLoading) return;
-  //   const scrollMessage = document.querySelector(".scroll__messages");
-  //   const messagesEle = document.getElementById("messages");
-  //   if (scrollMessage && messagesEle) {
-  //     console.log(messagesEle.offsetHeight, messagesEle.scrollHeight);
-  //     scrollMessage.scrollTo(0, messagesEle.offsetHeight);
-  //   }
-  // }, [isLoading, messages]);
+  }, [page, param.id]);
+  useEffect(() => {
+    if (isLoading) return;
+    const scrollMessage = document.querySelector(".scroll__messages");
+    const messagesEle = document.getElementById("messages");
+    if (scrollMessage && messagesEle) {
+      scrollMessage.scrollTo(0, messagesEle.scrollHeight);
+    }
+  }, [isLoading, messages]);
   const conversationRef = createRef<any>();
   const useRefDimensions = (ref) => {
     const [dimensions, setDimensions] = useState({ width: 1, height: 2 });

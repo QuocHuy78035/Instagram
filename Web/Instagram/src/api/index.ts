@@ -6,4 +6,4 @@ export {
   createConversation,
   deleteConversation,
 } from "./conversationAPI";
-export { createMessage } from "./messageAPI";
+export { createMessage, findByConversation } from "./messageAPI";

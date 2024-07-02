@@ -151,7 +151,7 @@ class UserService {
         unviewedFollowings.push(followings[i]);
       }
     }
-    followings = [...viewedFollowings, ...unviewedFollowings];
+    followings = [...unviewedFollowings, ...viewedFollowings];
     return {
       followings,
     };

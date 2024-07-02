@@ -24,3 +24,18 @@ export const createMessage = async (body: {
     if (err) return err.response?.data;
   }
 };
+
+export const findByConversation = async (
+  conversation: string,
+  page: number
+) => {
+  try {
+    const res = await axios.get(
+      `http://localhost:8000/api/v1/message/${conversation}?page=${page}`
+    );
+    return res.data;
+  } catch (err: any) {
+    console.log(err);
+    if (err) return err.response?.data;
+  }
+};
