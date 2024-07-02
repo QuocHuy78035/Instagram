@@ -30,9 +30,9 @@ export default function Messages({ conversation, messages, setMessages }) {
   }, [messages, lastMessageRef]);
 
   return (
-    <div id="messages" className="w-full">
+    <div id="messages">
       <HeaderMessages conversation={conversation} />
-      <div className="mb-[90px] flex flex-col">
+      <div className="flex flex-col">
         {messages.map((message) => {
           return (
             <MessageWithDays

@@ -32,7 +32,7 @@ export default function MessageInput({
     });
     if (data.status === 201) {
       const message = data.metadata.message;
-      setMessages(changeMessageToMessageWithDay(message, messages));
+      return message;
     }
   }
 
@@ -41,16 +41,27 @@ export default function MessageInput({
     if (!param.id) return;
     setIsLoading(true);
     if (message !== "") {
-      await sendMessage({ conversation: param.id, message });
+      const newMessage = await sendMessage({ conversation: param.id, message });
+      setMessages(changeMessageToMessageWithDay(newMessage, messages));
       setMessage("");
     }
     if (files.length !== 0) {
-      await Promise.all(
+      const newMessages = await Promise.all(
         files.map(async (file) => {
           if (!param.id) return;
-          await sendMessage({ conversation: param.id, file });
+          const message = await sendMessage({ conversation: param.id, file });
+          return message;
         })
       );
+      let messagesClone = messages;
+      for (let i = 0; i < newMessages.length; i++) {
+        messagesClone = changeMessageToMessageWithDay(
+          newMessages[i],
+          messagesClone
+        );
+      }
+      console.log(messagesClone);
+      setMessages([...messagesClone]);
       setFiles([]);
       setImages([]);
     }
@@ -176,7 +187,6 @@ export default function MessageInput({
                     reader.onload = function (e) {
                       if (!e.target) return;
                       image = reader.result;
-                      console.log(image);
                       setImages([...images, image]);
                     };
                     reader.readAsDataURL(filesArr[i]);

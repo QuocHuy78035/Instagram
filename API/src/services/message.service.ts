@@ -6,8 +6,6 @@ import { convertStringToObjectId } from "../utils";
 import messageRepo from "../repos/message.repo";
 import SocketConnection from "../socket/socket";
 import { UploadFiles } from "../utils/uploadFiles";
-import sharp from "sharp";
-import sizeOf from "buffer-image-size";
 import resizeImage from "../utils/resizeImage";
 class MessageService {
   constructor() {}

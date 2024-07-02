@@ -54,7 +54,7 @@ export default function Conversation() {
           ref={conversationRef}
         >
           <HeaderConversation conversation={conversation} />
-          <div className="scroll__messages relative w-full flex-grow overflow-y-scroll">
+          <div className="scroll__messages relative w-full flex-grow overflow-y-scroll mb-[70px]">
             <Messages
               conversation={conversation}
               messages={messages}
