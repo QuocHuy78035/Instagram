@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram_clone/core/local_db_config/init_local_db.dart';
 import 'package:instagram_clone/core/theme/app_assets.dart';
@@ -45,7 +44,8 @@ class LoginRememberScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.grey.withOpacity(.1), width: 5),
+                  border:
+                      Border.all(color: Colors.grey.withOpacity(.1), width: 5),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(100),
@@ -67,21 +67,20 @@ class LoginRememberScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    errorWidget: (context, url, error) =>
-                        SizedBox(
-                          width: 150,
-                          height: 150,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: Shimmer.fromColors(
-                              baseColor: Colors.grey.withOpacity(.1),
-                              highlightColor: Colors.white,
-                              child: Container(
-                                color: Colors.white,
-                              ),
-                            ),
+                    errorWidget: (context, url, error) => SizedBox(
+                      width: 150,
+                      height: 150,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: Shimmer.fromColors(
+                          baseColor: Colors.grey.withOpacity(.1),
+                          highlightColor: Colors.white,
+                          child: Container(
+                            color: Colors.white,
                           ),
                         ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -98,7 +97,15 @@ class LoginRememberScreen extends StatelessWidget {
               ),
               BlocConsumer<AuthBloc, AuthState>(builder: (context, state) {
                 return BaseButton(
-                  title: 'Login',
+                  title: state is AuthLoadingState
+                      ? const Center(
+                          child: CircularProgressIndicator(color: Colors.white,),
+                        )
+                      : const Text(
+                          "Log in",
+                          style: TextStyle(
+                              fontSize: 18, color: AppColor.whiteColor),
+                        ),
                   onPressed: () {
                     final emailOrPhone =
                         SharedPreferencesRepository.getString("emailOrPhone");
@@ -111,11 +118,11 @@ class LoginRememberScreen extends StatelessWidget {
                   },
                 );
               }, listener: (context, state) {
-                if (state is AuthLoadingState) {
-                  EasyLoading.show();
-                }
+                // if (state is AuthLoadingState) {
+                //   EasyLoading.show();
+                // }
                 if (state is LoggedInState) {
-                  EasyLoading.dismiss();
+                  //EasyLoading.dismiss();
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(

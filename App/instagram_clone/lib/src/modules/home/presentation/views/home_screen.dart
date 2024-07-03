@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/core/local_db_config/init_local_db.dart';
 import 'package:instagram_clone/core/theme/app_assets.dart';
+import 'package:instagram_clone/src/modules/chat/presentation/views/chat_screen.dart';
 import 'package:instagram_clone/src/modules/home/data/models/story_model.dart';
 import 'package:instagram_clone/src/modules/home/presentation/bloc/home_bloc.dart';
 import 'package:instagram_clone/src/modules/home/presentation/views/widgets/create_story_home_item.dart';
@@ -66,10 +67,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(
                   width: 20,
                 ),
-                Image.asset(
-                  AppAssets.messageIcon,
-                  height: 26,
-                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ChatScreen(),
+                      ),
+                    );
+                  },
+                  child: Image.asset(
+                    AppAssets.messageIcon,
+                    height: 26,
+                  ),
+                )
               ],
             ),
           )
@@ -111,10 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           List<String> storyUrl = [];
                           List<String> timeOver = ["2h", "6h"];
 
-                          for (int i = 0;
-                          i <
-                              stories.length;
-                          i++) {
+                          for (int i = 0; i < stories.length; i++) {
                             caption.add(stories[i].text);
                             storyUrl.add(stories[i].image);
                           }
@@ -123,12 +131,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             MaterialPageRoute(
                               builder: (context) => StoryUserItem(
                                 isOwner: true,
-                                  caption: caption,
-                                  storyUrl: storyUrl,
-                                  total: stories.length,
-                                  avtUrl: avt,
-                                  timeOver: timeOver,
-                                  nameUser: username,),
+                                caption: caption,
+                                storyUrl: storyUrl,
+                                total: stories.length,
+                                avtUrl: avt,
+                                timeOver: timeOver,
+                                nameUser: username,
+                              ),
                             ),
                           );
                           if (kDebugMode) {

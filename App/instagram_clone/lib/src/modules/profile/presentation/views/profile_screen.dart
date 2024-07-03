@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/core/theme/app_assets.dart';
 import '../../../../../core/local_db_config/init_local_db.dart';
+import '../../../../../core/theme/app_color.dart';
 import '../../../../widgets/base_button.dart';
 import '../../../home/presentation/views/widgets/story_item_circle.dart';
 
@@ -110,7 +111,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(
               height: 20,
             ),
-            BaseButton(title: "Edit profile", onPressed: (){}, height: 36,),
+            BaseButton(title: Text(
+              "Edit Profile",
+              style: const TextStyle(fontSize: 18, color: AppColor.whiteColor),
+            ), onPressed: (){}, height: 36,),
             SizedBox(
               height: 20,
             ),
