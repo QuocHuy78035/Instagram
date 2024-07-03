@@ -17,5 +17,8 @@ class GetAllAnotherStoryFailure extends HomeState{
   GetAllAnotherStoryFailure({required this.message});
 }
 
-class PatchViewStorySuccess extends HomeState{}
-class PatchViewStoryFailure extends HomeState{}
+class CreateStorySuccess extends HomeState{}
+
+class CreateStoryLoading extends HomeState{}
+
+class CrateStoryFailure extends HomeState{}

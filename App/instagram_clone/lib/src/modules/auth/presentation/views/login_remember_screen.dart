@@ -52,10 +52,10 @@ class LoginRememberScreen extends StatelessWidget {
                   child: CachedNetworkImage(
                     imageUrl: avt,
                     fit: BoxFit.fill,
-                    width: 160,
+                    width: 150,
                     placeholder: (context, url) => SizedBox(
-                      width: 160,
-                      height: 160,
+                      width: 150,
+                      height: 150,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(100),
                         child: Shimmer.fromColors(
@@ -68,12 +68,25 @@ class LoginRememberScreen extends StatelessWidget {
                       ),
                     ),
                     errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
+                        SizedBox(
+                          width: 150,
+                          height: 150,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: Shimmer.fromColors(
+                              baseColor: Colors.grey.withOpacity(.1),
+                              highlightColor: Colors.white,
+                              child: Container(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
                   ),
                 ),
               ),
               const SizedBox(
-                height: 30,
+                height: 20,
               ),
               Text(
                 userName,
@@ -81,7 +94,7 @@ class LoginRememberScreen extends StatelessWidget {
                     const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
               const SizedBox(
-                height: 50,
+                height: 30,
               ),
               BlocConsumer<AuthBloc, AuthState>(builder: (context, state) {
                 return BaseButton(

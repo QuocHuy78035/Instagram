@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/core/local_db_config/init_local_db.dart';
 import 'package:instagram_clone/core/theme/app_assets.dart';
 import 'package:instagram_clone/src/modules/home/presentation/bloc/home_bloc.dart';
+import 'package:instagram_clone/src/modules/home/presentation/views/widgets/create_story_home_item.dart';
 import 'package:instagram_clone/src/modules/home/presentation/views/widgets/story_item_circle.dart';
 import 'package:instagram_clone/src/modules/home/presentation/views/widgets/story_user_item.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -83,6 +84,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   StoryItem(
                     imageUrl: avt,
                     onPostYourStoryPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateStoryHomeItem()));
+
+                      //Navigator.push(context, MaterialPageRoute(builder: (context) => const TestCamera()));
                       if (kDebugMode) {
                         print("post story");
                       }

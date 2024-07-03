@@ -5,5 +5,5 @@ class ApiEndpointUrls {
   static const String logout = "logout";
   static const String getAllAnotherStory = 'user/followingAndHaveStories';
   static const String getInfoUser = 'user/me';
-
+  static const String createStory = 'story';
 }

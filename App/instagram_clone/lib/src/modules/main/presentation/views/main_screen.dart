@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/core/theme/app_assets.dart';
 import 'package:instagram_clone/src/modules/profile/presentation/views/profile_screen.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../../../core/local_db_config/init_local_db.dart';
 import '../../../home/presentation/views/home_screen.dart';
 
@@ -137,22 +139,83 @@ class _BottomNavigationBarState extends State<_BottomNavigationBar> {
           icon: _currentIndex == 4
               ? Container(
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.black,
-                      width: 2
-                    )
-                  ),
-                  child: Image.network(
-                    avt,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.black, width: 2)),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: CachedNetworkImage(
+                      imageUrl: avt,
+                      height: 26,
+                      width: 26,
+                      fit: BoxFit.fill,
+                      placeholder: (context, url) => SizedBox(
+                        width: 26,
+                        height: 26,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: Shimmer.fromColors(
+                            baseColor: Colors.grey.withOpacity(.1),
+                            highlightColor: Colors.white,
+                            child: Container(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => SizedBox(
+                        width: 26,
+                        height: 26,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: Shimmer.fromColors(
+                            baseColor: Colors.grey.withOpacity(.1),
+                            highlightColor: Colors.white,
+                            child: Container(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    //child: Image.network(imageUrl),
+                  ))
+              : ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: CachedNetworkImage(
+                    imageUrl: avt,
                     height: 26,
                     width: 26,
+                    fit: BoxFit.fill,
+                    placeholder: (context, url) => SizedBox(
+                      width: 26,
+                      height: 26,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: Shimmer.fromColors(
+                          baseColor: Colors.grey.withOpacity(.1),
+                          highlightColor: Colors.white,
+                          child: Container(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => SizedBox(
+                      width: 26,
+                      height: 26,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: Shimmer.fromColors(
+                          baseColor: Colors.grey.withOpacity(.1),
+                          highlightColor: Colors.white,
+                          child: Container(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                )
-              : Image.network(
-                  avt,
-                  height: 26,
-                  width: 26,
+                  //child: Image.network(imageUrl),
                 ),
           label: "",
         ),

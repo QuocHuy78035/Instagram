@@ -61,8 +61,8 @@ class StoryItem extends StatelessWidget {
                         imageUrl: imageUrl,
                         fit: BoxFit.fill,
                         placeholder: (context, url) => SizedBox(
-                          width: width,
-                          height: width! + 8,
+                          width: 70,
+                          height: 62,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(100),
                             child: Shimmer.fromColors(

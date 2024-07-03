@@ -18,3 +18,12 @@ class PatchViewedStory extends HomeEvent{
   // TODO: implement props
   List<Object?> get props => [storyId];
 }
+
+class CreateStory extends HomeEvent{
+  final File file;
+  const CreateStory({required this.file});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [file];
+}
