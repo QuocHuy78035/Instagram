@@ -13,6 +13,7 @@ class StoryUserItem extends StatefulWidget {
   final int total;
   final List<String> caption;
   final String nameUser;
+  final bool isOwner;
 
   const StoryUserItem({
     super.key,
@@ -22,6 +23,7 @@ class StoryUserItem extends StatefulWidget {
     required this.avtUrl,
     required this.timeOver,
     required this.nameUser,
+    this.isOwner = false,
   });
 
   @override
@@ -159,7 +161,29 @@ class _StoryUserItemState extends State<StoryUserItem> {
                   ),
                 ],
               ),
-            )
+            ),
+            widget.isOwner == true
+                ? const Positioned(
+                    bottom: 30,
+                    right: 20,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.visibility_outlined,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                        SizedBox(
+                          width: 6,
+                        ),
+                        Text(
+                          '12 views',
+                          style: TextStyle(fontSize: 12, color: Colors.white),
+                        )
+                      ],
+                    ),
+                  )
+                : Container()
           ],
         ),
       ),

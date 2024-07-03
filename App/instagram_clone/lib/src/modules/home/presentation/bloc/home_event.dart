@@ -27,3 +27,5 @@ class CreateStory extends HomeEvent{
   // TODO: implement props
   List<Object?> get props => [file];
 }
+
+class GetYourStory extends HomeEvent{}

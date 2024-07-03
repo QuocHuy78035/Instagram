@@ -18,6 +18,7 @@ import 'package:instagram_clone/src/modules/home/domain/repos/get_story_repo.dar
 import 'package:instagram_clone/src/modules/home/domain/repos/patch_view_story_repo.dart';
 import 'package:instagram_clone/src/modules/home/domain/usecase/user_create_story.dart';
 import 'package:instagram_clone/src/modules/home/domain/usecase/user_get_story.dart';
+import 'package:instagram_clone/src/modules/home/domain/usecase/user_get_your_story.dart';
 import 'package:instagram_clone/src/modules/home/presentation/bloc/home_bloc.dart';
 import 'package:instagram_clone/src/modules/main/data/datasources/get_info_user_remote_data_src.dart';
 import 'package:instagram_clone/src/modules/main/data/datasources/get_info_user_remote_data_src_impl.dart';
@@ -40,7 +41,7 @@ Future<void> init() async {
     () => HomeBloc(
       userGetStory: sl(),
       userPatchViewedStory: sl(),
-      userCreateStory: sl(),
+      userCreateStory: sl(), userGetYourStory: sl(),
     ),
   );
 
@@ -51,6 +52,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetInfoUser(sl()));
   sl.registerLazySingleton(() => UserPatchViewedStory(sl()));
   sl.registerLazySingleton(() => UserCreateStory(sl()));
+  sl.registerLazySingleton(() => UserGetYourStory(sl()));
 
   // Repository
   sl.registerLazySingleton<AuthRepo>(() => AuthRepoImpl(sl()));

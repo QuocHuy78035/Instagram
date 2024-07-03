@@ -22,3 +22,15 @@ class CreateStorySuccess extends HomeState{}
 class CreateStoryLoading extends HomeState{}
 
 class CrateStoryFailure extends HomeState{}
+
+class GetYourStoryLoading extends HomeState{}
+
+class GetYourStorySuccess extends HomeState{
+  final List<StoryModel> stories;
+  GetYourStorySuccess({required this.stories});
+}
+
+class GetYourStoryFailure extends HomeState{
+  final String message;
+  GetYourStoryFailure({required this.message});
+}

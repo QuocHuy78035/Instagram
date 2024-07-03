@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/core/local_db_config/init_local_db.dart';
 import 'package:instagram_clone/core/theme/app_assets.dart';
+import 'package:instagram_clone/src/modules/home/data/models/story_model.dart';
 import 'package:instagram_clone/src/modules/home/presentation/bloc/home_bloc.dart';
 import 'package:instagram_clone/src/modules/home/presentation/views/widgets/create_story_home_item.dart';
 import 'package:instagram_clone/src/modules/home/presentation/views/widgets/story_item_circle.dart';
@@ -20,16 +21,17 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageController = PageController();
   final avt = SharedPreferencesRepository.getString('avt');
+  final username = SharedPreferencesRepository.getString('userName');
   late bool isViewed;
+  List<StoryModel> stories = [];
 
   getStories() {
+    context.read<HomeBloc>().add(GetYourStory());
     context.read<HomeBloc>().add(GetAllAnotherStory());
   }
 
-  patchViewedStory(String storyId){
-
+  patchViewedStory(String storyId) {
     context.read<HomeBloc>().add(PatchViewedStory(storyId: storyId));
-
   }
 
   @override
@@ -81,30 +83,119 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 children: [
-                  StoryItem(
-                    imageUrl: avt,
-                    onPostYourStoryPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateStoryHomeItem()));
+                  BlocBuilder<HomeBloc, HomeState>(builder: (context, state) {
+                    if (state is GetYourStorySuccess) {
+                      stories = state.stories;
+                    }
+                    if (stories.isNotEmpty) {
+                      return StoryItem(
+                        imageUrl: avt,
+                        onPostYourStoryPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const CreateStoryHomeItem(),
+                            ),
+                          );
+                          if (kDebugMode) {
+                            print("post story");
+                          }
+                        },
+                        onWatchOtherUserStoryPressed: () {
+                          if (kDebugMode) {
+                            print("watch another user story");
+                          }
+                        },
+                        onWatchYourStoryPressed: () {
+                          List<String> caption = [];
+                          List<String> storyUrl = [];
+                          List<String> timeOver = ["2h", "6h"];
 
-                      //Navigator.push(context, MaterialPageRoute(builder: (context) => const TestCamera()));
-                      if (kDebugMode) {
-                        print("post story");
-                      }
-                    },
-                    onWatchOtherUserStoryPressed: () {
-                      if (kDebugMode) {
-                        print("watch another user story");
-                      }
-                    },
-                    onWatchYourStoryPressed: () {
-                      if (kDebugMode) {
-                        print("watch your story");
-                      }
-                    },
-                    ownerStory: "",
-                    isYourStoryPost: false,
-                    isOtherUserPostStory: false,
-                  ),
+                          for (int i = 0;
+                          i <
+                              stories.length;
+                          i++) {
+                            caption.add(stories[i].text);
+                            storyUrl.add(stories[i].image);
+                          }
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => StoryUserItem(
+                                isOwner: true,
+                                  caption: caption,
+                                  storyUrl: storyUrl,
+                                  total: stories.length,
+                                  avtUrl: avt,
+                                  timeOver: timeOver,
+                                  nameUser: username,),
+                            ),
+                          );
+                          if (kDebugMode) {
+                            print("watch your story");
+                          }
+                        },
+                        ownerStory: "",
+                        isYourStoryPosted: true,
+                        isOtherUserPostStory: false,
+                      );
+                    } else {
+                      return StoryItem(
+                        imageUrl: avt,
+                        onPostYourStoryPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const CreateStoryHomeItem(),
+                            ),
+                          );
+                          if (kDebugMode) {
+                            print("post story");
+                          }
+                        },
+                        onWatchOtherUserStoryPressed: () {
+                          if (kDebugMode) {
+                            print("watch another user story");
+                          }
+                        },
+                        onWatchYourStoryPressed: () {
+                          if (kDebugMode) {
+                            print("watch your story");
+                          }
+                        },
+                        ownerStory: "",
+                        isYourStoryPosted: false,
+                        isOtherUserPostStory: false,
+                      );
+                    }
+                  }),
+                  // StoryItem(
+                  //   imageUrl: avt,
+                  //   onPostYourStoryPressed: () {
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //         builder: (context) => const CreateStoryHomeItem(),
+                  //       ),
+                  //     );
+                  //     if (kDebugMode) {
+                  //       print("post story");
+                  //     }
+                  //   },
+                  //   onWatchOtherUserStoryPressed: () {
+                  //     if (kDebugMode) {
+                  //       print("watch another user story");
+                  //     }
+                  //   },
+                  //   onWatchYourStoryPressed: () {
+                  //     if (kDebugMode) {
+                  //       print("watch your story");
+                  //     }
+                  //   },
+                  //   ownerStory: "",
+                  //   isYourStoryPost: true,
+                  //   isOtherUserPostStory: false,
+                  // ),
                   const SizedBox(
                     width: 20,
                   ),
@@ -135,8 +226,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         List<String> timeOver = ["2h", "6h"];
                                         //patchViewedStory(state.stories[index].stories[0].id);
 
-                                        if(state.stories[index].viewed == false){
-                                          patchViewedStory(state.stories[index].stories[0].id);
+                                        if (state.stories[index].viewed ==
+                                            false) {
+                                          patchViewedStory(state
+                                              .stories[index].stories[0].id);
                                           getStories();
                                         }
 
@@ -278,7 +371,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Center(
                                 child: Text(
                                   "${index + 1}/3",
-                                  style: const TextStyle(color: AppColor.whiteColor),
+                                  style: const TextStyle(
+                                      color: AppColor.whiteColor),
                                 ),
                               ),
                             ),
