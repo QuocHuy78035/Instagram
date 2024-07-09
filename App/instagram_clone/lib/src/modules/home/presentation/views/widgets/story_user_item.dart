@@ -13,6 +13,7 @@ class StoryUserItem extends StatefulWidget {
   final int total;
   final List<String> caption;
   final String nameUser;
+  final bool isOwner;
 
   const StoryUserItem({
     super.key,
@@ -22,6 +23,7 @@ class StoryUserItem extends StatefulWidget {
     required this.avtUrl,
     required this.timeOver,
     required this.nameUser,
+    this.isOwner = false,
   });
 
   @override
@@ -35,8 +37,6 @@ class _StoryUserItemState extends State<StoryUserItem> {
   void initState() {
     super.initState();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -104,13 +104,13 @@ class _StoryUserItemState extends State<StoryUserItem> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(50),
                 child: CachedNetworkImage(
-                  height: 40,
-                  width: 40,
+                  height: 34,
+                  width: 34,
                   imageUrl: widget.avtUrl,
                   fit: BoxFit.fill,
                   placeholder: (context, url) => SizedBox(
-                    width: 40,
-                    height: 40,
+                    width: 34,
+                    height: 34,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(100),
                       child: Shimmer.fromColors(
@@ -123,8 +123,8 @@ class _StoryUserItemState extends State<StoryUserItem> {
                     ),
                   ),
                   errorWidget: (context, url, error) => SizedBox(
-                    width: 70,
-                    height: 62,
+                    width: 34,
+                    height: 34,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(100),
                       child: Shimmer.fromColors(
@@ -140,27 +140,50 @@ class _StoryUserItemState extends State<StoryUserItem> {
               ),
             ),
             Positioned(
-              top: 26,
-              left: 80,
+              top: 30,
+              left: 68,
               child: Row(
                 children: [
                   Text(
                     widget.nameUser,
                     style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(
                     width: 10,
                   ),
                   Text(
                     widget.timeOver[0],
-                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ],
               ),
-            )
+            ),
+            widget.isOwner == true
+                ? const Positioned(
+                    bottom: 30,
+                    right: 20,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.visibility_outlined,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                        SizedBox(
+                          width: 6,
+                        ),
+                        Text(
+                          '12 views',
+                          style: TextStyle(fontSize: 12, color: Colors.white),
+                        )
+                      ],
+                    ),
+                  )
+                : Container()
           ],
         ),
       ),

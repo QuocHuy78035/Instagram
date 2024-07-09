@@ -16,7 +16,7 @@ class StoryItem extends StatelessWidget {
   final double? width;
   final String ownerStory;
   final bool isOtherUserPostStory;
-  final bool isYourStoryPost;
+  final bool isYourStoryPosted;
   final bool isWatched;
 
   const StoryItem(
@@ -30,13 +30,13 @@ class StoryItem extends StatelessWidget {
       this.width = 70,
       required this.imageUrl,
       this.isOtherUserPostStory = true,
-      this.isYourStoryPost = false});
+      this.isYourStoryPosted = false});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: isOtherUserPostStory == false
-          ? isYourStoryPost == true
+          ? isYourStoryPosted == true
               ? onWatchYourStoryPressed
               : onPostYourStoryPressed
           : onWatchOtherUserStoryPressed,
@@ -53,86 +53,90 @@ class StoryItem extends StatelessWidget {
                 ClipRRect(
                   child: Container(
                     margin: isOtherUserPostStory == true
-                        ? const EdgeInsets.all(4)
+                        ? const EdgeInsets.all(2)
                         : const EdgeInsets.all(2),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: CachedNetworkImage(
-                        imageUrl: imageUrl,
-                        fit: BoxFit.fill,
-                        placeholder: (context, url) => SizedBox(
-                          width: width,
-                          height: width! + 8,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: Shimmer.fromColors(
-                              baseColor: Colors.grey.withOpacity(.1),
-                              highlightColor: Colors.white,
-                              child: Container(
-                                color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.all(2),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          fit: BoxFit.fill,
+                          placeholder: (context, url) => SizedBox(
+                            width: 70,
+                            height: 62,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: Shimmer.fromColors(
+                                baseColor: Colors.grey.withOpacity(.1),
+                                highlightColor: Colors.white,
+                                child: Container(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => SizedBox(
+                            width: 70,
+                            height: 62,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(100),
+                              child: Shimmer.fromColors(
+                                baseColor: Colors.grey.withOpacity(.1),
+                                highlightColor: Colors.white,
+                                child: Container(
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                        errorWidget: (context, url, error) => SizedBox(
-                          width: 70,
-                          height: 62,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: Shimmer.fromColors(
-                              baseColor: Colors.grey.withOpacity(.1),
-                              highlightColor: Colors.white,
-                              child: Container(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
+                        //child: Image.network(imageUrl),
                       ),
-                      //child: Image.network(imageUrl),
                     ),
                   ),
                 ),
                 isOtherUserPostStory == true
                     ? isWatched == false
-                    ? Positioned(
-                  child: Image.asset("assets/images/story_oval.png"),
-                )
-                    : Positioned(
-                  child:
-                  Image.asset("assets/images/story_oval_watched.png"),
-                )
-                    : isYourStoryPost == false
-                    ? Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: Container(
-                      height: 26,
-                      width: 26,
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white, width: 2),
-                          shape: BoxShape.circle,
-                          color: AppColor.primaryColor),
-                      child: const Icon(
-                        Icons.add,
-                        color: AppColor.whiteColor,
-                        size: 20,
-                      ),
-                    ))
-                    : isWatched == false
-                    ? Positioned(
-                  child: Image.asset("assets/images/story_oval.png"),
-                )
-                    : Positioned(
-                  child: Image.asset(
-                      "assets/images/story_oval_watched.png"),
-                )
+                        ? Positioned(
+                            child: Image.asset("assets/images/story_oval.png"),
+                          )
+                        : Positioned(
+                            child: Image.asset(
+                                "assets/images/story_oval_watched.png"),
+                          )
+                    : isYourStoryPosted == false
+                        ? Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: Container(
+                              height: 26,
+                              width: 26,
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: Colors.white, width: 2),
+                                  shape: BoxShape.circle,
+                                  color: AppColor.primaryColor),
+                              child: const Icon(
+                                Icons.add,
+                                color: AppColor.whiteColor,
+                                size: 20,
+                              ),
+                            ))
+                        : isWatched == false
+                            ? Image.asset("assets/images/story_oval.png")
+                            : Positioned(
+                                child: Image.asset(
+                                    "assets/images/story_oval_watched.png"),
+                              )
               ],
             ),
             const SizedBox(
               height: 6,
             ),
-            isOtherUserPostStory == false ? const Text("Your story") : Text(ownerStory)
+            isOtherUserPostStory == false
+                ? const Text("Your story")
+                : Text(ownerStory)
           ],
         ),
       ),

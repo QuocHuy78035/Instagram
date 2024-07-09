@@ -1,3 +1,4 @@
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/core/local_db_config/init_local_db.dart';
@@ -10,7 +11,11 @@ class ApiClient {
   late BaseOptions baseOptions;
 
   ApiClient() {
-    baseOptions = BaseOptions(baseUrl: ApiConstant.mainUrl);
+    baseOptions = BaseOptions(
+      baseUrl: ApiConstant.mainUrl,
+       connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    );
     dio = Dio(baseOptions);
     dio.interceptors.add(
       PrettyDioLogger(
@@ -64,7 +69,6 @@ class ApiClient {
           'x-client-id': userId,
         });
     }
-
     try {
       var response = await dio.post(path, data: body, options: options);
       return response;
@@ -85,8 +89,8 @@ class ApiClient {
   /// PATCH REQUEST
   Future<Response> patchRequest(
       {required String path,
-        dynamic body,
-        bool isTokenRequired = false}) async {
+      dynamic body,
+      bool isTokenRequired = false}) async {
     if (isTokenRequired == true) {
       var token = SharedPreferencesRepository.getString('accessToken');
       var userId = SharedPreferencesRepository.getString('userId');

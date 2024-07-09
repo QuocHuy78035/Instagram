@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_color.dart';
 
 class BaseButton extends StatelessWidget {
-  final String title;
+  final Widget title;
   final double? height;
   final void Function()? onPressed;
 
@@ -20,10 +20,7 @@ class BaseButton extends StatelessWidget {
         minimumSize: Size(MediaQuery.of(context).size.width, height!),
       ),
       onPressed: onPressed,
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 18, color: AppColor.whiteColor),
-      ),
+      child: title,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:story_view/controller/story_controller.dart';
@@ -197,7 +198,9 @@ class _MoreStoriesState extends State<MoreStories> {
                   print("Showing a story");
                 },
                 onComplete: () {
-                  print("Completed a cycle");
+                  if (kDebugMode) {
+                    print("Completed a cycle");
+                  }
                 },
                 progressPosition: ProgressPosition.top,
                 repeat: false,

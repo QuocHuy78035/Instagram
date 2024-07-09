@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram_clone/core/theme/app_assets.dart';
 import 'package:instagram_clone/src/extensions/flushbar_extension.dart';
@@ -107,7 +106,12 @@ class _BodyLogin extends StatelessWidget {
                         BlocConsumer<AuthBloc, AuthState>(
                           builder: (context, state) {
                             return BaseButton(
-                              title: 'Log in',
+                              title: state is AuthLoadingState ? const Center(
+                                child: CircularProgressIndicator(color: Colors.white,),
+                              ) : const Text(
+                                "Log in",
+                                style: TextStyle(fontSize: 18, color: AppColor.whiteColor),
+                              ),
                               onPressed: () {
                                 if (formKeyBody.currentState!.validate()) {
                                   context.read<AuthBloc>().add(
@@ -122,15 +126,15 @@ class _BodyLogin extends StatelessWidget {
                             );
                           },
                           listener: (context, state) {
-                            if (state is AuthLoadingState) {
-                              EasyLoading.show();
-                            }
+                            // if (state is AuthLoadingState) {
+                            //   EasyLoading.show();
+                            // }
                             if (state is AuthErrorState) {
-                              EasyLoading.dismiss();
+                              //EasyLoading.dismiss();
                               context.flushBarErrorMessage(
                                   message: state.errorMessage);
                             } else if (state is LoggedInState) {
-                              EasyLoading.dismiss();
+                              //EasyLoading.dismiss();
 
                               //remove another routes
                               Navigator.pushAndRemoveUntil(
