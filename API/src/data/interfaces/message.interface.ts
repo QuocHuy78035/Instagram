@@ -4,7 +4,7 @@ interface MessageInterface {
   senderId: Types.ObjectId;
   message?: string;
   image?: string;
-  replyMessage?: Types.ObjectId;
+  replyMessage?: Types.ObjectId | MessageInterface;
   react?: string;
   conversation: Types.ObjectId;
 }

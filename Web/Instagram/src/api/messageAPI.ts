@@ -31,7 +31,19 @@ export const findByConversation = async (
 ) => {
   try {
     const res = await axios.get(
-      `http://localhost:8000/api/v1/message/${conversation}?page=${page}`
+      `http://localhost:8000/api/v1/message?conversation=${conversation}&page=${page}`
+    );
+    return res.data;
+  } catch (err: any) {
+    console.log(err);
+    if (err) return err.response?.data;
+  }
+};
+
+export const deleteMessage = async (messageId: string) => {
+  try {
+    const res = await axios.delete(
+      `http://localhost:8000/api/v1/message/${messageId}`
     );
     return res.data;
   } catch (err: any) {

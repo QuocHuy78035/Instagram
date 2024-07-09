@@ -13,8 +13,9 @@ class MessageRouter {
     this.router.use(authentication);
     this.router
       .route("/")
-      .post(upload.single("file"), asyncHandler(messageController.sendMessage));
-    this.router.route("/:conversation").get(asyncHandler(messageController.findByConversation));
+      .post(upload.single("file"), asyncHandler(messageController.sendMessage))
+      .get(asyncHandler(messageController.findByConversation));
+    this.router.route("/:messageId").delete(asyncHandler(messageController.deleteMessage));
   }
 }
 

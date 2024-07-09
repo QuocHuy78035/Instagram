@@ -32,7 +32,6 @@ class MessageService {
       );
     }
 
-    
     let image: string | undefined = undefined;
     if (body.file) {
       body.file.buffer = await resizeImage(body.file.buffer);
@@ -102,6 +101,7 @@ class MessageService {
           receivedIds[i].toString()
         );
         if (receiverSocketId) {
+          newMessage.replyMessage = replyMessage;
           SocketConnection.io
             .to(receiverSocketId)
             .emit("newMessage", newMessage);
@@ -115,10 +115,14 @@ class MessageService {
     };
   }
 
-  async findByConversation(userId: Types.ObjectId, conversationId: string, page: number) {
+  async findByConversation(
+    userId: Types.ObjectId,
+    conversationId: string,
+    page: number
+  ) {
     if (!isValidObjectId(conversationId)) {
       throw new BadRequestError(
-        `Reply message with id ${conversationId} is invalid!`
+        `Conversation with id ${conversationId} is invalid!`
       );
     }
     const conversation = await conversationRepo.findByIdAndUser(
@@ -131,10 +135,25 @@ class MessageService {
         `Conversation with id ${conversationId} is not found!`
       );
     }
-    const messages = messagesWithDays(await messageRepo.findByConversation(conversation.id, page));
+    const messages = messagesWithDays(
+      await messageRepo.findByConversation(conversation.id, page)
+    );
     return {
       messages,
     };
+  }
+
+  async deleteMessage(messageId: string) {
+    if (!isValidObjectId(messageId)) {
+      throw new BadRequestError(`Message with id ${messageId} is invalid!`);
+    }
+    const message = await messageRepo.findById(
+      convertStringToObjectId(messageId)
+    );
+    if (!message) {
+      throw new BadRequestError(`Message with id ${messageId} is not found!`);
+    }
+    await messageRepo.deleteMessage(message.id);
   }
 }
 

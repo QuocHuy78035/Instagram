@@ -1,21 +1,80 @@
 import { useEffect, useState } from "react";
+import { CiFaceSmile } from "react-icons/ci";
+import { GoReply } from "react-icons/go";
+import { AiOutlineMore } from "react-icons/ai";
+import useOpenNavigateMore from "../../zustand/useOpenNavigateMore";
+import useReplyMessage from "../../zustand/useReplyMessage";
 
 export default function Message({ message, userId, participants }) {
   const [rightUser, setRightUser] = useState(true);
   const [sender, setSender] = useState<any>({});
+  const [isOpenBar, setIsOpenBar] = useState<boolean>(false);
+  const {
+    setIsOpenNavigateMore,
+    setTop,
+    setLeft,
+    setRight,
+    setSelectedMessage,
+    selectedMessage,
+    setIsRight,
+  } = useOpenNavigateMore();
+  const isOpenNavigateMore = useOpenNavigateMore(
+    (state) => state.isOpenNavigateMore
+  );
+  const { setReplyMessage, setSenderReplyMessage } = useReplyMessage();
   useEffect(() => {
     setRightUser(userId === message.senderId ? true : false);
   }, [userId, message]);
   useEffect(() => {
     setSender(participants.find((participant) => participant._id === userId));
   }, []);
+  function reply() {
+    setReplyMessage(message);
+    setSenderReplyMessage(sender);
+  }
   return (
-    <>
+    <div>
       <div
-        id={`message__${message._id}`}
-        className={`flex w-full my-[5px]`}
+        className="text-[13px] flex mb-1"
         style={{
           flexDirection: `${rightUser ? "row-reverse" : "row"}`,
+          marginRight: `${rightUser ? "12px" : "0px"}`,
+          marginLeft: `${rightUser ? "0px" : "12px"}`,
+        }}
+      >
+        {message.replyMessage ? "You replied to Tran Huu Quoc Huy" : ""}
+      </div>
+      {message.replyMessage ? (
+        <div
+          className="flex"
+          style={{
+            flexDirection: `${rightUser ? "row-reverse" : "row"}`,
+            marginRight: `${rightUser ? "12px" : "0px"}`,
+            marginLeft: `${rightUser ? "0px" : "12px"}`,
+            borderRight: `${rightUser ? "4px" : "0px"} solid #6b7280`,
+            borderLeft: `${rightUser ? "0px" : "4px"} solid #6b7280`,
+          }}
+        >
+          <div
+            className={`mx-3 text-[15px] py-2 px-[12px] my-auto bg-[rgb(239,239,239)] text-black rounded-lg max-w-[300px]`}
+          >
+            {message.replyMessage.message}
+          </div>
+        </div>
+      ) : (
+        ""
+      )}
+      <div
+        id={`message__${message._id}`}
+        className={`flex relative w-full my-[5px]`}
+        style={{
+          flexDirection: `${rightUser ? "row-reverse" : "row"}`,
+        }}
+        onMouseOver={function () {
+          setIsOpenBar(true);
+        }}
+        onMouseOut={function () {
+          setIsOpenBar(false);
         }}
       >
         {!rightUser ? (
@@ -58,7 +117,42 @@ export default function Message({ message, userId, participants }) {
             {message.message}
           </div>
         )}
+        <div
+          className={`flex ${rightUser ? "flex-row-reverse me-2" : "ms-2"} ${
+            !isOpenBar ? "hidden" : ""
+          } my-auto py-auto`}
+        >
+          <button className="flex flex-col justify-center w-[32px] h-[32px] hover:bg-[rgb(239,239,239)] rounded-full outline-none">
+            <CiFaceSmile className="mx-auto text-[18px]" />
+          </button>
+          <button
+            className="flex flex-col justify-center w-[32px] h-[32px] hover:bg-[rgb(239,239,239)] rounded-full outline-none"
+            onClick={reply}
+          >
+            <GoReply className="mx-auto text-[18px]" />
+          </button>
+          <button
+            id={`messageMore_${message._id}`}
+            className={
+              "flex flex-col justify-center w-[32px] h-[32px] hover:bg-[rgb(239,239,239)] rounded-full outline-none"
+            }
+            onClick={function (e) {
+              if (selectedMessage?._id === message._id) {
+                setIsOpenNavigateMore(!isOpenNavigateMore);
+              } else {
+                setTop(e.currentTarget.getBoundingClientRect().top);
+                setLeft(e.currentTarget.getBoundingClientRect().left);
+                setRight(e.currentTarget.getBoundingClientRect().right);
+                setSelectedMessage(message);
+                setIsOpenNavigateMore(true);
+                setIsRight(rightUser);
+              }
+            }}
+          >
+            <AiOutlineMore className="mx-auto text-[18px]" />
+          </button>
+        </div>
       </div>
-    </>
+    </div>
   );
 }

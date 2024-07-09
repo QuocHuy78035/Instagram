@@ -12,13 +12,12 @@ class MessageRepo {
 
   async findByConversation(conversation: Types.ObjectId, page: number) {
     const perPage = 20;
-    return (
-      await Message.find({ conversation })
-        .sort({ createdAt: -1 })
-        .skip(perPage * (page - 1))
-        .limit(perPage)
-        .lean()
-    ).reverse();
+    return await Message.find({ conversation })
+      .populate("replyMessage")
+      .sort({ createdAt: -1 })
+      .skip(perPage * (page - 1))
+      .limit(perPage)
+      .lean();
   }
   async createMessage(body: {
     senderId: Types.ObjectId;
@@ -33,6 +32,10 @@ class MessageRepo {
 
   async deleteMessagesByConversation(conversationId: Types.ObjectId) {
     return await Message.deleteMany({ conversation: conversationId });
+  }
+
+  async deleteMessage(messageId: Types.ObjectId) {
+    await Message.findByIdAndDelete(messageId);
   }
 }
 

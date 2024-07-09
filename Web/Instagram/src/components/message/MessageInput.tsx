@@ -7,6 +7,8 @@ import { useParams } from "react-router-dom";
 import { changeMessageToMessageWithDay } from "../../utils";
 import useOpenConversationInformation from "../../zustand/useOpenConversationInformation";
 import { FaRegCircleXmark } from "react-icons/fa6";
+import useReplyMessage from "../../zustand/useReplyMessage";
+import { HiXMark } from "react-icons/hi2";
 
 export default function MessageInput({
   messages,
@@ -20,6 +22,8 @@ export default function MessageInput({
   const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState<Array<File>>([]);
   const [images, setImages] = useState<Array<string | ArrayBuffer | null>>([]);
+  const { replyMessage, setReplyMessage, senderReplyMessage, setSenderReplyMessage } =
+    useReplyMessage();
   async function sendMessage(body: {
     conversation: string;
     message?: string;
@@ -29,6 +33,7 @@ export default function MessageInput({
       conversation: body.conversation,
       message: body.message,
       file: body.file,
+      replyMessage: replyMessage?._id
     });
     if (data.status === 201) {
       const message = data.metadata.message;
@@ -42,8 +47,10 @@ export default function MessageInput({
     setIsLoading(true);
     if (message !== "") {
       const newMessage = await sendMessage({ conversation: param.id, message });
+      newMessage.replyMessage = replyMessage;
       setMessages(changeMessageToMessageWithDay(newMessage, messages));
       setMessage("");
+      setReplyMessage(undefined);
     }
     if (files.length !== 0) {
       const newMessages = await Promise.all(
@@ -60,8 +67,7 @@ export default function MessageInput({
           messagesClone
         );
       }
-      console.log(messagesClone);
-      setMessages([...messagesClone]);
+      setMessages(messagesClone);
       setFiles([]);
       setImages([]);
     }
@@ -70,7 +76,14 @@ export default function MessageInput({
 
   async function createHeartMessage() {
     if (!param.id) return;
-    await sendMessage({ conversation: param.id, message: "❤️" });
+    const newMessage = await sendMessage({
+      conversation: param.id,
+      message: "❤️",
+    });
+    newMessage.replyMessage = replyMessage;
+    setMessages(changeMessageToMessageWithDay(newMessage, messages));
+    setMessage("");
+    setReplyMessage(undefined);
   }
   useEffect(() => {
     const messageInput = document.getElementById("message__input");
@@ -86,10 +99,24 @@ export default function MessageInput({
       <div
         id="message__input"
         className="fixed bottom-0 border-t border-gray-200 bg-white px-4 py-3 "
-        // style={{
-        //   width: "70%",
-        // }}
       >
+        {replyMessage && senderReplyMessage ? (
+          <div className="p-2 text-[14px] relative">
+            <div>{`Replying to ${senderReplyMessage.name}`}</div>
+            <div className="text-gray-500">{replyMessage.message}</div>
+            <div
+              className="absolute top-2 right-2 text-[15px]"
+              onClick={function () {
+                setReplyMessage(undefined);
+                setSenderReplyMessage(null);
+              }}
+            >
+              <HiXMark />
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
         {images.length !== 0 ? (
           <div className="flex">
             {images.map((image, i) => {

@@ -25,12 +25,40 @@ export function distanceBetweenTwoDates(date1: Date, date2: Date): string {
   return Math.floor(seconds) + " seconds ago";
 }
 
+export const changeDateToString = (date: Date) => {
+  const now = new Date(Date.now());
+  const timeStr: string = date
+    .toTimeString()
+    .split(" ")[0]
+    .split(":")
+    .slice(0, 2)
+    .join(":");
+  const dateStr: string = date.toDateString().split(" ").slice(1).join(" ");
+  const dayStr: string = date.toDateString().split(" ")[0];
+  if (
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === date.getFullYear()
+  ) {
+    return timeStr;
+  }
+  if (
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === date.getFullYear()
+  ) {
+    if (now.getDate() - date.getDate() <= 6 && now.getDate() > date.getDate()) {
+      return `${dayStr}, ${timeStr}`;
+    }
+  }
+  return dateStr + ", " + timeStr;
+};
+
 export function changeMessageToMessageWithDay(
   message: any,
-  messages: any
+  messagesWithDay: any
 ): Array<any> {
   const date = new Date(message.createdAt);
-  if (messages.length === 0) {
+  if (messagesWithDay.length === 0) {
     return [
       {
         date: new Date(Date.now())
@@ -44,20 +72,20 @@ export function changeMessageToMessageWithDay(
     ];
   }
   if (
-    new Date(messages[messages.length - 1].fullDate).getHours() ===
-    date.getHours()
+    new Date(
+      messagesWithDay[0].fullDate
+    ).getHours() === date.getHours()
   ) {
     return [
-      ...messages.slice(0, messages.length - 1),
       {
-        date: messages[messages.length - 1].date,
-        fullDate: messages[messages.length - 1].fullDate,
-        messages: [...messages[messages.length - 1].messages, message],
+        date: messagesWithDay[0].date,
+        fullDate: messagesWithDay[0].fullDate,
+        messages: [message, ...messagesWithDay[0].messages],
       },
+      ...messagesWithDay.slice(1),
     ];
   } else {
     return [
-      ...messages,
       {
         date: new Date(Date.now())
           .toTimeString()
@@ -67,6 +95,36 @@ export function changeMessageToMessageWithDay(
         fullDate: new Date(Date.now()),
         messages: [message],
       },
+      ...messagesWithDay,
     ];
+  }
+}
+
+export function concatTwoMessagesWithDay(
+  messagesWithDay1: any,
+  messagesWithDay2: any
+) {
+  if (messagesWithDay1.length === 0 || messagesWithDay2.length === 0) {
+    return [...messagesWithDay1, ...messagesWithDay2];
+  } else {
+    if (
+      new Date(
+        messagesWithDay1[messagesWithDay1.length - 1].fullDate
+      ).getHours() === new Date(messagesWithDay2[0].fullDate).getHours()
+    ) {
+      return [
+        ...messagesWithDay1.slice(0, messagesWithDay1.length - 1),
+        {
+          date: messagesWithDay1[messagesWithDay1.length - 1].date,
+          fullDate: messagesWithDay1[messagesWithDay1.length - 1].fullDate,
+          messages: [
+            ...messagesWithDay1[messagesWithDay1.length - 1].messages,
+            ...messagesWithDay2[0].messages,
+          ],
+        },
+        ...messagesWithDay2.slice(1),
+      ];
+    }
+    return [...messagesWithDay1, ...messagesWithDay2];
   }
 }

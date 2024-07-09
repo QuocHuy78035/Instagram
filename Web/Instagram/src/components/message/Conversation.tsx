@@ -1,17 +1,19 @@
 import { createRef, useEffect, useState } from "react";
 import MessageInput from "./MessageInput";
-import { findByConversation, getConversation } from "../../api";
+import { getConversation } from "../../api";
 import HeaderConversation from "./HeaderConversation";
 import Messages from "./Messages";
 import { useParams } from "react-router-dom";
 import useConversation from "../../zustand/useConversation";
+import usePage from "../../zustand/usePage";
+import useMessages from "../../zustand/useMessages";
 
 export default function Conversation() {
   const param = useParams();
   const { conversation, setConversation } = useConversation();
   const [isLoading, setIsLoading] = useState(true);
-  const [messages, setMessages] = useState([]);
-  const [page, setPage] = useState(1);
+  const {messages, setMessages} = useMessages();
+  const { setPage } = usePage();
   useEffect(() => {
     (async () => {
       if (!param.id) return;
@@ -22,24 +24,11 @@ export default function Conversation() {
       }
       setIsLoading(false);
     })();
-  }, [setConversation, setMessages, param.id]);
+  }, [setConversation, param.id]);
   useEffect(() => {
-    (async () => {
-      if (!param.id) return;
-      const dataMessages = await findByConversation(param.id, page);
-      if (dataMessages.status === 200) {
-        setMessages(dataMessages.metadata.messages);
-      }
-    })();
-  }, [page, param.id]);
-  useEffect(() => {
-    if (isLoading) return;
-    const scrollMessage = document.querySelector(".scroll__messages");
-    const messagesEle = document.getElementById("messages");
-    if (scrollMessage && messagesEle) {
-      scrollMessage.scrollTo(0, messagesEle.scrollHeight);
-    }
-  }, [isLoading, messages]);
+    setPage(1);
+  }, [param.id]);
+
   const conversationRef = createRef<any>();
   const useRefDimensions = (ref) => {
     const [dimensions, setDimensions] = useState({ width: 1, height: 2 });
@@ -54,20 +43,25 @@ export default function Conversation() {
     return dimensions;
   };
   const dimensions = useRefDimensions(conversationRef);
+
   return (
     <>
       {!isLoading ? (
         <div
           id="conversation"
-          className="flex-grow flex flex-col overflow-y-hidden h-full"
+          className="relative flex-grow flex flex-col overflow-y-hidden h-full"
           ref={conversationRef}
         >
           <HeaderConversation conversation={conversation} />
-          <div className="scroll__messages relative w-full flex-grow overflow-y-scroll mb-[70px]">
+          <div
+            id="scroll__messages"
+            className="flex flex-col-reverse w-full flex-grow overflow-y-auto mb-[70px]"
+          >
             <Messages
               conversation={conversation}
               messages={messages}
               setMessages={setMessages}
+              param={param}
             />
           </div>
           <MessageInput

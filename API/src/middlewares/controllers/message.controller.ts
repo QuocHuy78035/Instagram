@@ -34,6 +34,9 @@ class MessageController {
     if (!req.user) {
       throw new UnauthorizedError("User not found! Please log in again!");
     }
+    if (!req.query.conversation) {
+      throw new BadRequestError("Please fill the conversation query!");
+    }
     if (!req.query.page) {
       throw new BadRequestError("Please fill the page query!");
     }
@@ -42,7 +45,7 @@ class MessageController {
     }
     const metadata = await messageService.findByConversation(
       req.user.userId,
-      req.params.conversation,
+      req.query.conversation as string,
       parseInt(req.query.page as string)
     );
 
@@ -51,6 +54,21 @@ class MessageController {
       metadata,
     }).send(res);
   };
+
+  deleteMessage =  async (
+    req: RequestV2,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (!req.user) {
+      throw new UnauthorizedError("User not found! Please log in again!");
+    }
+    await messageService.deleteMessage(req.params.messageId);
+    new OK({
+      message: "Delete message successfully!",
+    }).send(res);
+  }
+  
 }
 
 export default new MessageController();
