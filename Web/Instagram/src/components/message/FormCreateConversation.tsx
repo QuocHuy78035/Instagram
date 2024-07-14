@@ -46,7 +46,6 @@ export default function FormCreateConversation() {
     <>
       <div className="absolute backdrop-brightness-[0.7] w-full h-full z-[1000] flex flex-col justify-center">
         <form
-          // onSubmit={handleSubmit(onSubmit)}
           className="relative flex flex-col mx-auto w-[550px] h-[450px] bg-[white] rounded-2xl"
         >
           <HiMiniXMark

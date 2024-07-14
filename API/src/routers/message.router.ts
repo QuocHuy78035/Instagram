@@ -15,7 +15,12 @@ class MessageRouter {
       .route("/")
       .post(upload.single("file"), asyncHandler(messageController.sendMessage))
       .get(asyncHandler(messageController.findByConversation));
-    this.router.route("/:messageId").delete(asyncHandler(messageController.deleteMessage));
+    this.router
+      .route("/chatai")
+      .post(asyncHandler(messageController.answerMessageByAI));
+    this.router
+      .route("/:messageId")
+      .delete(asyncHandler(messageController.deleteMessage));
   }
 }
 

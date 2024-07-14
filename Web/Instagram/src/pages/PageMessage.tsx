@@ -1,4 +1,4 @@
-import Sidebar from "../components/message/Sidebar";
+import Sidebar from "../components/Sidebar";
 import Conversations from "../components/message/Conversations";
 import useOpenConversation from "../zustand/useOpenConversation";
 import FormCreateConversation from "../components/message/FormCreateConversation";
@@ -49,7 +49,7 @@ export default function PageMessage({ children }) {
   return (
     <>
       <div className="bg-gray-50 flex h-screen relative">
-        <Sidebar />
+        <Sidebar isFullContent={false} />
         {isOpenConversation ? <FormCreateConversation /> : ""}
         {/* <!-- Main Content --> */}
         <div className="flex-grow flex flex-col overflow-hidden h-full">

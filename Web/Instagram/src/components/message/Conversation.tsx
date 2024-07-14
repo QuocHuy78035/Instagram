@@ -12,7 +12,7 @@ export default function Conversation() {
   const param = useParams();
   const { conversation, setConversation } = useConversation();
   const [isLoading, setIsLoading] = useState(true);
-  const {messages, setMessages} = useMessages();
+  const { messages, setMessages } = useMessages();
   const { setPage } = usePage();
   useEffect(() => {
     (async () => {
@@ -26,6 +26,7 @@ export default function Conversation() {
     })();
   }, [setConversation, param.id]);
   useEffect(() => {
+    setMessages([]);
     setPage(1);
   }, [param.id]);
 

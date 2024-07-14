@@ -22,11 +22,18 @@ export default function Message({ message, userId, participants }) {
     (state) => state.isOpenNavigateMore
   );
   const { setReplyMessage, setSenderReplyMessage } = useReplyMessage();
+  const [replyMessageUser, setReplyMessageUser] = useState<any>();
   useEffect(() => {
     setRightUser(userId === message.senderId ? true : false);
   }, [userId, message]);
   useEffect(() => {
     setSender(participants.find((participant) => participant._id === userId));
+    if (message.replyMessage)
+      setReplyMessageUser(
+        participants.find(
+          (participant) => participant._id === message.replyMessage.senderId
+        )
+      );
   }, []);
   function reply() {
     setReplyMessage(message);
@@ -42,7 +49,7 @@ export default function Message({ message, userId, participants }) {
           marginLeft: `${rightUser ? "0px" : "12px"}`,
         }}
       >
-        {message.replyMessage ? "You replied to Tran Huu Quoc Huy" : ""}
+        {message.replyMessage && replyMessageUser ? `You replied to ${replyMessageUser?.name}` : ""}
       </div>
       {message.replyMessage ? (
         <div
@@ -56,7 +63,7 @@ export default function Message({ message, userId, participants }) {
           }}
         >
           <div
-            className={`mx-3 text-[15px] py-2 px-[12px] my-auto bg-[rgb(239,239,239)] text-black rounded-lg max-w-[300px]`}
+            className={`mx-3 text-[15px] py-2 px-[12px] my-auto bg-[rgb(239,239,239)] text-black rounded-lg max-w-[400px]`}
           >
             {message.replyMessage.message}
           </div>
@@ -109,7 +116,7 @@ export default function Message({ message, userId, participants }) {
               rightUser
                 ? "bg-blue-600 text-white"
                 : "bg-[rgb(239,239,239)] text-black"
-            } rounded-lg max-w-[300px]`}
+            } rounded-lg max-w-[400px]`}
             style={{
               marginRight: rightUser ? "12px" : "0px",
             }}

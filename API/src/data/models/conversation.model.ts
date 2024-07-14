@@ -18,6 +18,7 @@ const conversationSchema: Schema<IConversationModel> =
         ],
         default: [],
       },
+      type: { type: String, default: "normal", enum: ["normal", "AI"] },
     },
     { timestamps: true, collection: COLLECTION_NAME }
   );

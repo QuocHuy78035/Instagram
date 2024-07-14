@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { BsEmojiSmile } from "react-icons/bs";
 import { FiHeart } from "react-icons/fi";
 import { GrImage, GrMicrophone } from "react-icons/gr";
-import { createMessage } from "../../api";
+import { answerMessageByAI, createMessage } from "../../api";
 import { useParams } from "react-router-dom";
 import { changeMessageToMessageWithDay } from "../../utils";
 import useOpenConversationInformation from "../../zustand/useOpenConversationInformation";
 import { FaRegCircleXmark } from "react-icons/fa6";
 import useReplyMessage from "../../zustand/useReplyMessage";
 import { HiXMark } from "react-icons/hi2";
+import useConversation from "../../zustand/useConversation";
 
 export default function MessageInput({
   messages,
@@ -22,8 +23,14 @@ export default function MessageInput({
   const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState<Array<File>>([]);
   const [images, setImages] = useState<Array<string | ArrayBuffer | null>>([]);
-  const { replyMessage, setReplyMessage, senderReplyMessage, setSenderReplyMessage } =
-    useReplyMessage();
+  const {
+    replyMessage,
+    setReplyMessage,
+    senderReplyMessage,
+    setSenderReplyMessage,
+  } = useReplyMessage();
+  const { conversation } = useConversation();
+  const [isAutoAnswer, setIsAutoAnswer] = useState(false);
   async function sendMessage(body: {
     conversation: string;
     message?: string;
@@ -33,7 +40,18 @@ export default function MessageInput({
       conversation: body.conversation,
       message: body.message,
       file: body.file,
-      replyMessage: replyMessage?._id
+      replyMessage: replyMessage?._id,
+    });
+    if (data.status === 201) {
+      const message = data.metadata.message;
+      return message;
+    }
+  }
+
+  async function answerMessage(message: string) {
+    const data = await answerMessageByAI({
+      conversation: conversation._id,
+      message,
     });
     if (data.status === 201) {
       const message = data.metadata.message;
@@ -44,15 +62,23 @@ export default function MessageInput({
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (!param.id) return;
-    setIsLoading(true);
+
     if (message !== "") {
+      setIsLoading(true);
       const newMessage = await sendMessage({ conversation: param.id, message });
       newMessage.replyMessage = replyMessage;
+
       setMessages(changeMessageToMessageWithDay(newMessage, messages));
-      setMessage("");
       setReplyMessage(undefined);
+      setIsLoading(false);
+      if (conversation.type === "AI") {
+        setIsAutoAnswer(true);
+      } else {
+        setMessage("");
+      }
     }
     if (files.length !== 0) {
+      setIsLoading(true);
       const newMessages = await Promise.all(
         files.map(async (file) => {
           if (!param.id) return;
@@ -70,9 +96,19 @@ export default function MessageInput({
       setMessages(messagesClone);
       setFiles([]);
       setImages([]);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
+
+  useEffect(() => {
+    if (!isAutoAnswer) return;
+    (async () => {
+      const answer = await answerMessage(message);
+      setMessages(changeMessageToMessageWithDay(answer, messages));
+      setIsAutoAnswer(false);
+      setMessage("");
+    })();
+  }, [isAutoAnswer]);
 
   async function createHeartMessage() {
     if (!param.id) return;

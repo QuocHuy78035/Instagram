@@ -80,7 +80,7 @@ export default function PageLogin() {
           <span className="text-gray-700 text-[14px]">
             Don't have an account?{" "}
           </span>
-          <a href="#" className="text-blue-500 font-medium text-[14px]">
+          <a href="/signup" className="text-blue-500 font-medium text-[14px]">
             Sign up
           </a>
         </div>

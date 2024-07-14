@@ -25,7 +25,8 @@ import keytokenService from "./keytoken.service";
 import { createTokenPair } from "../auth/authUtils";
 import crypto from "crypto";
 import { IKeyTokenModel } from "../data/interfaces/keytoken.interface";
-
+import conversationRepo from "../repos/conversation.repo";
+const CHATAI_ID = "668d01b84330936b4d5b427a";
 class AuthenService {
   constructor() {}
 
@@ -55,9 +56,9 @@ class AuthenService {
   async signUp(body: {
     mobile?: string;
     email?: string;
-    name: string;
-    username: string;
-    password: string;
+    name?: string;
+    username?: string;
+    password?: string;
   }) {
     const { error } = SignUpValidator(body);
     if (error) {
@@ -65,7 +66,7 @@ class AuthenService {
     }
 
     if (!body.mobile && !body.email) {
-      throw new BadRequestError("Please fill mobile phone or email!");
+      throw new BadRequestError("Please just fill mobile phone or email!");
     }
 
     if (body.mobile && body.email) {
@@ -91,7 +92,7 @@ class AuthenService {
     }
 
     const checkUsernameExists = await userRepo.findOneByUsernameAndActiveUser(
-      body.username
+      body.username as string
     );
     if (checkUsernameExists) {
       throw new BadRequestError("Username existed!");
@@ -110,7 +111,16 @@ class AuthenService {
     if (body.mobile) {
       newUser = await userRepo.findOneByMobileAndUnverifiedUser(body.mobile);
     }
-    newUser = newUser || (await userRepo.createUser(body));
+    let isOldUser = newUser ? true : false;
+    newUser =
+      newUser ||
+      (await userRepo.createUser({
+        mobile: body.mobile,
+        email: body.email,
+        name: body.name as string,
+        username: body.username as string,
+        password: body.password as string,
+      }));
 
     const OTP = generateOTP(6);
     const hashOTP = hashString(OTP);
@@ -137,6 +147,12 @@ class AuthenService {
           "There was an error sending the SMS. Try again later!" + err
         );
       }
+    }
+
+    // testing
+    if (process.env.NODE_ENV === "development") {
+      if (!isOldUser)
+        await userRepo.findByIdAndDelete(newUser.id);
     }
 
     return {
@@ -321,6 +337,11 @@ class AuthenService {
       role: user.role,
     });
 
+    await conversationRepo.createConversation([
+      user.id,
+      convertStringToObjectId(CHATAI_ID),
+    ]);
+
     return {
       user: getInfoData(user, [
         "_id",
@@ -338,7 +359,7 @@ class AuthenService {
     mobile?: string;
     email?: string;
     username?: string;
-    password: string;
+    password?: string;
   }) {
     const { error } = LoginValidator(body);
     if (error) {
@@ -358,19 +379,19 @@ class AuthenService {
       | null = null;
     if (body.username) {
       user = await userRepo.findOneByUsernameAndActiveUser(body.username);
-      if (!user || !(await user.matchPassword(body.password))) {
+      if (!user || !(await user.matchPassword(body.password as string))) {
         throw new BadRequestError("Username or password does not exist!");
       }
     }
     if (body.email) {
       user = await userRepo.findOneByEmailAndActiveUser(body.email);
-      if (!user || !(await user.matchPassword(body.password))) {
+      if (!user || !(await user.matchPassword(body.password as string))) {
         throw new BadRequestError("Email or password does not exist!");
       }
     }
     if (body.mobile) {
       user = await userRepo.findOneByMobileAndActiveUser(body.mobile);
-      if (!user || !(await user.matchPassword(body.password))) {
+      if (!user || !(await user.matchPassword(body.password as string))) {
         throw new BadRequestError("Mobile or password does not exist!");
       }
     }

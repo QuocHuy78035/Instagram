@@ -15,7 +15,7 @@ export const GlobalErrorMiddleware = (
   return res.status(statusCode).json({
     status: "error",
     code: statusCode,
-    err: error.stack,
+    // err: error.stack,
     message: formatErrorString(error.message) || "Internal Server Error",
   });
 };

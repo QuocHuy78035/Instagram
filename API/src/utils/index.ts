@@ -108,4 +108,4 @@ export const messagesWithDays = (messages: any) => {
   }
 
   return messagesWithDays;
-};
+}

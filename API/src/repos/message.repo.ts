@@ -10,7 +10,10 @@ class MessageRepo {
     });
   }
 
-  async findByConversation(conversation: Types.ObjectId, page: number) {
+  async findByConversation(conversation: Types.ObjectId, page?: number) {
+    if (!page) {
+      return await Message.find({ conversation });
+    }
     const perPage = 20;
     return await Message.find({ conversation })
       .populate("replyMessage")

@@ -4,5 +4,6 @@ export default interface User {
   mobile?: string;
   username: string;
   name: string;
+  avatar: string;
   role: string;
 }

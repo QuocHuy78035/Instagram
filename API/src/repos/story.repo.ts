@@ -33,6 +33,10 @@ class StoryRepo {
       { new: true }
     );
   }
+
+  async deleteStory(storyId: Types.ObjectId) {
+    await Story.findByIdAndDelete(storyId);
+  }
 }
 
 export default new StoryRepo();

@@ -26,6 +26,27 @@ class MessageController {
     }).send(res);
   };
 
+  answerMessageByAI = async (
+    req: RequestV2,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (!req.user) {
+      throw new UnauthorizedError("User not found! Please log in again!");
+    }
+
+    const metadata = await messageService.answerMessageByAI({
+      userId: req.user?.userId,
+      conversationId: req.body.conversation,
+      message: req.body.message,
+    });
+
+    new CREATED({
+      message: "AI answers message successfully!",
+      metadata,
+    }).send(res);
+  };
+
   findByConversation = async (
     req: RequestV2,
     res: Response,
@@ -55,11 +76,7 @@ class MessageController {
     }).send(res);
   };
 
-  deleteMessage =  async (
-    req: RequestV2,
-    res: Response,
-    next: NextFunction
-  ) => {
+  deleteMessage = async (req: RequestV2, res: Response, next: NextFunction) => {
     if (!req.user) {
       throw new UnauthorizedError("User not found! Please log in again!");
     }
@@ -67,8 +84,7 @@ class MessageController {
     new OK({
       message: "Delete message successfully!",
     }).send(res);
-  }
-  
+  };
 }
 
 export default new MessageController();

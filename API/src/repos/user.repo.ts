@@ -49,6 +49,10 @@ class UserRepo {
     return user?.following;
   }
 
+  async findByIdAndDelete(userId: Types.ObjectId) {
+    return await User.findByIdAndDelete(userId);
+  }
+  
   async createUser(body: {
     mobile?: string;
     email?: string;

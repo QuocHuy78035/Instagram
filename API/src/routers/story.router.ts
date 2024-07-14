@@ -14,13 +14,12 @@ class StoryRouter {
     this.router.use(authentication);
     this.router
       .route("/")
-      .post(upload.single("file"), asyncHandler(storyController.createStory));
-    this.router
-      .route("/:otherUserId")
+      .post(upload.single("file"), asyncHandler(storyController.createStory))
       .get(asyncHandler(storyController.findStoriesOfOtherUser));
     this.router
       .route("/:id/userViewed")
       .patch(asyncHandler(storyController.updateUserViewedById));
+    this.router.route("/:id").delete(asyncHandler(storyController.deleteStory));
   }
 }
 

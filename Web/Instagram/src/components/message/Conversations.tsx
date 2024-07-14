@@ -70,7 +70,7 @@ export default function Conversations() {
                       param.id === conversation._id
                         ? "bg-[rgb(239,239,239)]"
                         : ""
-                    } hover:bg-[rgb(239,239,239)] ps-6 py-[6px]`}
+                    } hover:bg-[rgb(239,239,239)] ps-6 py-[6px] cursor-pointer`}
                     onClick={function (e) {
                       e.preventDefault();
                       navigate("/direct/t/" + conversation._id);

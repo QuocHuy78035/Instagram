@@ -21,6 +21,7 @@ export default function Messages({
   const { userId } = useAuthContext();
   const [hasMore, setHasMore] = useState(true);
   const { page, setPage } = usePage();
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     socket?.on("newMessage", (newMessage) => {
       newMessage.shouldShake = true;
@@ -65,10 +66,31 @@ export default function Messages({
   }, [messages]);
 
   useEffect(() => {
-    setTimeout(() => {
-      (async () => {
-        if (!param.id) return;
+    (async () => {
+      if (!param.id) return;
+      if (page === 1) {
+        setIsLoading(true);
+        const dataMessages = await findByConversation(param.id, 1);
+        if (dataMessages.status === 200) {
+          if (dataMessages.metadata.messages.length) {
+            setMessages(
+              concatTwoMessagesWithDay(
+                [],
+                dataMessages.metadata.messages
+              )
+            );
+          } else {
+            setHasMore(false);
+          }
+        }
+        setIsLoading(false);
+        // return;
+      } else {
         let messagesClone: Array<any> = [];
+        const nextPageMessages = await findByConversation(param.id, page + 1);
+        if (!nextPageMessages.metadata.messages.length) {
+          setHasMore(false);
+        }
         for (let i = 1; i <= page; i++) {
           const dataMessages = await findByConversation(param.id, i);
           if (dataMessages.status === 200) {
@@ -77,15 +99,12 @@ export default function Messages({
                 messagesClone,
                 dataMessages.metadata.messages
               );
-            } else {
-              setHasMore(false);
-              break;
             }
           }
         }
-        setMessages(messagesClone);
-      })();
-    }, 500);
+        setMessages([...messagesClone]);
+      }
+    })();
   }, [page]);
 
   const fetchMoreData = () => {
@@ -94,40 +113,46 @@ export default function Messages({
     console.log("Loading!");
   };
   return (
-    <div id="messages">
-      {!hasMore ? <HeaderMessages conversation={conversation} /> : ""}
-      <div className="flex flex-col">
-        <InfiniteScroll
-          dataLength={messages.length}
-          next={fetchMoreData}
-          inverse={true}
-          hasMore={true}
-          style={{ display: "flex", flexDirection: "column-reverse" }}
-          loader={
-            hasMore ? (
-              <div className="absolute top-[90px] w-full">
-                <div className="loader mx-auto"></div>
-              </div>
-            ) : (
-              ""
-            )
-          }
-          scrollableTarget="scroll__messages"
-          scrollThreshold={`${
-            1200 - page * 200 >= 0 ? 1200 - page * 200 : 0
-          }px`}
-        >
-          {messages.map((message) => {
-            return (
-              <MessageWithDays
-                messageWithDays={message}
-                userId={userId}
-                conversation={conversation}
-              />
-            );
-          })}
-        </InfiniteScroll>
-      </div>
-    </div>
+    <>
+      {!isLoading ? (
+        <div id="messages">
+          {!hasMore ? <HeaderMessages conversation={conversation} /> : ""}
+          <div className="flex flex-col">
+            <InfiniteScroll
+              dataLength={messages.length}
+              next={fetchMoreData}
+              inverse={true}
+              hasMore={hasMore}
+              style={{ display: "flex", flexDirection: "column-reverse" }}
+              loader={
+                hasMore ? (
+                  <div className="absolute top-[90px] w-full">
+                    <div className="loader mx-auto"></div>
+                  </div>
+                ) : (
+                  ""
+                )
+              }
+              scrollableTarget="scroll__messages"
+              scrollThreshold={`${
+                1200 - page * 200 >= 0 ? 1200 - page * 200 : 0
+              }px`}
+            >
+              {messages.map((message) => {
+                return (
+                  <MessageWithDays
+                    messageWithDays={message}
+                    userId={userId}
+                    conversation={conversation}
+                  />
+                );
+              })}
+            </InfiniteScroll>
+          </div>
+        </div>
+      ) : (
+        ""
+      )}
+    </>
   );
 }

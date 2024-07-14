@@ -2,7 +2,6 @@ import { Types, isValidObjectId } from "mongoose";
 import { BadRequestError, UnauthorizedError } from "../core/error.response";
 import userRepo from "../repos/user.repo";
 import { convertStringToObjectId, getInfoData } from "../utils";
-import { fetchSearchURL } from "../utils/searchElastic";
 import storyRepo from "../repos/story.repo";
 
 class UserService {

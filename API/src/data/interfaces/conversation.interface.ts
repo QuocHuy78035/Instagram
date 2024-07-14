@@ -4,6 +4,7 @@ import { Types } from "mongoose";
 interface ConversationInterface {
   name?: string;
   participants: Array<Types.ObjectId>;
+  type: string;
 }
 
 export default interface IConversationModel

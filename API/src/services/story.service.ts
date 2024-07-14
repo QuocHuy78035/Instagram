@@ -91,6 +91,21 @@ class StoryService {
     }
     return { story: await storyRepo.updateUserViewedById(userId, story.id) };
   }
+
+  async deleteStory(userId: Types.ObjectId, storyId: string) {
+    if (!isValidObjectId(storyId)) {
+      throw new BadRequestError("Story id is invalid!");
+    }
+    const story = await storyRepo.findById(convertStringToObjectId(storyId));
+    if (!story) {
+      throw new BadRequestError(`Story with id ${storyId} is not found!`);
+    }
+
+    if (!story.userId.equals(userId)) {
+      throw new UnauthorizedError("You are not the owner of this story!");
+    }
+    await storyRepo.deleteStory(story.id);
+  }
 }
 
 export default new StoryService();
