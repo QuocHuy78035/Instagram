@@ -1,54 +1,36 @@
 import { useState } from "react";
-import { FaFacebookSquare } from "react-icons/fa";
-import { classifyInput } from "../utils";
-import { SignUpAPI } from "../api";
-import { useNavigate } from "react-router-dom";
+import { VerifyCodeAPI } from "../api";
 import useSignUp from "../zustand/useSignUp";
+import { useCookies } from "react-cookie";
+import { useAuthContext } from "../context/AuthContext";
 
-export default function PageSignUp() {
-  const [text, setText] = useState("");
+export default function PageVerifyCode() {
+  const [__, setCookies] = useCookies(["jwt", "user"]);
+  const { email, mobile } = useSignUp();
+  const [OTP, setOTP] = useState("");
   const [message, setMessage] = useState("");
-  const {
-    setMobile,
-    setEmail,
-    name,
-    setName,
-    username,
-    setUsername,
-    password,
-    setPassword,
-  } = useSignUp();
-  const navigate = useNavigate();
+  const { setUserId } = useAuthContext();
   async function handleSubmit(e) {
     e.preventDefault();
-    let email: string | undefined = undefined;
-    let mobile: string | undefined = undefined;
-    const type = classifyInput(text);
-    if (type === "email") {
-      setEmail(text);
-      email = text;
-    } else if (type === "mobile") {
-      setMobile(text);
-      mobile = text;
-    }
-    const data = await SignUpAPI({ email, mobile, name, username, password });
+    const data = await VerifyCodeAPI({ email, mobile, OTP });
     if (data.status === 201) {
-      navigate("/verifyCode");
+      setCookies("jwt", data.metadata.tokens.accessToken, { path: "/" });
+      setCookies("user", data.metadata.user._id, { path: "/" });
     } else {
       setMessage(data.message);
     }
+    setUserId(data.metadata.user._id);
   }
   return (
-    <div className="bg-gray-50 flex flex-col items-center justify-center">
-      <div className="w-full max-w-sm">
-        <div className="bg-white px-12 py-6 rounded shadow mt-4">
+    <div className="bg-gray-50 flex flex-col items-center justify-center h-screen">
+      <div className="w-full max-w-sm mt-8 mb-[100px]">
+        <div className="bg-white px-12 py-6 rounded shadow">
           <div className="mb-3">
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/1200px-Instagram_logo.svg.png"
               width={"160px"}
               height={"50px"}
               className="mx-auto"
-              alt=""
             ></img>
           </div>
           {message ? (
@@ -62,61 +44,24 @@ export default function PageSignUp() {
             ""
           )}
           <div className="text-[14px] font-semibold text-center my-3">
-            Sign up to see photos and videos from your friends
-          </div>
-          <button className="w-full flex items-center justify-center p-2 rounded font-medium transition duration-200 text-white bg-[#0099e6] text-[14px]">
-            <FaFacebookSquare className="bg-[#0099e6] text-[20px] text-white me-2" />
-            Log in with Facebook
-          </button>
-          <div className="flex items-center justify-between my-4">
-            <hr className="flex-1 border-t border-gray-300" />
-            <span className="mx-4 text-gray-400">OR</span>
-            <hr className="flex-1 border-t border-gray-300" />
+            Just more one step, enter the 6-digit code we sent to{" "}
+            {email ? email : mobile}
           </div>
           <form onSubmit={handleSubmit}>
-            <div className="space-y-2 mb-2">
-              <input
-                type="text"
-                placeholder="Mobile Number or Email"
-                className="w-full h-8 p-3 text-[13px] border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-                value={text}
-                onChange={(e) => {
-                  setText(e.target.value);
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Full Name"
-                className="w-full h-8 p-3 text-[13px] border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Username"
-                className="w-full h-8 p-3 text-[13px] border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-                value={username}
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                }}
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                className="w-full h-8 p-3 text-[13px] border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-              />
-            </div>
+            <input
+              type="text"
+              placeholder="######"
+              className="w-full h-8 p-3 text-[13px] border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 mb-2"
+              value={OTP}
+              onChange={(e) => {
+                setOTP(e.target.value);
+              }}
+            />
             <button
               type="submit"
               className="w-full h-8 bg-[#0099e6] text-white rounded font-medium transition duration-200 text-[14px] mt-2"
             >
-              Sign Up
+              Confirm
             </button>
           </form>
         </div>
@@ -146,7 +91,7 @@ export default function PageSignUp() {
           </div>
         </div>
       </div>
-      <footer className="text-center text-gray-600 my-[40px] text-[14px]">
+      <footer className="text-center text-gray-600 text-[14px]">
         <nav className="space-x-4">
           <a href="#" className="hover:underline">
             Meta

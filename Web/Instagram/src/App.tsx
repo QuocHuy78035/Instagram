@@ -11,6 +11,8 @@ import PageNotifications from "./pages/PageNotifications";
 import PageCreate from "./pages/PageCreate";
 import PageReels from "./pages/PageReels";
 import PageSignUp from "./pages/PageSignUp";
+import PageVerifyCode from "./pages/PageVerifyCode";
+import PageForgotPassword from "./pages/PageForgotPassword";
 
 export default function App() {
   const { userId } = useAuthContext();
@@ -23,13 +25,24 @@ export default function App() {
             path="/login"
             element={!userId ? <PageLogin /> : <Navigate to="/" />}
           />
-          <Route path="signup" element={<PageSignUp/>}/>
-          <Route path="/" element={<PageHome />} />
+          <Route path="/signup" element={<PageSignUp />} />
+          <Route path="/forgotPassword" element={<PageForgotPassword />} />
+          <Route
+            path="/verifyCode"
+            element={!userId ? <PageVerifyCode /> : <Navigate to="/" />}
+          />
+          <Route
+            path="/"
+            element={userId ? <PageHome /> : <Navigate to="/login" />}
+          />
           <Route path="/search" element={<PageSearch />} />
           <Route path="/explore" element={<PageExplore />} />
           <Route path="/reels" element={<PageReels />} />
           <Route path="/notifications" element={<PageNotifications />} />
-          <Route path="/create" element={<PageCreate />} />
+          <Route
+            path="/create"
+            element={userId ? <PageCreate /> : <Navigate to="/login" />}
+          />
           <Route
             path="/direct/inbox"
             element={
@@ -38,7 +51,7 @@ export default function App() {
                   <NoConversation />
                 </PageMessage>
               ) : (
-                <Navigate to="/" />
+                <Navigate to="/login" />
               )
             }
           />
@@ -50,7 +63,7 @@ export default function App() {
                   <Conversation />
                 </PageMessage>
               ) : (
-                <Navigate to="/" />
+                <Navigate to="/login" />
               )
             }
           />

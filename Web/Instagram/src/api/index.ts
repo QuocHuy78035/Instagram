@@ -1,4 +1,4 @@
-export { LoginAPI } from "./authenAPI";
+export { LoginAPI, SignUpAPI, VerifyCodeAPI } from "./authenAPI";
 export { getUser, searchUser } from "./userAPI";
 export {
   getAllConversations,

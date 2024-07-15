@@ -12,6 +12,21 @@ export function getCookie(cname: string) {
   }
   return "";
 }
+export function classifyInput(inputString: string) {
+  // Define a regex for email
+  const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+
+  // Define a regex for mobile numbers (assumes international format with country code)
+  const mobileRegex = /^\+?[1-9]\d{1,14}$/;
+
+  if (emailRegex.test(inputString)) {
+    return "email";
+  } else if (mobileRegex.test(inputString)) {
+    return "mobile";
+  } else {
+    return "username";
+  }
+}
 
 export function distanceBetweenTwoDates(date1: Date, date2: Date): string {
   const seconds = Math.abs(date1.getTime() - date2.getTime()) / 1000;

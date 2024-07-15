@@ -2,19 +2,34 @@ import { useState } from "react";
 import { LoginAPI } from "../api";
 import { useCookies } from "react-cookie";
 import { useAuthContext } from "../context/AuthContext";
+import { classifyInput } from "../utils";
 
 export default function PageLogin() {
   const [__, setCookies] = useCookies(["jwt", "user"]);
-  const [username, setUsername] = useState("");
+  const [text, setText] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState<any>(null);
   const { setUserId } = useAuthContext();
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    const data = await LoginAPI({ username, password });
+    let email: string | undefined = undefined;
+    let mobile: string | undefined = undefined;
+    let username: string | undefined = undefined;
+    const type = classifyInput(text);
+    if (type === "email") {
+      email = text;
+    } else if (type === "mobile") {
+      mobile = text;
+    } else {
+      username = text;
+    }
+    const data = await LoginAPI({ email, mobile, username, password });
     if (data.status === 200) {
       setCookies("jwt", data.metadata.tokens.accessToken, { path: "/" });
       setCookies("user", data.metadata.user._id, { path: "/" });
+    } else {
+      setMessage(data.message);
     }
     setUserId(data.metadata.user._id);
   };
@@ -22,7 +37,7 @@ export default function PageLogin() {
     <div className="bg-gray-50 flex flex-col items-center justify-center h-screen">
       <div className="w-full max-w-sm">
         <div className="bg-white px-12 py-6 rounded shadow">
-          <div className="mb-10">
+          <div className="mb-7">
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/1200px-Instagram_logo.svg.png"
               width={"160px"}
@@ -30,14 +45,25 @@ export default function PageLogin() {
               className="mx-auto"
             ></img>
           </div>
+          {message ? (
+            <div
+              className="text-[14px] my-3 text-center"
+              style={{ color: "red" }}
+            >
+              {message}
+            </div>
+          ) : (
+            ""
+          )}
           <form className="space-y-4" onSubmit={handleSubmit}>
             <input
               type="text"
               placeholder="Phone number, username, or email"
               className="w-full h-8 p-3 text-[13px] border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={username}
+              value={text}
               onChange={(e) => {
-                setUsername(e.target.value);
+                setText(e.target.value);
+                setMessage(null);
               }}
             />
             <input
@@ -47,6 +73,7 @@ export default function PageLogin() {
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
+                setMessage(null);
               }}
             />
             <button
@@ -69,7 +96,7 @@ export default function PageLogin() {
               Log in with Facebook
             </button>
             <a
-              href="#"
+              href="/forgotPassword"
               className="block text-center text-blue-500 mt-4 text-[14px]"
             >
               Forgot password?
