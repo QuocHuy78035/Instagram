@@ -7,7 +7,10 @@ export const LoginAPI = async (body: {
   password: string;
 }) => {
   try {
-    const res = await axios.post("http://localhost:8000/api/v1/login", body);
+    const res = await axios.post(
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/login`,
+      body
+    );
     return res.data;
   } catch (err: any) {
     console.log(err);
@@ -24,7 +27,7 @@ export const SignUpAPI = async (body: {
 }) => {
   try {
     const res = await axios.post(
-      `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/signup`,
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/signup`,
       body
     );
     return res.data;
@@ -41,7 +44,7 @@ export const VerifyCodeAPI = async (body: {
 }) => {
   try {
     const res = await axios.post(
-      "http://localhost:8000/api/v1/verifycode",
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/verifycode`,
       body
     );
     return res.data;
@@ -58,7 +61,7 @@ export const ForgotPasswordAPI = async (body: {
 }) => {
   try {
     const res = await axios.post(
-      "http://localhost:8000/api/v1/forgotPassword",
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/forgotPassword`,
       body
     );
     return res.data;
@@ -77,7 +80,7 @@ export const ResetPasswordAPI = async (
 ) => {
   try {
     const res = await axios.post(
-      `http://localhost:8000/api/v1/resetPassword/${resetToken}`,
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/resetPassword/${resetToken}`,
       body
     );
     return res.data;

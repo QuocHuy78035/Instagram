@@ -15,7 +15,7 @@ export const createMessage = async (body: {
     if (body.replyMessage) formData.append("replyMessage", body.replyMessage);
     if (body.react) formData.append("react", body.react);
     const res = await axios.post(
-      "http://localhost:8000/api/v1/message",
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/message`,
       formData
     );
     return res.data;
@@ -31,11 +31,11 @@ export const answerMessageByAI = async (body: {
 }) => {
   try {
     const res = await axios.post(
-      "http://localhost:8000/api/v1/message/chatai",
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/message/chatai`,
       body
     );
     return res.data;
-  } catch(err: any) {
+  } catch (err: any) {
     console.log(err);
     if (err) return err.response?.data;
   }
@@ -47,7 +47,7 @@ export const findByConversation = async (
 ) => {
   try {
     const res = await axios.get(
-      `http://localhost:8000/api/v1/message?conversation=${conversation}&page=${page}`
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/message?conversation=${conversation}&page=${page}`
     );
     return res.data;
   } catch (err: any) {
@@ -59,7 +59,7 @@ export const findByConversation = async (
 export const deleteMessage = async (messageId: string) => {
   try {
     const res = await axios.delete(
-      `http://localhost:8000/api/v1/message/${messageId}`
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/message/${messageId}`
     );
     return res.data;
   } catch (err: any) {

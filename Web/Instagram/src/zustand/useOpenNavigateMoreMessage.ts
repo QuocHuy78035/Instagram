@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
-const useOpenNavigateMore = create<{
-  isOpenNavigateMore: boolean;
-  setIsOpenNavigateMore: (isOpenNavigateMore: boolean) => void;
+const useOpenNavigateMoreMessage = create<{
+  isOpenNavigateMoreMessage: boolean;
+  setIsOpenNavigateMoreMessage: (isOpenNavigateMoreMessage: boolean) => void;
   selectedMessage: any;
   setSelectedMessage: (selectedMessage: any) => void;
   top: number;
@@ -14,9 +14,9 @@ const useOpenNavigateMore = create<{
   isRight: boolean;
   setIsRight: (isRight: boolean) => void;
 }>((set) => ({
-  isOpenNavigateMore: false,
-  setIsOpenNavigateMore: (isOpenNavigateMore: boolean) =>
-    set(() => ({ isOpenNavigateMore })),
+  isOpenNavigateMoreMessage: false,
+  setIsOpenNavigateMoreMessage: (isOpenNavigateMoreMessage: boolean) =>
+    set(() => ({ isOpenNavigateMoreMessage })),
   selectedMessage: undefined,
   setSelectedMessage: (selectedMessage: any) =>
     set(() => ({ selectedMessage })),
@@ -30,4 +30,4 @@ const useOpenNavigateMore = create<{
   setIsRight: (isRight: boolean) => set({ isRight }),
 }));
 
-export default useOpenNavigateMore;
+export default useOpenNavigateMoreMessage;

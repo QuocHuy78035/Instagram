@@ -2,7 +2,9 @@ import axios from "../configs/axios.config";
 
 export const getUser = async () => {
   try {
-    const res = await axios.get("http://localhost:8000/api/v1/user/me");
+    const res = await axios.get(
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/user/me`
+    );
     return res.data;
   } catch (err: any) {
     console.log(err);
@@ -13,7 +15,7 @@ export const getUser = async () => {
 export const searchUser = async (search: string) => {
   try {
     const res = await axios.get(
-      `http://localhost:8000/api/v1/user/search?search=${search}`
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/user/search?search=${search}`
     );
     return res.data;
   } catch (err: any) {

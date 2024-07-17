@@ -1,5 +1,6 @@
 import { Types } from "mongoose";
 import RecentSearch from "../data/models/recentsearch.model";
+import { Type } from "typescript";
 
 class RecentSearchRepo {
   constructor() {}
@@ -64,11 +65,11 @@ class RecentSearchRepo {
     return await RecentSearch.findOneAndUpdate(
       { user: userId },
       {
-        $push: {
+        $addToSet: {
           searchedUsers: searchedUserId,
         },
       },
-      { new: true }
+      { new: true, upsert: true }
     ).populate({
       path: "searchedUsers",
       select: {
@@ -78,6 +79,22 @@ class RecentSearchRepo {
         avatar: 1,
       },
     });
+  }
+
+  async findSearchUserInRecentSearch(
+    userId: Types.ObjectId,
+    searchedUserId: Types.ObjectId
+  ) {
+    return await RecentSearch.findOne(
+      { user: userId },
+      {
+        searchedUsers: { $elemMatch: { _id: searchedUserId } },
+      }
+    );
+  }
+
+  async createRecentSearch(userId: Types.ObjectId) {
+    return await RecentSearch.create({ user: userId });
   }
 }
 export default new RecentSearchRepo();

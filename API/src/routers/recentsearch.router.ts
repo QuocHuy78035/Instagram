@@ -20,10 +20,11 @@ class RecentSearchRouter {
         )
       );
     this.router
-      .route("/:searchUser")
+      .route("/:searchedUser")
       .patch(
         asyncHandler(recentsearchController.removeSearchedUserFromRecentSearch)
-      );
+      )
+      .post(asyncHandler(recentsearchController.addSearchedUserToRecentSearch));
   }
 }
 

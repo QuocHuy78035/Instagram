@@ -5,51 +5,56 @@ import FormCreateConversation from "../components/message/FormCreateConversation
 import ConversationInformation from "../components/message/ConversationInformation";
 import useOpenConversationInformation from "../zustand/useOpenConversationInformation";
 import useConversation from "../zustand/useConversation";
-import NavigateMore from "../components/message/NavigateMore";
-import useOpenNavigateMore from "../zustand/useOpenNavigateMore";
+import NavigateMore from "../components/message/NavigateMoreMessage";
+import useOpenNavigateMoreMessage from "../zustand/useOpenNavigateMoreMessage";
 import { useEffect } from "react";
+import useOpenSearch from "../zustand/useOpenSearch";
+import Search from "../components/search/Search";
 
 export default function PageMessage({ children }) {
   const { isOpenConversation } = useOpenConversation();
   const { isOpenConversationInformation } = useOpenConversationInformation();
   const { conversation } = useConversation();
   const {
-    isOpenNavigateMore,
-    setIsOpenNavigateMore,
+    isOpenNavigateMoreMessage,
+    setIsOpenNavigateMoreMessage,
     top,
     left,
     selectedMessage,
     isRight,
-  } = useOpenNavigateMore();
+  } = useOpenNavigateMoreMessage();
+  const { isOpenSearch } = useOpenSearch();
   useEffect(() => {
     function handleClickOutside(event) {
       const messageMore = document.getElementById(
         `messageMore_${selectedMessage?._id}`
       );
-      const navigateMore = document.getElementById("navigate__more");
+      const navigateMoreMessage = document.getElementById(
+        "navigate__more__message"
+      );
       if (
-        navigateMore &&
-        !navigateMore.contains(event.target) &&
+        navigateMoreMessage &&
+        !navigateMoreMessage.contains(event.target) &&
         messageMore &&
         !messageMore.contains(event.target)
       ) {
-        setIsOpenNavigateMore(false);
+        setIsOpenNavigateMoreMessage(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [selectedMessage, setIsOpenNavigateMore]);
-
+  }, [selectedMessage, setIsOpenNavigateMoreMessage]);
 
   useEffect(() => {
-    window.addEventListener("wheel", () => setIsOpenNavigateMore(false));
-  }, []); 
+    window.addEventListener("wheel", () => setIsOpenNavigateMoreMessage(false));
+  }, []);
   return (
     <>
       <div className="bg-gray-50 flex h-screen relative">
         <Sidebar isFullContent={false} />
+        {isOpenSearch ? <Search /> : ""}
         {isOpenConversation ? <FormCreateConversation /> : ""}
         {/* <!-- Main Content --> */}
         <div className="flex-grow flex flex-col overflow-hidden h-full">
@@ -67,7 +72,7 @@ export default function PageMessage({ children }) {
 
         <NavigateMore
           className={`absolute ${
-            !isOpenNavigateMore ? "hidden" : ""
+            !isOpenNavigateMoreMessage ? "hidden" : ""
           } w-[200px] bg-white rounded-lg`}
           style={{
             top: `${Math.floor(top - 200)}px`,

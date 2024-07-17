@@ -8,38 +8,50 @@ import { MdOutlineExplore, MdOutlineOndemandVideo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import Tooltip from "./Tooltip";
 import { useAuthContext } from "../context/AuthContext";
+import useOpenSearch from "../zustand/useOpenSearch";
+import useOpenNavigateMore from "../zustand/useOpenNavigateMore";
+import NavigateMore from "./NavigateMore";
 
 export default function Sidebar({ isFullContent }) {
   const navigate = useNavigate();
-  const {user} = useAuthContext();
+  const { user } = useAuthContext();
+  const { isOpenSearch, setIsOpenSearch } = useOpenSearch();
+  const { isOpenNavigateMore, setIsOpenNavigateMore } = useOpenNavigateMore();
   function goToHome() {
     navigate("/");
+    setIsOpenSearch(false);
   }
   function goToSearch() {
-    navigate("/search");
+    setIsOpenSearch(!isOpenSearch);
   }
   function goToExplore() {
     navigate("/explore");
+    setIsOpenSearch(false);
   }
   function goToReels() {
     navigate("/reels");
+    setIsOpenSearch(false);
   }
   function goToNotifications() {
     navigate("/notifications");
+    setIsOpenSearch(false);
   }
   function goToMessage() {
     navigate("/direct/inbox");
+    setIsOpenSearch(false);
   }
   function goToCreate() {
     navigate("/create");
+    setIsOpenSearch(false);
   }
 
   return (
     <>
       <div
-        className={`relative w-[${
-          !isFullContent ? "70" : "200"
-        }px] bg-white border-r border-gray-200 flex flex-col justify-between items-center p-4`}
+        className={`relative bg-white border-r border-gray-200 flex flex-col justify-between items-center p-4`}
+        style={{
+          width: `${!isFullContent ? "80" : "240"}px`,
+        }}
       >
         {!isFullContent ? (
           <button
@@ -117,7 +129,10 @@ export default function Sidebar({ isFullContent }) {
               </Tooltip>
               <Tooltip message="Profile">
                 <button className="w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none">
-                  <img src={user?.avatar} className="w-[24px] h-[24px] mx-auto rounded-full" />
+                  <img
+                    src={user?.avatar}
+                    className="w-[24px] h-[24px] mx-auto rounded-full"
+                  />
                 </button>
               </Tooltip>
             </>
@@ -173,7 +188,10 @@ export default function Sidebar({ isFullContent }) {
                 <div className="ms-[10px] my-auto">Create</div>
               </button>
               <button className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none">
-                <img src={user?.avatar} className="w-[24px] h-[24px] ms-[10px] my-auto rounded-full" />
+                <img
+                  src={user?.avatar}
+                  className="w-[24px] h-[24px] ms-[10px] my-auto rounded-full"
+                />
                 <div className="ms-[10px] my-auto">Profile</div>
               </button>
             </div>
@@ -181,16 +199,33 @@ export default function Sidebar({ isFullContent }) {
         </div>
         {!isFullContent ? (
           <Tooltip message="More">
-            <button className="my-[13px] w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none">
+            <button
+              className="btn__more my-[13px] w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+              onClick={function () {
+                setIsOpenNavigateMore(!isOpenNavigateMore);
+              }}
+              style={{
+                fontWeight: `${isOpenNavigateMore ? "bold" : "normal"}`,
+              }}
+            >
               <HiBars3 className="w-[24px] h-[24px] mx-auto" />
             </button>
           </Tooltip>
         ) : (
-          <button className="my-[13px] flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none">
+          <button
+            className="btn__more my-[13px] flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+            onClick={function () {
+              setIsOpenNavigateMore(!isOpenNavigateMore);
+            }}
+            style={{
+              fontWeight: `${isOpenNavigateMore ? "bold" : "normal"}`,
+            }}
+          >
             <HiBars3 className="w-[24px] h-[24px] ms-[10px] my-auto" />
             <div className="ms-[10px] my-auto">More</div>
           </button>
         )}
+        {isOpenNavigateMore ? <NavigateMore /> : ""}
       </div>
     </>
   );

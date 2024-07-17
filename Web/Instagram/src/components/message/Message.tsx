@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { CiFaceSmile } from "react-icons/ci";
 import { GoReply } from "react-icons/go";
 import { AiOutlineMore } from "react-icons/ai";
-import useOpenNavigateMore from "../../zustand/useOpenNavigateMore";
+import useOpenNavigateMoreMessage from "../../zustand/useOpenNavigateMoreMessage";
 import useReplyMessage from "../../zustand/useReplyMessage";
 
 export default function Message({ message, userId, participants }) {
@@ -10,16 +10,16 @@ export default function Message({ message, userId, participants }) {
   const [sender, setSender] = useState<any>({});
   const [isOpenBar, setIsOpenBar] = useState<boolean>(false);
   const {
-    setIsOpenNavigateMore,
+    setIsOpenNavigateMoreMessage,
     setTop,
     setLeft,
     setRight,
     setSelectedMessage,
     selectedMessage,
     setIsRight,
-  } = useOpenNavigateMore();
-  const isOpenNavigateMore = useOpenNavigateMore(
-    (state) => state.isOpenNavigateMore
+  } = useOpenNavigateMoreMessage();
+  const isOpenNavigateMoreMessage = useOpenNavigateMoreMessage(
+    (state) => state.isOpenNavigateMoreMessage
   );
   const { setReplyMessage, setSenderReplyMessage } = useReplyMessage();
   const [replyMessageUser, setReplyMessageUser] = useState<any>();
@@ -49,7 +49,9 @@ export default function Message({ message, userId, participants }) {
           marginLeft: `${rightUser ? "0px" : "12px"}`,
         }}
       >
-        {message.replyMessage && replyMessageUser ? `You replied to ${replyMessageUser?.name}` : ""}
+        {message.replyMessage && replyMessageUser
+          ? `You replied to ${replyMessageUser?.name}`
+          : ""}
       </div>
       {message.replyMessage ? (
         <div
@@ -145,13 +147,13 @@ export default function Message({ message, userId, participants }) {
             }
             onClick={function (e) {
               if (selectedMessage?._id === message._id) {
-                setIsOpenNavigateMore(!isOpenNavigateMore);
+                setIsOpenNavigateMoreMessage(!isOpenNavigateMoreMessage);
               } else {
                 setTop(e.currentTarget.getBoundingClientRect().top);
                 setLeft(e.currentTarget.getBoundingClientRect().left);
                 setRight(e.currentTarget.getBoundingClientRect().right);
                 setSelectedMessage(message);
-                setIsOpenNavigateMore(true);
+                setIsOpenNavigateMoreMessage(true);
                 setIsRight(rightUser);
               }
             }}

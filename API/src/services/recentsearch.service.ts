@@ -7,7 +7,10 @@ import { convertStringToObjectId } from "../utils";
 class RecentSearchService {
   constructor() {}
   async findRecentSearchByUser(userId: Types.ObjectId) {
-    const recentSearch = await recentsearchRepo.findRecentSearchByUser(userId);
+    let recentSearch = await recentsearchRepo.findRecentSearchByUser(userId);
+    if (!recentSearch) {
+      recentSearch = await recentsearchRepo.createRecentSearch(userId);
+    }
     return {
       recentSearch,
     };

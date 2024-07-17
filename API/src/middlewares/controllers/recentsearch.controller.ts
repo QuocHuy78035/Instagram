@@ -33,7 +33,7 @@ class RecentSearchController {
     const metadata =
       await recentsearchService.removeSearchedUserFromRecentSearch(
         req.user.userId,
-        req.params.searchUser
+        req.params.searchedUser
       );
 
     new OK({

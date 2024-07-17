@@ -5,7 +5,6 @@ import { useAuthContext } from "./context/AuthContext";
 import NoConversation from "./components/message/NoConversation";
 import Conversation from "./components/message/Conversation";
 import PageHome from "./pages/PageHome";
-import PageSearch from "./pages/PageSearch";
 import PageExplore from "./pages/PageExplore";
 import PageNotifications from "./pages/PageNotifications";
 import PageCreate from "./pages/PageCreate";
@@ -14,9 +13,34 @@ import PageSignUp from "./pages/PageSignUp";
 import PageVerifyCode from "./pages/PageVerifyCode";
 import PageForgotPassword from "./pages/PageForgotPassword";
 import PageResetPassword from "./pages/PageResetPassword";
+import { useEffect } from "react";
+import useOpenNavigateMore from "./zustand/useOpenNavigateMore";
 
 export default function App() {
   const { userId } = useAuthContext();
+  const { setIsOpenNavigateMore } = useOpenNavigateMore();
+  useEffect(() => {
+    function handleClickOutside(event) {
+      const navigateMore = document.getElementById("navigate__more");
+      const btnMore = document.getElementsByClassName("btn__more");
+      if (btnMore) {
+        for (let i = 0; i < btnMore.length; i++) {
+          if (
+            btnMore[i] &&
+            !btnMore[i].contains(event.target) &&
+            navigateMore &&
+            !navigateMore.contains(event.target)
+          ) {
+            setIsOpenNavigateMore(false);
+          }
+        }
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setIsOpenNavigateMore]);
   return (
     <>
       <BrowserRouter>
@@ -39,7 +63,6 @@ export default function App() {
             path="/"
             element={userId ? <PageHome /> : <Navigate to="/login" />}
           />
-          <Route path="/search" element={<PageSearch />} />
           <Route path="/explore" element={<PageExplore />} />
           <Route path="/reels" element={<PageReels />} />
           <Route path="/notifications" element={<PageNotifications />} />

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { HiMiniXMark } from "react-icons/hi2";
 import { findRecentSearchByUser, searchUser } from "../../api";
+import { addSearchedUserToRecentSearch } from "../../api/recentSearchAPI";
 
 export default function Search() {
   const [search, setSearch] = useState("");
@@ -22,18 +23,19 @@ export default function Search() {
     (async () => {
       const data = await findRecentSearchByUser();
       if (data.status === 200) {
-        setSearchedUsers(data.recentSearch.searchUsers);
+        setSearchedUsers(data.metadata.recentSearch.searchedUsers);
       }
     })();
   }, []);
+
   return (
     <div
-      className="w-[400px] h-screen shadow rounded-r-[20px]"
+      className="absolute left-[80px] w-[400px] bg-gray-50 h-screen shadow rounded-r-[20px] z-[999997]"
       style={{
         boxShadow: "25px 0 20px -25px rgba(0, 0, 0, 0.2)",
       }}
     >
-      <div className="px-[30px] py-[30px] ">
+      <div className="px-[30px] py-[30px]">
         <div className="text-[23px] font-semibold mb-8">Search</div>
         <input
           type="text"
@@ -53,7 +55,7 @@ export default function Search() {
           </div>
           {searchedUsers.map((user: any) => (
             <div
-              className={`flex justify-between hover:bg-[rgb(239,239,239)] px-6 py-[10px]`}
+              className={`relative flex justify-between hover:bg-[rgb(239,239,239)] px-6 py-[10px]`}
             >
               <div className="flex items-center space-x-4">
                 <img
@@ -67,8 +69,8 @@ export default function Search() {
                     {user.username}
                   </p>
                 </div>
-                <div>
-                  <HiMiniXMark className="ml-[160px] my-auto fill-black text-[25px]" />
+                <div className="absolute top-5 right-5">
+                  <HiMiniXMark className="my-auto fill-black text-[25px]" />
                 </div>
               </div>
             </div>
@@ -78,7 +80,14 @@ export default function Search() {
         <div>
           {users.map((user) => (
             <div
-              className={`flex justify-between hover:bg-[rgb(239,239,239)] px-6 py-[6px]`}
+              className={`flex justify-between hover:bg-[rgb(239,239,239)] px-6 py-[6px] cursor-pointer`}
+              onClick={async function () {
+                const data = await addSearchedUserToRecentSearch(user._id);
+                if (data.status === 200) {
+                  setSearchedUsers(data.metadata.recentSearch.searchedUsers);
+                  setSearch("");
+                }
+              }}
             >
               <div className="flex items-center space-x-4">
                 <img

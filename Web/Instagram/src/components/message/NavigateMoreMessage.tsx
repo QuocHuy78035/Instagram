@@ -6,11 +6,11 @@ import { deleteMessage, findByConversation } from "../../api";
 import usePage from "../../zustand/usePage";
 import { useParams } from "react-router-dom";
 import useMessages from "../../zustand/useMessages";
-import useOpenNavigateMore from "../../zustand/useOpenNavigateMore";
+import useOpenNavigateMoreMessage from "../../zustand/useOpenNavigateMoreMessage";
 import { GoReport } from "react-icons/go";
 
-export default function NavigateMore({ className, style, message }) {
-  const { setIsOpenNavigateMore, isRight } = useOpenNavigateMore();
+export default function NavigateMoreMessage({ className, style, message }) {
+  const { setIsOpenNavigateMoreMessage, isRight } = useOpenNavigateMoreMessage();
   const { page } = usePage();
   const { setMessages } = useMessages();
   const param = useParams();
@@ -32,14 +32,14 @@ export default function NavigateMore({ className, style, message }) {
           }
         }
         setMessages(messagesClone);
-        setIsOpenNavigateMore(false);
+        setIsOpenNavigateMoreMessage(false);
       })();
     }
   }
   if (!message) return;
   return (
     <div
-      id="navigate__more"
+      id="navigate__more__message"
       className={"px-2 py-1 text-[14px] " + className}
       style={{ boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px", ...style }}
     >

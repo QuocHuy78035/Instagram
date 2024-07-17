@@ -2,9 +2,12 @@ import axios from "../configs/axios.config";
 
 export const createConversation = async (participants: Array<string>) => {
   try {
-    const res = await axios.post("http://localhost:8000/api/v1/conversation", {
-      participants,
-    });
+    const res = await axios.post(
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/conversation`,
+      {
+        participants,
+      }
+    );
     return res.data;
   } catch (err: any) {
     console.log(err);
@@ -14,7 +17,9 @@ export const createConversation = async (participants: Array<string>) => {
 
 export const getAllConversations = async () => {
   try {
-    const res = await axios.get("http://localhost:8000/api/v1/conversation");
+    const res = await axios.get(
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/conversation`
+    );
     return res.data;
   } catch (err: any) {
     console.log(err);
@@ -25,7 +30,7 @@ export const getAllConversations = async () => {
 export const getConversation = async (id: string) => {
   try {
     const res = await axios.get(
-      `http://localhost:8000/api/v1/conversation/${id}`
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/conversation/${id}`
     );
     return res.data;
   } catch (err: any) {
@@ -37,7 +42,7 @@ export const getConversation = async (id: string) => {
 export const deleteConversation = async (id: string) => {
   try {
     const res = await axios.delete(
-      `http://localhost:8000/api/v1/conversation/${id}`
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/conversation/${id}`
     );
     return res.data;
   } catch (err: any) {
