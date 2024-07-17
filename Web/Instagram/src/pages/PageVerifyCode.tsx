@@ -3,6 +3,7 @@ import { VerifyCodeAPI } from "../api";
 import useSignUp from "../zustand/useSignUp";
 import { useCookies } from "react-cookie";
 import { useAuthContext } from "../context/AuthContext";
+import Footer from "../components/authen/Footer";
 
 export default function PageVerifyCode() {
   const [__, setCookies] = useCookies(["jwt", "user"]);
@@ -10,8 +11,10 @@ export default function PageVerifyCode() {
   const [OTP, setOTP] = useState("");
   const [message, setMessage] = useState("");
   const { setUserId } = useAuthContext();
+  const [isLoading, setIsLoading] = useState(false);
   async function handleSubmit(e) {
     e.preventDefault();
+    setIsLoading(true);
     const data = await VerifyCodeAPI({ email, mobile, OTP });
     if (data.status === 201) {
       setCookies("jwt", data.metadata.tokens.accessToken, { path: "/" });
@@ -19,6 +22,7 @@ export default function PageVerifyCode() {
     } else {
       setMessage(data.message);
     }
+    setIsLoading(false);
     setUserId(data.metadata.user._id);
   }
   return (
@@ -61,7 +65,7 @@ export default function PageVerifyCode() {
               type="submit"
               className="w-full h-8 bg-[#0099e6] text-white rounded font-medium transition duration-200 text-[14px] mt-2"
             >
-              Confirm
+              {isLoading ? <div className="loader"></div> : "Confirm"}
             </button>
           </form>
         </div>
@@ -91,49 +95,7 @@ export default function PageVerifyCode() {
           </div>
         </div>
       </div>
-      <footer className="text-center text-gray-600 text-[14px]">
-        <nav className="space-x-4">
-          <a href="#" className="hover:underline">
-            Meta
-          </a>
-          <a href="#" className="hover:underline">
-            About
-          </a>
-          <a href="#" className="hover:underline">
-            Blog
-          </a>
-          <a href="#" className="hover:underline">
-            Jobs
-          </a>
-          <a href="#" className="hover:underline">
-            Help
-          </a>
-          <a href="#" className="hover:underline">
-            API
-          </a>
-          <a href="#" className="hover:underline">
-            Privacy
-          </a>
-          <a href="#" className="hover:underline">
-            Terms
-          </a>
-          <a href="#" className="hover:underline">
-            Locations
-          </a>
-          <a href="#" className="hover:underline">
-            Instagram Lite
-          </a>
-          <a href="#" className="hover:underline">
-            Threads
-          </a>
-          <a href="#" className="hover:underline">
-            Contact Uploading & Non-Users
-          </a>
-          <a href="#" className="hover:underline">
-            Meta Verified
-          </a>
-        </nav>
-      </footer>
+      <Footer className={""} />
     </div>
   );
 }

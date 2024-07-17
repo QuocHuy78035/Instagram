@@ -13,10 +13,10 @@ import PageReels from "./pages/PageReels";
 import PageSignUp from "./pages/PageSignUp";
 import PageVerifyCode from "./pages/PageVerifyCode";
 import PageForgotPassword from "./pages/PageForgotPassword";
+import PageResetPassword from "./pages/PageResetPassword";
 
 export default function App() {
   const { userId } = useAuthContext();
-
   return (
     <>
       <BrowserRouter>
@@ -27,6 +27,10 @@ export default function App() {
           />
           <Route path="/signup" element={<PageSignUp />} />
           <Route path="/forgotPassword" element={<PageForgotPassword />} />
+          <Route
+            path="/resetPassword/:resetToken"
+            element={!userId ? <PageResetPassword /> : <Navigate to="/" />}
+          />
           <Route
             path="/verifyCode"
             element={!userId ? <PageVerifyCode /> : <Navigate to="/" />}

@@ -211,8 +211,7 @@ class AuthenService {
       passwordResetToken,
       passwordResetExpires
     );
-    const URL = "http://localhost:8000/api/v1";
-    const resetURL = `${URL}/resetPassword/${resetToken}`;
+    const resetURL = `${process.env.CLIENT_DOMAIN}/resetPassword/${resetToken}`;
 
     if (body.email) {
       try {

@@ -23,7 +23,10 @@ export const SignUpAPI = async (body: {
   password: string;
 }) => {
   try {
-    const res = await axios.post("http://localhost:8000/api/v1/signup", body);
+    const res = await axios.post(
+      `${process.env.REACT_APP_SERVER_DOMAIN}/api/v1/signup`,
+      body
+    );
     return res.data;
   } catch (err: any) {
     console.log(err);
@@ -39,6 +42,42 @@ export const VerifyCodeAPI = async (body: {
   try {
     const res = await axios.post(
       "http://localhost:8000/api/v1/verifycode",
+      body
+    );
+    return res.data;
+  } catch (err: any) {
+    console.log(err);
+    if (err) return err.response?.data;
+  }
+};
+
+export const ForgotPasswordAPI = async (body: {
+  mobile?: string;
+  email?: string;
+  username?: string;
+}) => {
+  try {
+    const res = await axios.post(
+      "http://localhost:8000/api/v1/forgotPassword",
+      body
+    );
+    return res.data;
+  } catch (err: any) {
+    console.log(err);
+    if (err) return err.response?.data;
+  }
+};
+
+export const ResetPasswordAPI = async (
+  resetToken: string,
+  body: {
+    password: string;
+    passwordConfirm: string;
+  }
+) => {
+  try {
+    const res = await axios.post(
+      `http://localhost:8000/api/v1/resetPassword/${resetToken}`,
       body
     );
     return res.data;

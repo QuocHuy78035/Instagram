@@ -3,14 +3,15 @@ import { LoginAPI } from "../api";
 import { useCookies } from "react-cookie";
 import { useAuthContext } from "../context/AuthContext";
 import { classifyInput } from "../utils";
+import Footer from "../components/authen/Footer";
 
 export default function PageLogin() {
   const [__, setCookies] = useCookies(["jwt", "user"]);
   const [text, setText] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { setUserId } = useAuthContext();
-
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     let email: string | undefined = undefined;
@@ -24,6 +25,7 @@ export default function PageLogin() {
     } else {
       username = text;
     }
+    setIsLoading(true);
     const data = await LoginAPI({ email, mobile, username, password });
     if (data.status === 200) {
       setCookies("jwt", data.metadata.tokens.accessToken, { path: "/" });
@@ -31,6 +33,7 @@ export default function PageLogin() {
     } else {
       setMessage(data.message);
     }
+    setIsLoading(false);
     setUserId(data.metadata.user._id);
   };
   return (
@@ -80,7 +83,7 @@ export default function PageLogin() {
               type="submit"
               className="w-full h-8 bg-[#0099e6] text-white rounded font-medium transition duration-200 text-[14px]"
             >
-              Log in
+              {isLoading ? <div className="loader"></div> : "Log in"}
             </button>
             <div className="flex items-center justify-between mt-4">
               <hr className="flex-1 border-t border-gray-300" />
@@ -131,49 +134,7 @@ export default function PageLogin() {
           </div>
         </div>
       </div>
-      <footer className="text-center text-gray-600 mt-16 text-[14px]">
-        <nav className="space-x-4">
-          <a href="#" className="hover:underline">
-            Meta
-          </a>
-          <a href="#" className="hover:underline">
-            About
-          </a>
-          <a href="#" className="hover:underline">
-            Blog
-          </a>
-          <a href="#" className="hover:underline">
-            Jobs
-          </a>
-          <a href="#" className="hover:underline">
-            Help
-          </a>
-          <a href="#" className="hover:underline">
-            API
-          </a>
-          <a href="#" className="hover:underline">
-            Privacy
-          </a>
-          <a href="#" className="hover:underline">
-            Terms
-          </a>
-          <a href="#" className="hover:underline">
-            Locations
-          </a>
-          <a href="#" className="hover:underline">
-            Instagram Lite
-          </a>
-          <a href="#" className="hover:underline">
-            Threads
-          </a>
-          <a href="#" className="hover:underline">
-            Contact Uploading & Non-Users
-          </a>
-          <a href="#" className="hover:underline">
-            Meta Verified
-          </a>
-        </nav>
-      </footer>
+      <Footer className={"mt-16"} />
     </div>
   );
 }

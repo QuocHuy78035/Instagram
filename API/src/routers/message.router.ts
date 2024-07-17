@@ -9,7 +9,7 @@ class MessageRouter {
     this.initRouter();
   }
 
-  async initRouter() {
+  initRouter() {
     this.router.use(authentication);
     this.router
       .route("/")

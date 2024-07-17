@@ -34,8 +34,6 @@ export default function Sidebar({ isFullContent }) {
     navigate("/create");
   }
 
-
-
   return (
     <>
       <div

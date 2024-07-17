@@ -1,14 +1,40 @@
+import { useState } from "react";
 import { FiLock } from "react-icons/fi";
+import { ForgotPasswordAPI } from "../api";
+import { classifyInput } from "../utils";
+import Footer from "../components/authen/Footer";
 
 export default function PageForgotPassword() {
-  async function handleSubmit() {}
+  const [text, setText] = useState("");
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  async function handleSubmit(e) {
+    e.preventDefault();
+    let username: string | undefined;
+    let email: string | undefined;
+    let mobile: string | undefined;
+    const type = classifyInput(text);
+    if (type === "mobile") {
+      mobile = text;
+    } else if (type === "email") {
+      email = text;
+    } else {
+      username = text;
+    }
+    setIsLoading(true);
+    const data = await ForgotPasswordAPI({ username, email, mobile });
+    if (data.status === 200) {
+      setMessage(data.message);
+    }
+    setIsLoading(false);
+  }
   return (
     <div className="bg-gray-50 flex flex-col items-center justify-center h-screen">
       <div className="w-full max-w-sm mt-8 mb-[80px]">
         <div className="bg-white px-12 py-6 rounded shadow">
           <div className="flex flex-col justify-center rounded-full border-[4px] border-black w-[100px] h-[100px] mx-auto">
             <FiLock className="text-[50px] mx-auto" />
-          </div>s
+          </div>
           <div className="text-[15px] font-semibold text-center my-3">
             Trouble logging in?
           </div>
@@ -16,22 +42,31 @@ export default function PageForgotPassword() {
             Enter your email, phone, or username and we'll send you a link to
             get back into your account.
           </div>
+          {message ? (
+            <div
+              className="text-[14px] my-3 text-center"
+              style={{ color: "green" }}
+            >
+              {message}
+            </div>
+          ) : (
+            ""
+          )}
           <form className="space-y-4" onSubmit={handleSubmit}>
             <input
               type="text"
               placeholder="Phone number, username, or email"
               className="w-full h-10 p-3 text-[13px] border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              // value={text}
-              // onChange={(e) => {
-              //   setText(e.target.value);
-              //   setMessage(null);
-              // }}
+              value={text}
+              onChange={(e) => {
+                setText(e.target.value);
+              }}
             />
             <button
               type="submit"
               className="w-full h-8 bg-[#0099e6] text-white rounded font-medium transition duration-200 text-[14px]"
             >
-              Send Login Link
+              {isLoading ? <div className="loader"></div> : "Send Login Link"}
             </button>
           </form>
           <div className="text-[14px] text-[#0099e6] text-center my-3">
@@ -50,49 +85,7 @@ export default function PageForgotPassword() {
           </div>
         </div>
       </div>
-      <footer className="text-center text-gray-600 text-[14px]">
-        <nav className="space-x-4">
-          <a href="#" className="hover:underline">
-            Meta
-          </a>
-          <a href="#" className="hover:underline">
-            About
-          </a>
-          <a href="#" className="hover:underline">
-            Blog
-          </a>
-          <a href="#" className="hover:underline">
-            Jobs
-          </a>
-          <a href="#" className="hover:underline">
-            Help
-          </a>
-          <a href="#" className="hover:underline">
-            API
-          </a>
-          <a href="#" className="hover:underline">
-            Privacy
-          </a>
-          <a href="#" className="hover:underline">
-            Terms
-          </a>
-          <a href="#" className="hover:underline">
-            Locations
-          </a>
-          <a href="#" className="hover:underline">
-            Instagram Lite
-          </a>
-          <a href="#" className="hover:underline">
-            Threads
-          </a>
-          <a href="#" className="hover:underline">
-            Contact Uploading & Non-Users
-          </a>
-          <a href="#" className="hover:underline">
-            Meta Verified
-          </a>
-        </nav>
-      </footer>
+      <Footer className={""} />
     </div>
   );
 }

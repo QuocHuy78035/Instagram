@@ -8,6 +8,7 @@ import useSignUp from "../zustand/useSignUp";
 export default function PageSignUp() {
   const [text, setText] = useState("");
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const {
     setMobile,
     setEmail,
@@ -31,12 +32,14 @@ export default function PageSignUp() {
       setMobile(text);
       mobile = text;
     }
+    setIsLoading(true);
     const data = await SignUpAPI({ email, mobile, name, username, password });
     if (data.status === 201) {
       navigate("/verifyCode");
     } else {
       setMessage(data.message);
     }
+    setIsLoading(false);
   }
   return (
     <div className="bg-gray-50 flex flex-col items-center justify-center">
@@ -116,7 +119,7 @@ export default function PageSignUp() {
               type="submit"
               className="w-full h-8 bg-[#0099e6] text-white rounded font-medium transition duration-200 text-[14px] mt-2"
             >
-              Sign Up
+              {isLoading ? <div className="loader"></div> : "Sign Up"}
             </button>
           </form>
         </div>
