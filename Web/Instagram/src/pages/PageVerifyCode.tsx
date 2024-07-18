@@ -10,7 +10,7 @@ export default function PageVerifyCode() {
   const { email, mobile } = useSignUp();
   const [OTP, setOTP] = useState("");
   const [message, setMessage] = useState("");
-  const { setUserId } = useAuthContext();
+  const { setUserId, setUser } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   async function handleSubmit(e) {
     e.preventDefault();
@@ -19,6 +19,7 @@ export default function PageVerifyCode() {
     if (data.status === 201) {
       setCookies("jwt", data.metadata.tokens.accessToken, { path: "/" });
       setCookies("user", data.metadata.user._id, { path: "/" });
+      setUser(data.metadata.user);
     } else {
       setMessage(data.message);
     }

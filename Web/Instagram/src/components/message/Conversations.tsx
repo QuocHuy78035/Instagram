@@ -47,7 +47,7 @@ export default function Conversations() {
           <div className="flex justify-between ps-6">
             <div className="flex py-2">
               <h2 className="font-bold text-[20px]">
-                {user ? user.username : ""}
+                {user && typeof user !== "string" ? user.username : ""}
               </h2>
               <GoChevronDown className="ms-1 my-auto" />
             </div>

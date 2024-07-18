@@ -18,6 +18,18 @@ export const LoginAPI = async (body: {
   }
 };
 
+export const LogoutAPI = async () => {
+  try {
+    const res = await axios.post(
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/logout`
+    );
+    return res.data;
+  } catch (err: any) {
+    console.log(err);
+    if (err) return err.response?.data;
+  }
+};
+
 export const SignUpAPI = async (body: {
   mobile?: string;
   email?: string;
@@ -80,7 +92,9 @@ export const ResetPasswordAPI = async (
 ) => {
   try {
     const res = await axios.post(
-      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/resetPassword/${resetToken}`,
+      `${
+        import.meta.env.VITE_SERVER_DOMAIN
+      }/api/v1/resetPassword/${resetToken}`,
       body
     );
     return res.data;

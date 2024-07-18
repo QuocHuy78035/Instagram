@@ -8,6 +8,18 @@ class UserRepo {
     return await User.findById(id);
   }
 
+  async findByUsername(username: string) {
+    return await User.findOne({ username }).select({
+      _id: 1,
+      name: 1,
+      username: 1,
+      avatar: 1,
+      following: 1,
+      followers: 1,
+      modePrivate: 1,
+    });
+  }
+
   async findOneByUsernameAndActiveUser(username: string) {
     return await User.findOne({ username, status: "active" }).select(
       "+password"
@@ -52,7 +64,7 @@ class UserRepo {
   async findByIdAndDelete(userId: Types.ObjectId) {
     return await User.findByIdAndDelete(userId);
   }
-  
+
   async createUser(body: {
     mobile?: string;
     email?: string;

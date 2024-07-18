@@ -1,10 +1,11 @@
 export {
   LoginAPI,
+  LogoutAPI,
   SignUpAPI,
   VerifyCodeAPI,
   ForgotPasswordAPI,
 } from "./authenAPI";
-export { getUser, searchUser } from "./userAPI";
+export { getUser, getProfile, searchUser } from "./userAPI";
 export {
   getAllConversations,
   getConversation,

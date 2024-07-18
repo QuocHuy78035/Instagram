@@ -15,9 +15,10 @@ import PageForgotPassword from "./pages/PageForgotPassword";
 import PageResetPassword from "./pages/PageResetPassword";
 import { useEffect } from "react";
 import useOpenNavigateMore from "./zustand/useOpenNavigateMore";
+import PageProfile from "./pages/PageProfile";
 
 export default function App() {
-  const { userId } = useAuthContext();
+  const { user } = useAuthContext();
   const { setIsOpenNavigateMore } = useOpenNavigateMore();
   useEffect(() => {
     function handleClickOutside(event) {
@@ -41,39 +42,51 @@ export default function App() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [setIsOpenNavigateMore]);
-  return (
+  return user === "" ? (
+    ""
+  ) : (
     <>
       <BrowserRouter>
         <Routes>
           <Route
             path="/login"
-            element={!userId ? <PageLogin /> : <Navigate to="/" />}
+            element={!user ? <PageLogin /> : <Navigate to="/" />}
           />
           <Route path="/signup" element={<PageSignUp />} />
           <Route path="/forgotPassword" element={<PageForgotPassword />} />
           <Route
             path="/resetPassword/:resetToken"
-            element={!userId ? <PageResetPassword /> : <Navigate to="/" />}
+            element={!user ? <PageResetPassword /> : <Navigate to="/" />}
           />
           <Route
             path="/verifyCode"
-            element={!userId ? <PageVerifyCode /> : <Navigate to="/" />}
+            element={!user ? <PageVerifyCode /> : <Navigate to="/" />}
           />
           <Route
             path="/"
-            element={userId ? <PageHome /> : <Navigate to="/login" />}
+            element={user ? <PageHome /> : <Navigate to="/login" />}
           />
-          <Route path="/explore" element={<PageExplore />} />
-          <Route path="/reels" element={<PageReels />} />
+          <Route
+            path="/explore"
+            element={user ? <PageExplore /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/reels"
+            element={user ? <PageReels /> : <Navigate to="/login" />}
+          />
           <Route path="/notifications" element={<PageNotifications />} />
           <Route
             path="/create"
-            element={userId ? <PageCreate /> : <Navigate to="/login" />}
+            element={user ? <PageCreate /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/profile/:username"
+            element={user ? <PageProfile /> : <Navigate to="/login" />}
           />
           <Route
             path="/direct/inbox"
             element={
-              userId ? (
+              user ? (
                 <PageMessage>
                   <NoConversation />
                 </PageMessage>
@@ -85,7 +98,7 @@ export default function App() {
           <Route
             path="/direct/t/:id"
             element={
-              userId ? (
+              user ? (
                 <PageMessage>
                   <Conversation />
                 </PageMessage>

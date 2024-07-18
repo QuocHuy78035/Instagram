@@ -8,7 +8,16 @@ class UserService {
   constructor() {}
   async getUserById(userId: Types.ObjectId) {
     const user = await userRepo.findById(userId);
+    return {
+      user,
+    };
+  }
 
+  async getUserByUserName(username: string) {
+    const user = await userRepo.findByUsername(username);
+    if (!user) {
+      throw new BadRequestError("User not found");
+    }
     return {
       user,
     };

@@ -14,9 +14,20 @@ class UserController {
 
     const metadata = await userService.getUserById(req.user.userId);
     new OK({
-      message: "Get user successfully",
+      message: "Get user successfully!",
       metadata,
     }).send(res);
+  };
+
+  getUserByUsername = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const metadata = await userService.getUserByUserName(req.params.username);
+    new OK({ message: "Get user by username successfully!", metadata }).send(
+      res
+    );
   };
 
   following = async (req: RequestV2, res: Response, next: NextFunction) => {
@@ -103,7 +114,9 @@ class UserController {
     if (!req.user) {
       throw new UnauthorizedError("User not found! Please log in again!");
     }
-    const metadata = await userService.findFollowingsByIdAndHaveStories(req.user.userId);
+    const metadata = await userService.findFollowingsByIdAndHaveStories(
+      req.user.userId
+    );
     new OK({
       message: "Find followings by user id and have stories successfully!",
       metadata,

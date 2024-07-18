@@ -11,7 +11,7 @@ export default function PageLogin() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { setUserId } = useAuthContext();
+  const { setUserId, setUser } = useAuthContext();
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     let email: string | undefined = undefined;
@@ -30,6 +30,7 @@ export default function PageLogin() {
     if (data.status === 200) {
       setCookies("jwt", data.metadata.tokens.accessToken, { path: "/" });
       setCookies("user", data.metadata.user._id, { path: "/" });
+      setUser(data.metadata.user);
     } else {
       setMessage(data.message);
     }

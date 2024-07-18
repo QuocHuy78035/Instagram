@@ -3,8 +3,24 @@ import { FiBookmark } from "react-icons/fi";
 import { IoSettingsSharp } from "react-icons/io5";
 import { LuActivitySquare } from "react-icons/lu";
 import { RiErrorWarningLine } from "react-icons/ri";
+import { LogoutAPI } from "../api";
+import { useCookies } from "react-cookie";
+import { useAuthContext } from "../context/AuthContext";
+import useOpenNavigateMore from "../zustand/useOpenNavigateMore";
 
 export default function NavigateMore() {
+  const [__, setCookies] = useCookies(["jwt", "user"]);
+  const { setIsOpenNavigateMore } = useOpenNavigateMore();
+  const { setUser } = useAuthContext();
+  async function logOutClick() {
+    const data = await LogoutAPI();
+    if (data.status === 200) {
+      setCookies("jwt", "", { path: "/" });
+      setCookies("user", "", { path: "/" });
+      setIsOpenNavigateMore(false);
+      setUser(null);
+    }
+  }
   return (
     <div
       id="navigate__more"
@@ -40,7 +56,10 @@ export default function NavigateMore() {
         <button className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-t-md outline-none border-b-[1px] border-gray-200">
           <div className="ms-[10px] my-auto">Switch accounts</div>
         </button>
-        <button className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-b-md outline-none border-t-[1px] border-gray-200">
+        <button
+          className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-b-md outline-none border-t-[1px] border-gray-200"
+          onClick={logOutClick}
+        >
           <div className="ms-[10px] my-auto">Log out</div>
         </button>
       </div>

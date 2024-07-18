@@ -12,7 +12,7 @@ export default function PageResetPassword() {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { setUserId } = useAuthContext();
+  const { setUserId, setUser } = useAuthContext();
   async function handleSubmit(e) {
     e.preventDefault();
     if (!params.resetToken) {
@@ -26,6 +26,7 @@ export default function PageResetPassword() {
     if (data.status === 200) {
       setCookies("jwt", data.metadata.tokens.accessToken, { path: "/" });
       setCookies("user", data.metadata.user._id, { path: "/" });
+      setUser(data.metadata.user);
     } else {
       setMessage(data.message);
     }

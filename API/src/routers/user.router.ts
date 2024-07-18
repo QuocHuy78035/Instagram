@@ -11,6 +11,9 @@ class UserRouter {
 
   initialRouter() {
     this.router.route("/search").get(asyncHandler(userController.searchUsers));
+    this.router
+      .route("/profile/:username")
+      .get(asyncHandler(userController.getUserByUsername));
     this.router.use(authentication);
     this.router.route("/me").get(asyncHandler(userController.getUserById));
     this.router

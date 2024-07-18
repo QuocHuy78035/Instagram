@@ -44,7 +44,10 @@ export default function Sidebar({ isFullContent }) {
     navigate("/create");
     setIsOpenSearch(false);
   }
-
+  function goToProfile() {
+    navigate(`/profile/${typeof user !== "string" ? user?.username : ""}`);
+    setIsOpenSearch(false);
+  }
   return (
     <>
       <div
@@ -82,6 +85,11 @@ export default function Sidebar({ isFullContent }) {
               <Tooltip message="Search">
                 <button
                   className="w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+                  style={{
+                    border: `${
+                      isOpenSearch ? "1px solid rgb(229,231,235)" : "0px"
+                    }`,
+                  }}
                   onClick={goToSearch}
                 >
                   <IoSearchOutline className="w-[24px] h-[24px] mx-auto" />
@@ -106,6 +114,13 @@ export default function Sidebar({ isFullContent }) {
               <Tooltip message="Messages">
                 <button
                   className="w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+                  style={{
+                    border: `${
+                      window.location.href.split("/")[3] === "direct"
+                        ? "1px solid rgb(229,231,235)"
+                        : "0px"
+                    }`,
+                  }}
                   onClick={goToMessage}
                 >
                   <BiSolidMessageRounded className="w-[24px] h-[24px] mx-auto" />
@@ -128,9 +143,12 @@ export default function Sidebar({ isFullContent }) {
                 </button>
               </Tooltip>
               <Tooltip message="Profile">
-                <button className="w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none">
+                <button
+                  className="w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+                  onClick={goToProfile}
+                >
                   <img
-                    src={user?.avatar}
+                    src={typeof user !== "string" ? user?.avatar : ""}
                     className="w-[24px] h-[24px] mx-auto rounded-full"
                   />
                 </button>
@@ -140,6 +158,11 @@ export default function Sidebar({ isFullContent }) {
             <div className="text-[16px] font-normal">
               <button
                 className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+                style={{
+                  fontWeight: `${
+                    window.location.href.split("/")[3] === "" ? "700" : "400"
+                  }`,
+                }}
                 onClick={goToHome}
               >
                 <GoHome className="w-[24px] h-[24px] ms-[10px] my-auto" />
@@ -147,6 +170,9 @@ export default function Sidebar({ isFullContent }) {
               </button>
               <button
                 className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+                style={{
+                  fontWeight: `${isOpenSearch ? "700" : "400"}`,
+                }}
                 onClick={goToSearch}
               >
                 <IoSearchOutline className="w-[24px] h-[24px] ms-[10px] my-auto" />
@@ -154,6 +180,13 @@ export default function Sidebar({ isFullContent }) {
               </button>
               <button
                 className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+                style={{
+                  fontWeight: `${
+                    window.location.href.split("/")[3] === "explore"
+                      ? "700"
+                      : "400"
+                  }`,
+                }}
                 onClick={goToExplore}
               >
                 <MdOutlineExplore className="w-[24px] h-[24px] ms-[10px] my-auto" />
@@ -161,6 +194,13 @@ export default function Sidebar({ isFullContent }) {
               </button>
               <button
                 className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+                style={{
+                  fontWeight: `${
+                    window.location.href.split("/")[3] === "reels"
+                      ? "700"
+                      : "400"
+                  }`,
+                }}
                 onClick={goToReels}
               >
                 <MdOutlineOndemandVideo className="w-[24px] h-[24px] ms-[10px] my-auto" />
@@ -168,6 +208,13 @@ export default function Sidebar({ isFullContent }) {
               </button>
               <button
                 className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+                style={{
+                  fontWeight: `${
+                    window.location.href.split("/")[3] === "direct"
+                      ? "700"
+                      : "400"
+                  }`,
+                }}
                 onClick={goToMessage}
               >
                 <BiSolidMessageRounded className="w-[24px] h-[24px] ms-[10px] my-auto" />
@@ -175,6 +222,13 @@ export default function Sidebar({ isFullContent }) {
               </button>
               <button
                 className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+                style={{
+                  fontWeight: `${
+                    window.location.href.split("/")[3] === "notifications"
+                      ? "700"
+                      : "400"
+                  }`,
+                }}
                 onClick={goToNotifications}
               >
                 <FaRegHeart className="w-[24px] h-[24px] ms-[10px] my-auto" />
@@ -182,14 +236,31 @@ export default function Sidebar({ isFullContent }) {
               </button>
               <button
                 className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+                style={{
+                  fontWeight: `${
+                    window.location.href.split("/")[3] === "create"
+                      ? "700"
+                      : "400"
+                  }`,
+                }}
                 onClick={goToCreate}
               >
                 <LuPlusSquare className="w-[24px] h-[24px] ms-[10px] my-auto" />
                 <div className="ms-[10px] my-auto">Create</div>
               </button>
-              <button className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none">
+              <button
+                className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+                style={{
+                  fontWeight: `${
+                    window.location.href.split("/")[3] === "profile"
+                      ? "700"
+                      : "400"
+                  }`,
+                }}
+                onClick={goToProfile}
+              >
                 <img
-                  src={user?.avatar}
+                  src={typeof user !== "string" ? user?.avatar : ""}
                   className="w-[24px] h-[24px] ms-[10px] my-auto rounded-full"
                 />
                 <div className="ms-[10px] my-auto">Profile</div>

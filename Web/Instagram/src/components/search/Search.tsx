@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
 import { HiMiniXMark } from "react-icons/hi2";
 import { findRecentSearchByUser, searchUser } from "../../api";
-import { addSearchedUserToRecentSearch } from "../../api/recentSearchAPI";
+import {
+  addSearchedUserToRecentSearch,
+  removeAllSearchedUsersFromRecentSearch,
+  removeSearchedUserFromRecentSearch,
+} from "../../api/recentSearchAPI";
+import { useNavigate } from "react-router-dom";
 
 export default function Search() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState<Array<any>>([]);
   const [searchedUsers, setSearchedUsers] = useState([]);
@@ -49,13 +55,24 @@ export default function Search() {
         <div className="border-t-[1px] border-gray-200">
           <div className="flex justify-between font-semibold px-[30px] pt-[30px] pb-[20px]">
             <div>Recent</div>
-            <div className="text-blue-500 hover:text-blue-800 cursor-pointer">
+            <div
+              className="text-blue-500 hover:text-blue-800 cursor-pointer"
+              onClick={async function () {
+                const data = await removeAllSearchedUsersFromRecentSearch();
+                if (data.status === 200) {
+                  setSearchedUsers(data.metadata.recentSearch.searchedUsers);
+                }
+              }}
+            >
               Clear All
             </div>
           </div>
           {searchedUsers.map((user: any) => (
             <div
               className={`relative flex justify-between hover:bg-[rgb(239,239,239)] px-6 py-[10px]`}
+              onClick={function () {
+                navigate(`/profile/${user.username}`);
+              }}
             >
               <div className="flex items-center space-x-4">
                 <img
@@ -70,7 +87,19 @@ export default function Search() {
                   </p>
                 </div>
                 <div className="absolute top-5 right-5">
-                  <HiMiniXMark className="my-auto fill-black text-[25px]" />
+                  <HiMiniXMark
+                    className="my-auto fill-black text-[25px]"
+                    onClick={async function () {
+                      const data = await removeSearchedUserFromRecentSearch(
+                        user._id
+                      );
+                      if (data.status === 200) {
+                        setSearchedUsers(
+                          data.metadata.recentSearch.searchedUsers
+                        );
+                      }
+                    }}
+                  />
                 </div>
               </div>
             </div>
@@ -87,6 +116,7 @@ export default function Search() {
                   setSearchedUsers(data.metadata.recentSearch.searchedUsers);
                   setSearch("");
                 }
+                navigate(`/profile/${user.username}`);
               }}
             >
               <div className="flex items-center space-x-4">

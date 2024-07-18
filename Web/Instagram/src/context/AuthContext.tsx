@@ -7,7 +7,8 @@ import { getUser } from "../api";
 export const AuthContext = createContext<AuthContextProps>({
   userId: null,
   setUserId: () => null,
-  user: null,
+  user: "",
+  setUser: () => "",
 });
 
 export const useAuthContext = () => {
@@ -18,7 +19,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }): React.ReactNode => {
   const [userId, setUserId] = useState<string | null>(getCookie("user"));
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null | string>("");
   useEffect(() => {
     setUserId(getCookie("user"));
   }, []);
@@ -28,11 +29,11 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log("Data", data);
       if (data.status === 200) {
         setUser(data.metadata.user);
-      }
+      } else setUser(null);
     })();
   }, [userId]);
   return (
-    <AuthContext.Provider value={{ userId, setUserId, user }}>
+    <AuthContext.Provider value={{ userId, setUserId, user, setUser }}>
       {children}
     </AuthContext.Provider>
   );
