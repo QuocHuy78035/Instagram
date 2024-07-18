@@ -66,6 +66,7 @@ class _BottomNavigationBarState extends State<_BottomNavigationBar> {
   Widget build(BuildContext context) {
     final avt = SharedPreferencesRepository.getString('avt');
     return BottomNavigationBar(
+      backgroundColor: Colors.white,
       selectedItemColor: Colors.black,
       unselectedItemColor: Colors.grey,
       showSelectedLabels: false,

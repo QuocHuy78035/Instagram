@@ -6,7 +6,7 @@ import 'package:instagram_clone/src/modules/auth/domain/repos/auth_repo.dart';
 import 'package:instagram_clone/src/modules/auth/domain/usecase/user_login.dart';
 import 'package:instagram_clone/src/modules/auth/domain/usecase/user_sign_up.dart';
 import 'package:instagram_clone/src/modules/auth/presentation/bloc/auth_bloc.dart';
-import 'package:instagram_clone/src/modules/home/data/datasources/create_repo_data_src_impl.dart';
+import 'package:instagram_clone/src/modules/home/data/datasources/create_story_data_src_impl.dart';
 import 'package:instagram_clone/src/modules/home/data/datasources/create_story_data_src.dart';
 import 'package:instagram_clone/src/modules/home/data/datasources/get_story_data_src_impl.dart';
 import 'package:instagram_clone/src/modules/home/data/datasources/patch_viewed_story_data_src.dart';
