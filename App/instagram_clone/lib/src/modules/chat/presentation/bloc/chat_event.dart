@@ -26,3 +26,8 @@ class CreateChatEvent extends ChatEvent{
   // TODO: implement props
   List<Object?> get props => [conversationId, message];
 }
+
+class GetConversationEvent extends ChatEvent{
+  final String conversationId;
+  const GetConversationEvent({required this.conversationId});
+}

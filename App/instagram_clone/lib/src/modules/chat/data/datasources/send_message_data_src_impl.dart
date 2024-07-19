@@ -11,7 +11,6 @@ class SendMessageDataSrcImpl implements SendMessageDataSrc{
       "conversation": conversationId,
       "message": message
     };
-    print('object');
     final response = await _apiClient.postRequest(path: '${ApiEndpointUrls.message}/', isTokenRequired: true, body: body);
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = response.data;

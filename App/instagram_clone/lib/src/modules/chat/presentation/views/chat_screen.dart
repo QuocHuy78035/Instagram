@@ -23,6 +23,7 @@ class _ChatScreenState extends State<ChatScreen> {
       '667cfe153ad266535e7910be',
       '666c2e1f1ad808d2cf9de960'
     ];
+    context.read<ChatBloc>().add(GetConversationEvent(conversationId: '6699fd83588708bf9be7b7c6'));
     //context.read<ChatBloc>().add(CreateConversationEvent(userId: userId));
     //context.read<ChatBloc>().add(CreateChatEvent(conversationId: "6699fd83588708bf9be7b7c6", message: "Hello"));
   }
