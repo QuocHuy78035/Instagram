@@ -6,6 +6,16 @@ import 'package:instagram_clone/src/modules/auth/domain/repos/auth_repo.dart';
 import 'package:instagram_clone/src/modules/auth/domain/usecase/user_login.dart';
 import 'package:instagram_clone/src/modules/auth/domain/usecase/user_sign_up.dart';
 import 'package:instagram_clone/src/modules/auth/presentation/bloc/auth_bloc.dart';
+import 'package:instagram_clone/src/modules/chat/data/datasources/create_conversation_data_src.dart';
+import 'package:instagram_clone/src/modules/chat/data/datasources/create_conversation_data_src_impl.dart';
+import 'package:instagram_clone/src/modules/chat/data/datasources/send_message_data_src.dart';
+import 'package:instagram_clone/src/modules/chat/data/datasources/send_message_data_src_impl.dart';
+import 'package:instagram_clone/src/modules/chat/data/repos/send_message_repo_impl.dart';
+import 'package:instagram_clone/src/modules/chat/domain/repos/create_conversation_repo.dart';
+import 'package:instagram_clone/src/modules/chat/domain/repos/send_message_repo.dart';
+import 'package:instagram_clone/src/modules/chat/domain/usecase/user_create_conversation.dart';
+import 'package:instagram_clone/src/modules/chat/domain/usecase/user_send_message.dart';
+import 'package:instagram_clone/src/modules/chat/presentation/bloc/chat_bloc.dart';
 import 'package:instagram_clone/src/modules/home/data/datasources/create_story_data_src_impl.dart';
 import 'package:instagram_clone/src/modules/home/data/datasources/create_story_data_src.dart';
 import 'package:instagram_clone/src/modules/home/data/datasources/get_story_data_src_impl.dart';
@@ -27,6 +37,7 @@ import 'package:instagram_clone/src/modules/main/domain/repos/get_info_user_repo
 import 'package:instagram_clone/src/modules/main/domain/usecase/get_info_user.dart';
 import 'package:instagram_clone/src/modules/main/presentation/bloc/main_bloc.dart';
 import '../core/network/api_client.dart';
+import '../src/modules/chat/data/repos/create_conversation_repo_impl.dart';
 import '../src/modules/home/data/datasources/get_story_data_src.dart';
 import '../src/modules/home/domain/repos/create_story_repo.dart';
 import '../src/modules/home/domain/usecase/user_patch_viewed_story.dart';
@@ -44,6 +55,7 @@ Future<void> init() async {
       userCreateStory: sl(), userGetYourStory: sl(),
     ),
   );
+  sl.registerLazySingleton(() => ChatBloc(userCreateConversation: sl(), userSendMessage: sl()));
 
   // Use cases
   sl.registerLazySingleton(() => UserLogin(sl()));
@@ -53,6 +65,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UserPatchViewedStory(sl()));
   sl.registerLazySingleton(() => UserCreateStory(sl()));
   sl.registerLazySingleton(() => UserGetYourStory(sl()));
+  sl.registerLazySingleton(() => UserCreateConversation(sl()));
+  sl.registerLazySingleton(() => UserSendMessage(sl()));
 
   // Repository
   sl.registerLazySingleton<AuthRepo>(() => AuthRepoImpl(sl()));
@@ -61,6 +75,8 @@ Future<void> init() async {
   sl.registerLazySingleton<PatchViewStoryRepo>(
       () => PatchViewedStoryRepoImpl(sl()));
   sl.registerLazySingleton<CreateStoryRepo>(() => CreateStoryRepoImpl(sl()));
+  sl.registerLazySingleton<CreateConversationRepo>(() => CreateConversationRepoImpl(sl()));
+  sl.registerLazySingleton<SendMessageRepo>(() => SendMessageRepoImpl(sl()));
 
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSrc>(
@@ -71,6 +87,10 @@ Future<void> init() async {
   sl.registerLazySingleton<PatchViewedStoryDataSrc>(
       () => PatchViewedStoryDataSrcImpl(sl()));
   sl.registerLazySingleton<CreateStoryDataSrc>(() => CreateRepoDataSrcImpl(sl()));
+  sl.registerLazySingleton<CreateConversationDataSrc>(() => CreateConversationDataSrcImpl(sl()));
+  sl.registerLazySingleton<SendMessageDataSrc>(() => SendMessageDataSrcImpl(sl()));
+
+  sl.registerLazySingleton(() => SendMessageDataSrcImpl(sl()));
 
   //network
   sl.registerLazySingleton<ApiClient>(() => ApiClient());
