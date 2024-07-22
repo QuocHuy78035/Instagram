@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:instagram_clone/src/modules/chat/domain/usecase/user_create_conversation.dart';
+import 'package:instagram_clone/src/modules/chat/domain/usecase/user_get_all_conversation.dart';
 import 'package:instagram_clone/src/modules/chat/presentation/bloc/chat_event.dart';
 import 'package:instagram_clone/src/modules/chat/presentation/bloc/chat_state.dart';
 import '../../domain/usecase/user_get_conversation.dart';
@@ -9,18 +10,22 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final UserCreateConversation _userCreateConversation;
   final UserSendMessage _userSendMessage;
   final UserGetConversation _userGetConversation;
+  final UserGetAllConversation _userGetAllConversation;
 
   ChatBloc(
       {required UserCreateConversation userCreateConversation,
       required UserSendMessage userSendMessage,
-      required UserGetConversation userGetConversation})
+      required UserGetConversation userGetConversation,
+      required UserGetAllConversation userGetAllConversation})
       : _userCreateConversation = userCreateConversation,
         _userSendMessage = userSendMessage,
         _userGetConversation = userGetConversation,
+        _userGetAllConversation = userGetAllConversation,
         super(ChatInitial()) {
     on<CreateChatEvent>(_onCreateChat);
     on<CreateConversationEvent>(_onCreateConversation);
     on<GetConversationEvent>(_onGetConversation);
+    on<GetAllConversationEvent>(_onGetAllConversation);
   }
 
   _onCreateChat(CreateChatEvent event, Emitter<ChatState> emit) async {
@@ -30,8 +35,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     message.fold(
         (failure) => emit(
               CreateChatError(),
-            ),
-        (stories) {
+            ), (stories) {
       emit(CreateChatSuccess());
     });
   }
@@ -50,11 +54,25 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     emit(ChatLoadingState());
     final conversation = await _userGetConversation(event.conversationId);
     conversation.fold(
-            (failure) => emit(GetConversationError(),
-        ),
-            (conversation) {
-          emit(GetConversationSuccess(conversationModel: conversation));
-        });
-    print(conversation);
+      (failure) => emit(
+        GetConversationError(),
+      ),
+      (conversation) {
+        emit(GetConversationSuccess(conversationModel: conversation));
+      },
+    );
+  }
+
+  _onGetAllConversation(GetAllConversationEvent event, Emitter<ChatState> emit) async {
+    emit(ChatLoadingState());
+    final conversations = await _userGetAllConversation(null);
+    conversations.fold(
+          (failure) => emit(
+        GetAllConversationError(),
+      ),
+          (conversations) {
+        emit(GetAllConversationSuccess(listConversationModel: conversations));
+      },
+    );
   }
 }

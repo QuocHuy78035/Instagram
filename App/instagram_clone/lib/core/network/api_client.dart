@@ -2,7 +2,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/core/local_db_config/init_local_db.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'api_constant.dart';
 import 'api_exception.dart';
 
@@ -17,11 +16,11 @@ class ApiClient {
       receiveTimeout: const Duration(seconds: 10),
     );
     dio = Dio(baseOptions);
-    dio.interceptors.add(
-      PrettyDioLogger(
-        requestBody: true,
-      ),
-    );
+    // dio.interceptors.add(
+    //   PrettyDioLogger(
+    //     requestBody: true,
+    //   ),
+    // );
   }
 
   Options options = Options();

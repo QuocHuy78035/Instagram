@@ -1,26 +1,47 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:instagram_clone/src/modules/chat/data/models/conversation_model.dart';
+import 'package:instagram_clone/src/modules/chat/presentation/bloc/chat_state.dart';
 import 'package:instagram_clone/src/modules/chat/presentation/views/widgets/chat_item_friend.dart';
 import 'package:instagram_clone/src/modules/chat/presentation/views/widgets/chat_item_me.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../../../../../core/local_db_config/init_local_db.dart';
+import '../bloc/chat_bloc.dart';
+import '../bloc/chat_event.dart';
+
 class DetailChatScreen extends StatefulWidget {
+  final String conversationId;
   final String userChatAvt;
   final String userChatName;
 
-  const DetailChatScreen({super.key, required this.userChatAvt, required this.userChatName});
+  const DetailChatScreen(
+      {super.key,
+      required this.userChatAvt,
+      required this.userChatName,
+      required this.conversationId});
 
   @override
   State<DetailChatScreen> createState() => _DetailChatScreenState();
 }
 
-class _DetailChatScreenState extends State<DetailChatScreen> with WidgetsBindingObserver {
+class _DetailChatScreenState extends State<DetailChatScreen>
+    with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _textController = TextEditingController();
+  ConversationModel? conversation;
+
+  getConversation() {
+    context
+        .read<ChatBloc>()
+        .add(GetConversationEvent(conversationId: widget.conversationId));
+  }
 
   @override
   void initState() {
     super.initState();
+    getConversation();
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -31,6 +52,7 @@ class _DetailChatScreenState extends State<DetailChatScreen> with WidgetsBinding
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
+
   //
   // @override
   // void didChangeMetrics() {
@@ -61,6 +83,7 @@ class _DetailChatScreenState extends State<DetailChatScreen> with WidgetsBinding
 
   @override
   Widget build(BuildContext context) {
+    final userId = SharedPreferencesRepository.getString('userId');
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -74,7 +97,7 @@ class _DetailChatScreenState extends State<DetailChatScreen> with WidgetsBinding
                 borderRadius: BorderRadius.circular(50),
                 child: CachedNetworkImage(
                   imageUrl:
-                  "https://firebasestorage.googleapis.com/v0/b/insta-ebedc.appspot.com/o/users%2Fimages%2F143086968_2856368904622192_1959732218791162458_n.png?alt=media&token=77e45ba1-a6c1-444d-bbaf-05c13e01cf43",
+                      "https://firebasestorage.googleapis.com/v0/b/insta-ebedc.appspot.com/o/users%2Fimages%2F143086968_2856368904622192_1959732218791162458_n.png?alt=media&token=77e45ba1-a6c1-444d-bbaf-05c13e01cf43",
                   fit: BoxFit.fill,
                   placeholder: (context, url) => SizedBox(
                     width: 35,
@@ -119,27 +142,48 @@ class _DetailChatScreenState extends State<DetailChatScreen> with WidgetsBinding
       ),
       body: Column(
         children: [
-          Expanded(
-            child: ListView(
-              reverse: true, // Ensures the list scrolls to bottom by default
-              controller: _scrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              children: [
-                ChatItemFriend(message: 'fhkjlhkjlhkjh'),
-                ChatItemMe(message: "1234"),
-                ChatItemFriend(message: 'wqeurhkjasdhfjkhasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh'),
-                ChatItemMe(message: "1234"),
-                ChatItemFriend(message: 'hasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh'),
-                ChatItemMe(message: "1234hasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh"),
-                ChatItemFriend(message: 'fhkjlhkjlhkjh'),
-                ChatItemMe(message: "1234"),
-                ChatItemFriend(message: 'wqeurhkjasdhfjkhasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh'),
-                ChatItemMe(message: "1234"),
-                ChatItemFriend(message: 'hasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh'),
-                ChatItemMe(message: "1234hasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh"),
-              ],
-            ),
-          ),
+          BlocBuilder<ChatBloc, ChatState>(builder: (context, state) {
+            if (state is GetConversationSuccess) {
+              conversation = state.conversationModel;
+            } else if (state is ChatLoadingState) {
+              return const CircularProgressIndicator();
+            }
+            return Expanded(
+              child: ListView.builder(
+                itemCount: conversation?.messages.length,
+                reverse: true,
+                // Ensures the list scrolls to bottom by default
+                controller: _scrollController,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                itemBuilder: (BuildContext context, int index) {
+                  return Column(
+                    children: [
+                      conversation!.messages[index].messages[0].senderId == userId
+                          ? ChatItemMe(
+                              message: conversation
+                                  ?.messages[index].messages[0].message ?? "")
+                          : ChatItemFriend(
+                              message: conversation
+                                  ?.messages[index].messages[0].message ?? "")
+
+                      // ChatItemFriend(message: 'fhkjlhkjlhkjh'),
+                      // ChatItemMe(message: "1234"),
+                      // ChatItemFriend(message: 'wqeurhkjasdhfjkhasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh'),
+                      // ChatItemMe(message: "1234"),
+                      // ChatItemFriend(message: 'hasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh'),
+                      // ChatItemMe(message: "1234hasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh"),
+                      // ChatItemFriend(message: 'fhkjlhkjlhkjh'),
+                      // ChatItemMe(message: "1234"),
+                      // ChatItemFriend(message: 'wqeurhkjasdhfjkhasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh'),
+                      // ChatItemMe(message: "1234"),
+                      // ChatItemFriend(message: 'hasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh'),
+                      // ChatItemMe(message: "1234hasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh"),
+                    ],
+                  );
+                },
+              ),
+            );
+          }),
           const SizedBox(
             height: 30,
           ),
@@ -148,9 +192,8 @@ class _DetailChatScreenState extends State<DetailChatScreen> with WidgetsBinding
             margin: const EdgeInsets.symmetric(horizontal: 10),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.4),
-              borderRadius: BorderRadius.circular(20)
-            ),
+                color: Colors.grey.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(20)),
             child: Row(
               children: [
                 Expanded(
