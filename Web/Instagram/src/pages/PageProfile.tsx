@@ -6,11 +6,12 @@ import { LuUserSquare2 } from "react-icons/lu";
 import Sidebar from "../components/Sidebar";
 import useOpenSearch from "../zustand/useOpenSearch";
 import { useAuthContext } from "../context/AuthContext";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getProfile } from "../api";
 
 export default function PageProfile() {
   const params = useParams();
+  const navigate = useNavigate();
   const { isOpenSearch } = useOpenSearch();
   const [isFullContent, setIsFullContent] = useState(true);
   const [mode, setMode] = useState("Posts");
@@ -41,6 +42,7 @@ export default function PageProfile() {
                 className={`my-auto rounded-full z-10 w-[140px] h-[140px]`}
                 alt="Profile"
               />
+
               <div className="mt-3">
                 <div className="flex space-x-3 mt-5 mb-5">
                   <div className="text-[21px] my-auto">
@@ -50,7 +52,12 @@ export default function PageProfile() {
                   user &&
                   user._id === userProfile?._id ? (
                     <>
-                      <button className="px-3 py-1 rounded-md bg-[rgb(239,239,239)] hover:bg-[rgb(220,220,220)] font-semibold my-auto cursor-pointer outline-none">
+                      <button
+                        className="px-3 py-1 rounded-md bg-[rgb(239,239,239)] hover:bg-[rgb(220,220,220)] font-semibold my-auto cursor-pointer outline-none"
+                        onClick={function () {
+                          navigate("/accounts/edit");
+                        }}
+                      >
                         Edit profile
                       </button>
                       <button className="px-3 py-1 rounded-md bg-[rgb(239,239,239)] hover:bg-[rgb(220,220,220)]  font-semibold my-auto cursor-pointer outline-none">

@@ -35,13 +35,23 @@ const userSchema: Schema<IUserModel> = new Schema<IUserModel>(
       enum: ["user", "admin"],
       default: "user",
     },
+    bio: {
+      type: String,
+      maxLength: 150,
+      default: "",
+    },
     gender: {
       type: String,
-      enum: ["Male", "Female", "Undefined"],
+      enum: ["Male", "Female", "Prefer not to say"],
+      default: "Prefer not to say",
     },
     dateOfBirth: {
       type: Date,
       default: null,
+    },
+    show_account_suggestions: {
+      type: Boolean,
+      default: false,
     },
     password: {
       type: String,

@@ -7,8 +7,10 @@ import { LogoutAPI } from "../api";
 import { useCookies } from "react-cookie";
 import { useAuthContext } from "../context/AuthContext";
 import useOpenNavigateMore from "../zustand/useOpenNavigateMore";
+import { useNavigate } from "react-router-dom";
 
 export default function NavigateMore() {
+  const navigate = useNavigate();
   const [__, setCookies] = useCookies(["jwt", "user"]);
   const { setIsOpenNavigateMore } = useOpenNavigateMore();
   const { setUser } = useAuthContext();
@@ -31,7 +33,12 @@ export default function NavigateMore() {
       }}
     >
       <div className="px-2 py-2 bg-white">
-        <button className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none">
+        <button
+          className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+          onClick={function () {
+            navigate("/accounts/edit");
+          }}
+        >
           <IoSettingsSharp className="w-[24px] h-[24px] ms-[10px] my-auto" />
           <div className="ms-[10px] my-auto">Settings</div>
         </button>

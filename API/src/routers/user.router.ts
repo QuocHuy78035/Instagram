@@ -2,6 +2,7 @@ import express from "express";
 import { authentication } from "../middlewares/interceptors/authentication.interceptor";
 import { asyncHandler } from "../helpers/asyncHandler";
 import userController from "../middlewares/controllers/user.controller";
+import upload from "../middlewares/interceptors/uploadfile.interceptor";
 
 class UserRouter {
   router = express.Router();
@@ -15,7 +16,13 @@ class UserRouter {
       .route("/profile/:username")
       .get(asyncHandler(userController.getUserByUsername));
     this.router.use(authentication);
-    this.router.route("/me").get(asyncHandler(userController.getUserById));
+    this.router
+      .route("/me")
+      .get(asyncHandler(userController.getUserById))
+      .patch(upload.single("file"), asyncHandler(userController.updateProfile));
+    this.router
+      .route("/password")
+      .patch(asyncHandler(userController.updatePassword));
     this.router
       .route("/followingAndHaveStories")
       .get(asyncHandler(userController.findFollowingsByIdAndHaveStories));

@@ -1,8 +1,12 @@
-import { Types, isValidObjectId } from "mongoose";
+import { Document, Types, isValidObjectId } from "mongoose";
 import { BadRequestError, UnauthorizedError } from "../core/error.response";
 import userRepo from "../repos/user.repo";
 import { convertStringToObjectId, getInfoData } from "../utils";
 import storyRepo from "../repos/story.repo";
+import { UploadFiles } from "../utils/uploadFiles";
+import { UpdatePassword } from "../validators/user.validator";
+import { IKeyTokenModel } from "../data/interfaces/keytoken.interface";
+import keytokenService from "./keytoken.service";
 
 class UserService {
   constructor() {}
@@ -187,6 +191,89 @@ class UserService {
     }
 
     return await userRepo.updateLatestOnlineAt(user.id);
+  }
+
+  async updateProfile(
+    userId: Types.ObjectId,
+    body: {
+      name?: string;
+      username?: string;
+      bio?: string;
+      gender?: string;
+      show_account_suggestions?: string;
+    },
+    file?: Express.Multer.File
+  ) {
+    let avatar: string | undefined = undefined;
+    if (file) {
+      avatar = await new UploadFiles(
+        "messages",
+        "images",
+        file
+      ).uploadFileAndDownloadURL();
+    }
+    const user = await userRepo.updateProfile(userId, {
+      ...body,
+      avatar,
+      show_account_suggestions: Boolean(body.show_account_suggestions),
+    });
+    return {
+      user,
+    };
+  }
+
+  async updatePassword(
+    userId: Types.ObjectId,
+    body: {
+      currentPassword: string;
+      newPassword: string;
+      retypeNewPassword: string;
+    },
+    keyStore?:
+      | (Document<unknown, {}, IKeyTokenModel> &
+          IKeyTokenModel &
+          Required<{
+            _id: unknown;
+          }>)
+      | null
+  ) {
+    const { error } = UpdatePassword(body);
+    if (error) {
+      throw new BadRequestError(error.message);
+    }
+
+    const user = await userRepo.findByIdWithPassword(userId);
+    if (!user) {
+      throw new UnauthorizedError("User not found! Please log in again!");
+    }
+
+    if (!(await user.matchPassword(body.currentPassword))) {
+      throw new BadRequestError(
+        "Current password is not correct! Please try again!"
+      );
+    }
+
+    if (body.currentPassword === body.newPassword) {
+      throw new BadRequestError(
+        "Current password and new password must not be the same! Please try again!"
+      );
+    }
+
+    if (body.newPassword !== body.retypeNewPassword) {
+      throw new BadRequestError(
+        "New password and retype new password must be the same! Please try again!"
+      );
+    }
+
+    user.password = body.newPassword;
+    await user.save({ validateBeforeSave: true });
+
+    //logout
+    if (!keyStore) {
+      throw new UnauthorizedError("Not found keystore!");
+    }
+    const delKey = await keytokenService.removeKeyById(keyStore.id);
+    return {};
   }
 }
 

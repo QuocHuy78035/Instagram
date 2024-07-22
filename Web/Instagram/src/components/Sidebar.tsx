@@ -54,6 +54,7 @@ export default function Sidebar({ isFullContent }) {
         className={`relative bg-white border-r border-gray-200 flex flex-col justify-between items-center p-4`}
         style={{
           width: `${!isFullContent ? "80" : "240"}px`,
+          minWidth: `${!isFullContent ? "80" : "240"}px`,
         }}
       >
         {!isFullContent ? (

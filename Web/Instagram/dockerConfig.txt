@@ -1,0 +1,7 @@
+#Client
+docker build -t clientapp .
+docker run --name clientapp_c -v C:\Users\HP\Desktop\insta\Web\Instagram:/app/Instagram -v /app/node_modules -p 4173:4173 clientapp
+
+#Server
+docker build -t serverapp .
+docker run --name serverapp_c -v C:\Users\HP\Desktop\insta\API:/server/API -p 8000:8000 serverapp

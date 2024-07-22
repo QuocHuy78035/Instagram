@@ -130,5 +130,36 @@ class UserController {
       metadata,
     }).send(res);
   };
+
+  updateProfile = async (req: RequestV2, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      throw new UnauthorizedError("User not found! Please log in again!");
+    }
+    const metadata = await userService.updateProfile(
+      req.user.userId,
+      req.body,
+      req.file
+    );
+
+    new OK({
+      message: "Update profile successfully!",
+      metadata,
+    }).send(res);
+  };
+
+  updatePassword = async (
+    req: RequestV2,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (!req.user) {
+      throw new UnauthorizedError("User not found! Please log in again!");
+    }
+
+    await userService.updatePassword(req.user.userId, req.body, req.keyStore);
+    new OK({
+      message: "Update password successfully!",
+    }).send(res);
+  };
 }
 export default new UserController();

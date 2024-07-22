@@ -7,6 +7,8 @@ interface UserInterface {
   avatar: string;
   status: string;
   role: string;
+  bio: string;
+  show_account_suggestions: boolean;
   gender: string;
   dateOfBirth: Date;
   password: string;

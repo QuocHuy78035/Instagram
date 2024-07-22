@@ -5,7 +5,7 @@
   "main": "server.ts",
   "scripts": {
     "test": "vitest",
-    "start": "nodemon -x ts-node server.ts"
+    "start": "nodemon --legacy-watch -x ts-node server.ts"
   },
   "author": "",
   "license": "ISC",

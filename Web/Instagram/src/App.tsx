@@ -16,6 +16,7 @@ import PageResetPassword from "./pages/PageResetPassword";
 import { useEffect } from "react";
 import useOpenNavigateMore from "./zustand/useOpenNavigateMore";
 import PageProfile from "./pages/PageProfile";
+import PageSetting from "./pages/PageSetting";
 
 export default function App() {
   const { user } = useAuthContext();
@@ -106,6 +107,10 @@ export default function App() {
                 <Navigate to="/login" />
               )
             }
+          />
+          <Route
+            path="/accounts/:mode"
+            element={user ? <PageSetting /> : <Navigate to="/login" />}
           />
         </Routes>
       </BrowserRouter>

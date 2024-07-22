@@ -8,6 +8,10 @@ class UserRepo {
     return await User.findById(id);
   }
 
+  async findByIdWithPassword(id: Types.ObjectId) {
+    return await User.findById(id).select("+password");
+  }
+
   async findByUsername(username: string) {
     return await User.findOne({ username }).select({
       _id: 1,
@@ -182,6 +186,20 @@ class UserRepo {
       },
       { new: true }
     );
+  }
+
+  async updateProfile(
+    userId: Types.ObjectId,
+    body: {
+      avatar?: string;
+      name?: string;
+      username?: string;
+      bio?: string;
+      gender?: string;
+      show_account_suggestions?: boolean;
+    }
+  ) {
+    return await User.findByIdAndUpdate(userId, body, { new: true });
   }
 
   async searchUsers(search: string) {

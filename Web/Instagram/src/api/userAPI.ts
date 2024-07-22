@@ -37,3 +37,34 @@ export const searchUser = async (search: string) => {
     if (err) return err.response?.data;
   }
 };
+
+export const updateProfile = async (body: {
+  file?: File;
+  username?: string;
+  name?: string;
+  gender?: string;
+  show_account_suggestions?: string;
+  bio?: string;
+}) => {
+  try {
+    const formData = new FormData();
+    if (body.file) formData.append("file", body.file);
+    if (body.username) formData.append("username", body.username);
+    if (body.name) formData.append("name", body.name);
+    if (body.gender) formData.append("gender", body.gender);
+    if (body.show_account_suggestions)
+      formData.append(
+        "show_account_suggestions",
+        body.show_account_suggestions
+      );
+    if (body.bio) formData.append("bio", body.bio);
+    const res = await axios.patch(
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/user/me`,
+      formData
+    );
+    return res.data;
+  } catch (err: any) {
+    console.log(err);
+    if (err) return err.response?.data;
+  }
+};
