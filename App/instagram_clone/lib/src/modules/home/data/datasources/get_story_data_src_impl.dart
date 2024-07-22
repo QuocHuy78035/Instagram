@@ -25,7 +25,8 @@ class GetStoryDataSrcImpl implements GetStoryDataSrc{
   @override
   Future<List<StoryModel>> getYourStory() async {
     final String userId = SharedPreferencesRepository.getString('userId');
-    final response = await _apiClient.getRequest(path: "story/$userId", isTokenRequired: true);
+    //final response = await _apiClient.getRequest(path: "story/$userId", isTokenRequired: true);
+    final response = await _apiClient.getRequest(path: "story?otherUserId=$userId", isTokenRequired: true);
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = response.data;
       final List<dynamic> storiesData = responseData['metadata']['stories'];

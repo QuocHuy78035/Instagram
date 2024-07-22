@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:instagram_clone/src/modules/auth/presentation/bloc/auth_bloc.dart';
+import 'package:instagram_clone/src/modules/chat/presentation/bloc/chat_bloc.dart';
 import 'package:instagram_clone/src/modules/home/presentation/bloc/home_bloc.dart';
 import 'package:instagram_clone/src/modules/main/presentation/bloc/main_bloc.dart';
 import 'package:instagram_clone/src/modules/splash/presentation/views/splash_screen.dart';
@@ -28,6 +29,9 @@ class _InstagramAppState extends State<InstagramApp> {
         ),
         BlocProvider(
           create: (_) => di.sl<HomeBloc>(),
+        ),
+        BlocProvider(
+          create: (_) => di.sl<ChatBloc>(),
         ),
       ],
       child: MaterialApp(
