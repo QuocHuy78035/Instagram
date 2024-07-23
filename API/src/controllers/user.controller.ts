@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import RequestV2 from "../data/interfaces/requestv2.interface";
 import userService from "../services/user.service";
-import { UnauthorizedError } from "../core/error.response";
+import { BadRequestError, UnauthorizedError } from "../core/error.response";
 import { OK } from "../core/success.response";
 import { Types } from "mongoose";
 
@@ -16,7 +16,10 @@ class UserController {
     // if (!req.user) {
     //   throw new UnauthorizedError("User not found! Please log in again!");
     // }
-    const userId = new Types.ObjectId(req.params.userId);
+    if (!req.query.userId) {
+      throw new BadRequestError("Query userId does not exist!");
+    }
+    const userId = new Types.ObjectId(req.query.userId as string);
 
     const metadata = await userService.getAnotherUserById(userId);
     new OK({

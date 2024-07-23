@@ -15,6 +15,7 @@ class UserRouter {
     this.router
       .route("/profile/:username")
       .get(asyncHandler(userController.getUserByUsername));
+
     this.router.use(authentication);
     this.router
       .route("/me")
@@ -41,9 +42,6 @@ class UserRouter {
     this.router
       .route("/modePrivate/off")
       .patch(asyncHandler(userController.turnOffModePrivate));
-    this.router
-      .route("/:userId")
-      .get(asyncHandler(userController.getAnotherUserByUserId));
   }
 }
 
