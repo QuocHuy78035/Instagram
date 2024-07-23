@@ -1,8 +1,7 @@
 import { ErrorResponse } from "../../data/error.class";
 import { NextFunction, Request, Response } from "express";
 import { formatErrorString } from "../../utils";
-
-const INTERNAL_SERVER_ERROR_STATUS = 500;
+import statusCodes from "../../utils/statusCodes";
 
 export const GlobalErrorMiddleware = (
   error: ErrorResponse,
@@ -11,7 +10,7 @@ export const GlobalErrorMiddleware = (
   next: NextFunction
 ) => {
   console.log("Error", error.status);
-  const statusCode = error.status || INTERNAL_SERVER_ERROR_STATUS;
+  const statusCode = error.status || statusCodes.INTERNAL_SERVER_ERROR;
   return res.status(statusCode).json({
     status: "error",
     code: statusCode,

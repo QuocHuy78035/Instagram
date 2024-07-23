@@ -1,7 +1,7 @@
 import express from "express";
 import { authentication } from "../middlewares/interceptors/authentication.interceptor";
 import { asyncHandler } from "../helpers/asyncHandler";
-import userController from "../middlewares/controllers/user.controller";
+import userController from "../controllers/user.controller";
 import upload from "../middlewares/interceptors/uploadfile.interceptor";
 
 class UserRouter {

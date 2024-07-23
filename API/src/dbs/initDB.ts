@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-
-const connectionString: string = process.env.CONNECTION_STRING || "";
+import { mongo } from "../configs/mongo.config";
 
 export class DBConnection {
   static instance: DBConnection;
@@ -10,7 +9,7 @@ export class DBConnection {
 
   connect() {
     mongoose
-      .connect(connectionString, { maxPoolSize: 50 })
+      .connect(mongo.connectionString, { maxPoolSize: mongo.maxPoolSize })
       .then((res) => {
         console.log("Connect to MongoDB successfully!");
       })
@@ -26,5 +25,3 @@ export class DBConnection {
     return DBConnection.instance;
   }
 }
-
-

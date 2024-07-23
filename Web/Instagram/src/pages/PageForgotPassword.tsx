@@ -3,6 +3,9 @@ import { FiLock } from "react-icons/fi";
 import { ForgotPasswordAPI } from "../api";
 import { classifyInput } from "../utils";
 import Footer from "../components/authen/Footer";
+import Input from "../components/authen/Input";
+import Button from "../components/authen/Button";
+import BorderOr from "../components/authen/BorderOr";
 
 export default function PageForgotPassword() {
   const [text, setText] = useState("");
@@ -53,32 +56,22 @@ export default function PageForgotPassword() {
             ""
           )}
           <form className="space-y-4" onSubmit={handleSubmit}>
-            <input
+            <Input
               type="text"
-              placeholder="Phone number, username, or email"
-              className="w-full h-10 p-3 text-[13px] border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder={"Phone number, username, or email"}
               value={text}
               onChange={(e) => {
                 setText(e.target.value);
               }}
             />
-            <button
-              type="submit"
-              className="w-full h-8 bg-[#0099e6] text-white rounded font-medium transition duration-200 text-[14px]"
-            >
-              {isLoading ? <div className="loader"></div> : "Send Login Link"}
-            </button>
+            <Button isLoading={isLoading} name="Send Login Link" />
           </form>
           <div className="text-[14px] text-[#0099e6] text-center my-3">
             <a href="/">Can't reset your password</a>
           </div>
-          <div className="flex items-center justify-between mt-4">
-            <hr className="flex-1 border-t border-gray-300" />
-            <span className="mx-4 text-gray-400">OR</span>
-            <hr className="flex-1 border-t border-gray-300" />
-          </div>
+          <BorderOr/>
           <div className="text-[14px] text-black font-semibold text-center my-3 hover:text-gray-400">
-            <a href="/">Create new account</a>
+            <a href="/signUp">Create new account</a>
           </div>
           <div className="text-[14px] text-black font-semibold text-center my-3 hover:text-gray-400 border-[2px] border-gray-200 p-2">
             <a href="/login">Back to login</a>

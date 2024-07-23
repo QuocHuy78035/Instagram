@@ -1,52 +1,33 @@
 import { BiSolidMessageRounded } from "react-icons/bi";
 import { FaInstagram, FaRegHeart } from "react-icons/fa6";
 import { GoHome } from "react-icons/go";
-import { HiBars3 } from "react-icons/hi2";
 import { IoSearchOutline } from "react-icons/io5";
 import { LuPlusSquare } from "react-icons/lu";
 import { MdOutlineExplore, MdOutlineOndemandVideo } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import Tooltip from "./Tooltip";
+import Tooltip from "./sidebar/Tooltip";
 import { useAuthContext } from "../context/AuthContext";
 import useOpenSearch from "../zustand/useOpenSearch";
 import useOpenNavigateMore from "../zustand/useOpenNavigateMore";
 import NavigateMore from "./NavigateMore";
+import Tab from "./sidebar/Tab";
+import TabWithText from "./sidebar/TabWithText";
+import ButtonMore from "./sidebar/ButtonMore";
+import Avatar from "./sidebar/Avatar";
 
 export default function Sidebar({ isFullContent }) {
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const { isOpenSearch, setIsOpenSearch } = useOpenSearch();
-  const { isOpenNavigateMore, setIsOpenNavigateMore } = useOpenNavigateMore();
-  function goToHome() {
-    navigate("/");
-    setIsOpenSearch(false);
+  const { isOpenNavigateMore } = useOpenNavigateMore();
+  function direct(to: string) {
+    return function goTo() {
+      navigate(to);
+      setIsOpenSearch(false);
+    };
   }
   function goToSearch() {
     setIsOpenSearch(!isOpenSearch);
-  }
-  function goToExplore() {
-    navigate("/explore");
-    setIsOpenSearch(false);
-  }
-  function goToReels() {
-    navigate("/reels");
-    setIsOpenSearch(false);
-  }
-  function goToNotifications() {
-    navigate("/notifications");
-    setIsOpenSearch(false);
-  }
-  function goToMessage() {
-    navigate("/direct/inbox");
-    setIsOpenSearch(false);
-  }
-  function goToCreate() {
-    navigate("/create");
-    setIsOpenSearch(false);
-  }
-  function goToProfile() {
-    navigate(`/profile/${typeof user !== "string" ? user?.username : ""}`);
-    setIsOpenSearch(false);
   }
   return (
     <>
@@ -58,244 +39,133 @@ export default function Sidebar({ isFullContent }) {
         }}
       >
         {!isFullContent ? (
-          <button
-            className="my-[13px] w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-            onClick={goToHome}
-          >
-            <FaInstagram className="w-[24px] h-[24px] mx-auto" />
-          </button>
+          <Tab onClick={direct("/")} Icon={FaInstagram} />
         ) : (
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/1200px-Instagram_logo.svg.png"
             className="my-[13px] w-[70%] h-[48px] cursor-pointer"
-            onClick={goToHome}
+            onClick={direct("/")}
           />
         )}
 
         <div className="w-full">
           {!isFullContent ? (
             <>
-              <Tooltip message="Home">
-                <button
-                  className="w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-                  onClick={goToHome}
-                >
-                  <GoHome className="w-[24px] h-[24px] mx-auto" />
-                </button>
-              </Tooltip>
-              <Tooltip message="Search">
-                <button
-                  className="w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-                  style={{
-                    border: `${
-                      isOpenSearch ? "1px solid rgb(229,231,235)" : "0px"
-                    }`,
-                  }}
-                  onClick={goToSearch}
-                >
-                  <IoSearchOutline className="w-[24px] h-[24px] mx-auto" />
-                </button>
-              </Tooltip>
-              <Tooltip message="Explore">
-                <button
-                  className="w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-                  onClick={goToExplore}
-                >
-                  <MdOutlineExplore className="w-[24px] h-[24px] mx-auto" />
-                </button>
-              </Tooltip>
-              <Tooltip message="Reels">
-                <button
-                  className="w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-                  onClick={goToReels}
-                >
-                  <MdOutlineOndemandVideo className="w-[24px] h-[24px] mx-auto" />
-                </button>
-              </Tooltip>
-              <Tooltip message="Messages">
-                <button
-                  className="w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-                  style={{
-                    border: `${
-                      window.location.href.split("/")[3] === "direct"
-                        ? "1px solid rgb(229,231,235)"
-                        : "0px"
-                    }`,
-                  }}
-                  onClick={goToMessage}
-                >
-                  <BiSolidMessageRounded className="w-[24px] h-[24px] mx-auto" />
-                </button>
-              </Tooltip>
-              <Tooltip message="Notifications">
-                <button
-                  className="w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-                  onClick={goToNotifications}
-                >
-                  <FaRegHeart className="w-[24px] h-[24px] mx-auto" />
-                </button>
-              </Tooltip>
-              <Tooltip message="Create">
-                <button
-                  className="w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-                  onClick={goToCreate}
-                >
-                  <LuPlusSquare className="w-[24px] h-[24px] mx-auto" />
-                </button>
-              </Tooltip>
-              <Tooltip message="Profile">
-                <button
-                  className="w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-                  onClick={goToProfile}
-                >
-                  <img
-                    src={typeof user !== "string" ? user?.avatar : ""}
-                    className="w-[24px] h-[24px] mx-auto rounded-full"
-                  />
-                </button>
-              </Tooltip>
+              <Tab message={"Home"} onClick={direct("/")} Icon={GoHome} />
+              <Tab
+                message={"Search"}
+                style={{
+                  border: `${
+                    isOpenSearch ? "1px solid rgb(229,231,235)" : "0px"
+                  }`,
+                }}
+                onClick={goToSearch}
+                Icon={IoSearchOutline}
+              />
+              <Tab
+                message="Explore"
+                onClick={direct("/explore")}
+                Icon={MdOutlineExplore}
+              />
+              <Tab
+                message="Reels"
+                onClick={direct("/reels")}
+                Icon={MdOutlineOndemandVideo}
+              />
+              <Tab
+                message="Messages"
+                style={{
+                  border: `${
+                    window.location.href.split("/")[3] === "direct"
+                      ? "1px solid rgb(229,231,235)"
+                      : "0px"
+                  }`,
+                }}
+                onClick={direct("/direct/inbox")}
+                Icon={BiSolidMessageRounded}
+              />
+              <Tab
+                message="Notifications"
+                onClick={direct("/notifications")}
+                Icon={FaRegHeart}
+              />
+              <Tab
+                message="Create"
+                onClick={direct("/create")}
+                Icon={LuPlusSquare}
+              />
+              <Tab
+                message="Profile"
+                onClick={direct(
+                  `/profile/${typeof user !== "string" ? user?.username : ""}`
+                )}
+                avatar={<Avatar hasText={false} />}
+              />
             </>
           ) : (
             <div className="text-[16px] font-normal">
-              <button
-                className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-                style={{
-                  fontWeight: `${
-                    window.location.href.split("/")[3] === "" ? "700" : "400"
-                  }`,
-                }}
-                onClick={goToHome}
-              >
-                <GoHome className="w-[24px] h-[24px] ms-[10px] my-auto" />
-                <div className="ms-[10px] my-auto">Home</div>
-              </button>
-              <button
-                className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+              <TabWithText
+                name="Home"
+                onClick={direct("/")}
+                Icon={GoHome}
+                to="home"
+              />
+              <TabWithText
+                name="Search"
                 style={{
                   fontWeight: `${isOpenSearch ? "700" : "400"}`,
                 }}
                 onClick={goToSearch}
-              >
-                <IoSearchOutline className="w-[24px] h-[24px] ms-[10px] my-auto" />
-                <div className="ms-[10px] my-auto">Search</div>
-              </button>
-              <button
-                className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-                style={{
-                  fontWeight: `${
-                    window.location.href.split("/")[3] === "explore"
-                      ? "700"
-                      : "400"
-                  }`,
-                }}
-                onClick={goToExplore}
-              >
-                <MdOutlineExplore className="w-[24px] h-[24px] ms-[10px] my-auto" />
-                <div className="ms-[10px] my-auto">Explore</div>
-              </button>
-              <button
-                className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-                style={{
-                  fontWeight: `${
-                    window.location.href.split("/")[3] === "reels"
-                      ? "700"
-                      : "400"
-                  }`,
-                }}
-                onClick={goToReels}
-              >
-                <MdOutlineOndemandVideo className="w-[24px] h-[24px] ms-[10px] my-auto" />
-                <div className="ms-[10px] my-auto">Reels</div>
-              </button>
-              <button
-                className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-                style={{
-                  fontWeight: `${
-                    window.location.href.split("/")[3] === "direct"
-                      ? "700"
-                      : "400"
-                  }`,
-                }}
-                onClick={goToMessage}
-              >
-                <BiSolidMessageRounded className="w-[24px] h-[24px] ms-[10px] my-auto" />
-                <div className="ms-[10px] my-auto">Messages</div>
-              </button>
-              <button
-                className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-                style={{
-                  fontWeight: `${
-                    window.location.href.split("/")[3] === "notifications"
-                      ? "700"
-                      : "400"
-                  }`,
-                }}
-                onClick={goToNotifications}
-              >
-                <FaRegHeart className="w-[24px] h-[24px] ms-[10px] my-auto" />
-                <div className="ms-[10px] my-auto">Notifications</div>
-              </button>
-              <button
-                className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-                style={{
-                  fontWeight: `${
-                    window.location.href.split("/")[3] === "create"
-                      ? "700"
-                      : "400"
-                  }`,
-                }}
-                onClick={goToCreate}
-              >
-                <LuPlusSquare className="w-[24px] h-[24px] ms-[10px] my-auto" />
-                <div className="ms-[10px] my-auto">Create</div>
-              </button>
-              <button
-                className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-                style={{
-                  fontWeight: `${
-                    window.location.href.split("/")[3] === "profile"
-                      ? "700"
-                      : "400"
-                  }`,
-                }}
-                onClick={goToProfile}
-              >
-                <img
-                  src={typeof user !== "string" ? user?.avatar : ""}
-                  className="w-[24px] h-[24px] ms-[10px] my-auto rounded-full"
-                />
-                <div className="ms-[10px] my-auto">Profile</div>
-              </button>
+                Icon={IoSearchOutline}
+                to="search"
+              />
+              <TabWithText
+                name="Explore"
+                onClick={direct("/explore")}
+                Icon={MdOutlineExplore}
+                to="explore"
+              />
+              <TabWithText
+                name="Reels"
+                onClick={direct("/reels")}
+                Icon={MdOutlineOndemandVideo}
+                to="reels"
+              />
+              <TabWithText
+                name={"Messages"}
+                onClick={direct("/direct/inbox")}
+                Icon={BiSolidMessageRounded}
+                to="direct"
+              />
+              <TabWithText
+                name="Notifications"
+                onClick={direct("/notifications")}
+                Icon={FaRegHeart}
+                to="notifications"
+              />
+              <TabWithText
+                name="Create"
+                onClick={direct("/create")}
+                Icon={LuPlusSquare}
+                to="create"
+              />
+              <TabWithText
+                name="Profile"
+                onClick={direct(
+                  `/profile/${typeof user !== "string" ? user?.username : ""}`
+                )}
+                avatar={<Avatar hasText={true} />}
+                to="profile"
+              />
             </div>
           )}
         </div>
         {!isFullContent ? (
           <Tooltip message="More">
-            <button
-              className="btn__more my-[13px] w-[48px] h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-              onClick={function () {
-                setIsOpenNavigateMore(!isOpenNavigateMore);
-              }}
-              style={{
-                fontWeight: `${isOpenNavigateMore ? "bold" : "normal"}`,
-              }}
-            >
-              <HiBars3 className="w-[24px] h-[24px] mx-auto" />
-            </button>
+            <ButtonMore hasText={false} />
           </Tooltip>
         ) : (
-          <button
-            className="btn__more my-[13px] flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
-            onClick={function () {
-              setIsOpenNavigateMore(!isOpenNavigateMore);
-            }}
-            style={{
-              fontWeight: `${isOpenNavigateMore ? "bold" : "normal"}`,
-            }}
-          >
-            <HiBars3 className="w-[24px] h-[24px] ms-[10px] my-auto" />
-            <div className="ms-[10px] my-auto">More</div>
-          </button>
+          <ButtonMore hasText={true} />
         )}
         {isOpenNavigateMore ? <NavigateMore /> : ""}
       </div>

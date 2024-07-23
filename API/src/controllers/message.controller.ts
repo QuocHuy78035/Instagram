@@ -1,8 +1,8 @@
 import { NextFunction, Response } from "express";
-import RequestV2 from "../../data/interfaces/requestv2.interface";
-import messageService from "../../services/message.service";
-import { BadRequestError, UnauthorizedError } from "../../core/error.response";
-import { CREATED, OK } from "../../core/success.response";
+import RequestV2 from "../data/interfaces/requestv2.interface";
+import messageService from "../services/message.service";
+import { BadRequestError, UnauthorizedError } from "../core/error.response";
+import { CREATED, OK } from "../core/success.response";
 
 class MessageController {
   constructor() {}

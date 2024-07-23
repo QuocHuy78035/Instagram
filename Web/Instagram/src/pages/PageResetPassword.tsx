@@ -4,6 +4,9 @@ import { ResetPasswordAPI } from "../api/authenAPI";
 import { useParams } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { useAuthContext } from "../context/AuthContext";
+import Input from "../components/authen/Input";
+import Button from "../components/authen/Button";
+import NavigateLogin from "../components/authen/NavigateLogin";
 
 export default function PageResetPassword() {
   const params = useParams();
@@ -55,40 +58,28 @@ export default function PageResetPassword() {
             ""
           )}
           <form className="space-y-4" onSubmit={handleSubmit}>
-            <input
+            <Input
               type="password"
-              placeholder="New Password"
-              className="w-full h-8 p-3 text-[13px] border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder={"New Password"}
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
                 setMessage(null);
               }}
             />
-            <input
+            <Input
               type="password"
-              placeholder="Confirm New Password"
-              className="w-full h-8 p-3 text-[13px] border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder={"Confirm New Password"}
               value={passwordConfirm}
               onChange={(e) => {
                 setPasswordConfirm(e.target.value);
                 setMessage(null);
               }}
             />
-            <button
-              type="submit"
-              className="w-full h-8 bg-[#0099e6] text-white rounded font-medium transition duration-200 text-[14px]"
-            >
-              {isLoading ? <div className="loader"></div> : "Reset Password"}
-            </button>
+            <Button isLoading={isLoading} name={"Reset Password"} />
           </form>
         </div>
-        <div className="flex justify-center bg-white px-12 py-6 rounded shadow mt-4 text-center text-[14px] font-normal">
-          <div className="text-gray-700">Have an account?</div>{" "}
-          <a href="/login" className="text-[#0099e6] font-medium ms-1">
-            Log in
-          </a>
-        </div>
+        <NavigateLogin />
       </div>
       <Footer className={""} />
     </div>

@@ -1,8 +1,7 @@
 import { Schema, model } from "mongoose";
 import IRecentSearchModel from "../interfaces/recentsearch.interface";
+import { RecentSearchName } from "../../utils/globalvariables";
 
-const DOCUMENT_NAME = "RecentSearch";
-const COLLECTION_NAME = "recentsearchs";
 
 const recentSearchSchema: Schema<IRecentSearchModel> =
   new Schema<IRecentSearchModel>(
@@ -19,12 +18,12 @@ const recentSearchSchema: Schema<IRecentSearchModel> =
     },
     {
       timestamps: true,
-      collection: COLLECTION_NAME,
+      collection: RecentSearchName.COLLECTION_NAME,
     }
   );
 
 const RecentSearch = model<IRecentSearchModel>(
-  DOCUMENT_NAME,
+  RecentSearchName.DOCUMENT_NAME,
   recentSearchSchema
 );
 export default RecentSearch;

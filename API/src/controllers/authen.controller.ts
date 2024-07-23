@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import authenService from "../../services/authen.service";
-import { CREATED, OK } from "../../core/success.response";
-import RequestV2 from "../../data/interfaces/requestv2.interface";
+import authenService from "../services/authen.service";
+import { CREATED, OK } from "../core/success.response";
+import RequestV2 from "../data/interfaces/requestv2.interface";
 class AuthenController {
   constructor() {}
 

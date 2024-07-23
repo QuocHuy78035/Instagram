@@ -1,8 +1,6 @@
 import { Schema, model } from "mongoose";
 import IConversationModel from "../interfaces/conversation.interface";
-
-const DOCUMENT_NAME = "Conversation";
-const COLLECTION_NAME = "conversations";
+import { ConversationName } from "../../utils/globalvariables";
 
 const conversationSchema: Schema<IConversationModel> =
   new Schema<IConversationModel>(
@@ -20,11 +18,11 @@ const conversationSchema: Schema<IConversationModel> =
       },
       type: { type: String, default: "normal", enum: ["normal", "AI"] },
     },
-    { timestamps: true, collection: COLLECTION_NAME }
+    { timestamps: true, collection: ConversationName.COLLECTION_NAME }
   );
 
 const Conversation = model<IConversationModel>(
-  DOCUMENT_NAME,
+  ConversationName.DOCUMENT_NAME,
   conversationSchema
 );
 

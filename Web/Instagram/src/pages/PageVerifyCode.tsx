@@ -4,6 +4,11 @@ import useSignUp from "../zustand/useSignUp";
 import { useCookies } from "react-cookie";
 import { useAuthContext } from "../context/AuthContext";
 import Footer from "../components/authen/Footer";
+import Input from "../components/authen/Input";
+import Button from "../components/authen/Button";
+import NavigateLogin from "../components/authen/NavigateLogin";
+import GetTheApp from "../components/authen/GetTheApp";
+import Logo from "../components/authen/Logo";
 
 export default function PageVerifyCode() {
   const [__, setCookies] = useCookies(["jwt", "user"]);
@@ -30,14 +35,7 @@ export default function PageVerifyCode() {
     <div className="bg-gray-50 flex flex-col items-center justify-center h-screen">
       <div className="w-full max-w-sm mt-8 mb-[100px]">
         <div className="bg-white px-12 py-6 rounded shadow">
-          <div className="mb-3">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/1200px-Instagram_logo.svg.png"
-              width={"160px"}
-              height={"50px"}
-              className="mx-auto"
-            ></img>
-          </div>
+          <Logo className="mb-3" />
           {message ? (
             <div
               className="text-[14px] my-3 text-center"
@@ -52,49 +50,20 @@ export default function PageVerifyCode() {
             Just more one step, enter the 6-digit code we sent to{" "}
             {email ? email : mobile}
           </div>
-          <form onSubmit={handleSubmit}>
-            <input
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
               type="text"
-              placeholder="######"
-              className="w-full h-8 p-3 text-[13px] border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 mb-2"
+              placeholder={"######"}
               value={OTP}
               onChange={(e) => {
                 setOTP(e.target.value);
               }}
             />
-            <button
-              type="submit"
-              className="w-full h-8 bg-[#0099e6] text-white rounded font-medium transition duration-200 text-[14px] mt-2"
-            >
-              {isLoading ? <div className="loader"></div> : "Confirm"}
-            </button>
+            <Button isLoading={isLoading} name="Confirm" />
           </form>
         </div>
-        <div className="flex justify-center bg-white px-12 py-6 rounded shadow mt-4 text-center text-[14px] font-normal">
-          <div className="text-gray-700">Have an account?</div>{" "}
-          <a href="/login" className="text-[#0099e6] font-medium ms-1">
-            Log in
-          </a>
-        </div>
-        <div className="text-center mt-4">
-          <p className="text-gray-700 my-4 text-[14px]">Get the app.</p>
-          <div className="flex justify-center space-x-2">
-            <a href="#">
-              <img
-                src="https://static.cdninstagram.com/rsrc.php/v3/yz/r/c5Rp7Ym-Klz.png"
-                alt="Google Play Store"
-                className="w-32 h-10 rounded-sm"
-              />
-            </a>
-            <a href="#">
-              <img
-                src="https://static.cdninstagram.com/rsrc.php/v3/yu/r/EHY6QnZYdNX.png"
-                alt="Microsoft Store"
-                className="w-32 h-10 rounded-sm"
-              />
-            </a>
-          </div>
-        </div>
+        <NavigateLogin />
+        <GetTheApp />
       </div>
       <Footer className={""} />
     </div>

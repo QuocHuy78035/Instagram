@@ -1,5 +1,5 @@
 import express from "express";
-import conversationController from "../middlewares/controllers/conversation.controller";
+import conversationController from "../controllers/conversation.controller";
 import { authentication } from "../middlewares/interceptors/authentication.interceptor";
 import { asyncHandler } from "../helpers/asyncHandler";
 

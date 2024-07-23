@@ -1,7 +1,10 @@
-export default function Tooltip({ message, children }) {
+export default function Tooltip(body: {
+  message?: string;
+  children: JSX.Element;
+}) {
   return (
     <div className="group relative flex items-center justify-center">
-      {children}
+      {body.children}
       <div className="absolute left-[51px] ml-auto mr-auto scale-0 transform rounded-lg px-3 py-2 transition-all duration-500 group-hover:scale-100 z-[1000000]">
         <div
           className="flex items-center flex-row-reverse"
@@ -10,7 +13,7 @@ export default function Tooltip({ message, children }) {
           }}
         >
           <div className="rounded bg-white p-2 text-center text-[14px] text-black">
-            {message}
+            {body.message ? body.message : ""}
           </div>
         </div>
       </div>

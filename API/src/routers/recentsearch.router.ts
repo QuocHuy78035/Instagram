@@ -1,6 +1,6 @@
 import express from "express";
 import { authentication } from "../middlewares/interceptors/authentication.interceptor";
-import recentsearchController from "../middlewares/controllers/recentsearch.controller";
+import recentsearchController from "../controllers/recentsearch.controller";
 import { asyncHandler } from "../helpers/asyncHandler";
 
 class RecentSearchRouter {

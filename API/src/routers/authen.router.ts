@@ -1,5 +1,5 @@
 import express from "express";
-import authenController from "../middlewares/controllers/authen.controller";
+import authenController from "../controllers/authen.controller";
 import { asyncHandler } from "../helpers/asyncHandler";
 import { authentication } from "../middlewares/interceptors/authentication.interceptor";
 

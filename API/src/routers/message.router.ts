@@ -1,7 +1,7 @@
 import express from "express";
 import { authentication } from "../middlewares/interceptors/authentication.interceptor";
 import { asyncHandler } from "../helpers/asyncHandler";
-import messageController from "../middlewares/controllers/message.controller";
+import messageController from "../controllers/message.controller";
 import upload from "../middlewares/interceptors/uploadfile.interceptor";
 class MessageRouter {
   router = express.Router();

@@ -1,8 +1,6 @@
 import { Schema, model } from "mongoose";
 import IMessageModel from "../interfaces/message.interface";
-
-const DOCUMENT_NAME = "Message";
-const COLLECTION_NAME = "messages";
+import { MessageName } from "../../utils/globalvariables";
 
 const messageSchema: Schema<IMessageModel> = new Schema<IMessageModel>(
   {
@@ -32,9 +30,9 @@ const messageSchema: Schema<IMessageModel> = new Schema<IMessageModel>(
   },
   {
     timestamps: true,
-    collection: COLLECTION_NAME,
+    collection: MessageName.COLLECTION_NAME,
   }
 );
 
-const Message = model<IMessageModel>(DOCUMENT_NAME, messageSchema);
+const Message = model<IMessageModel>(MessageName.DOCUMENT_NAME, messageSchema);
 export default Message;

@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import RequestV2 from "../../data/interfaces/requestv2.interface";
-import userService from "../../services/user.service";
-import { UnauthorizedError } from "../../core/error.response";
-import { OK } from "../../core/success.response";
+import RequestV2 from "../data/interfaces/requestv2.interface";
+import userService from "../services/user.service";
+import { UnauthorizedError } from "../core/error.response";
+import { OK } from "../core/success.response";
 
 class UserController {
   constructor() {}

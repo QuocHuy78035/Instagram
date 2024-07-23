@@ -1,8 +1,8 @@
 import { NextFunction, Response } from "express";
-import RequestV2 from "../../data/interfaces/requestv2.interface";
-import conversationService from "../../services/conversation.service";
-import { UnauthorizedError } from "../../core/error.response";
-import { OK } from "../../core/success.response";
+import RequestV2 from "../data/interfaces/requestv2.interface";
+import conversationService from "../services/conversation.service";
+import { UnauthorizedError } from "../core/error.response";
+import { OK } from "../core/success.response";
 
 class ConversationController {
   constructor() {}

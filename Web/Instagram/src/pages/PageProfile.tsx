@@ -8,6 +8,8 @@ import useOpenSearch from "../zustand/useOpenSearch";
 import { useAuthContext } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { getProfile } from "../api";
+import Button from "../components/profile/Button";
+import Tab from "../components/profile/Tab";
 
 export default function PageProfile() {
   const params = useParams();
@@ -52,17 +54,13 @@ export default function PageProfile() {
                   user &&
                   user._id === userProfile?._id ? (
                     <>
-                      <button
-                        className="px-3 py-1 rounded-md bg-[rgb(239,239,239)] hover:bg-[rgb(220,220,220)] font-semibold my-auto cursor-pointer outline-none"
+                      <Button
                         onClick={function () {
                           navigate("/accounts/edit");
                         }}
-                      >
-                        Edit profile
-                      </button>
-                      <button className="px-3 py-1 rounded-md bg-[rgb(239,239,239)] hover:bg-[rgb(220,220,220)]  font-semibold my-auto cursor-pointer outline-none">
-                        View archive
-                      </button>
+                        name={"Edit profile"}
+                      />
+                      <Button onClick={function () {}} name={"View archive"} />
                       <IoMdSettings className="text-[28px] my-auto cursor-pointer" />
                     </>
                   ) : (
@@ -104,51 +102,24 @@ export default function PageProfile() {
           </div>
           <div className="h-[300px] w-[100%] border-t-[1px] border-gray-200">
             <ul className="flex justify-center space-x-12 mx-auto text-[15px]">
-              <li
-                className={`flex space-x-1 pt-4 cursor-pointer`}
-                style={{
-                  borderTop: `${mode === "Posts" ? "1px solid black" : "0px"}`,
-                  color: `${
-                    mode === "Posts" ? "rgb(0,0,0)" : "rgb(120,120,120)"
-                  }`,
-                }}
-                onClick={function () {
-                  setMode("Posts");
-                }}
-              >
-                <IoMdGrid className="my-auto" />
-                <div>Posts</div>
-              </li>
-              <li
-                className={`flex space-x-1 pt-4 cursor-pointer`}
-                style={{
-                  borderTop: `${mode === "Saved" ? "1px solid black" : "0px"}`,
-                  color: `${
-                    mode === "Saved" ? "rgb(0,0,0)" : "rgb(120,120,120)"
-                  }`,
-                }}
-                onClick={function () {
-                  setMode("Saved");
-                }}
-              >
-                <CiBookmark className="my-auto" />
-                <div>Saved</div>
-              </li>
-              <li
-                className={`flex space-x-1 pt-4 cursor-pointer`}
-                style={{
-                  borderTop: `${mode === "Tagged" ? "1px solid black" : "0px"}`,
-                  color: `${
-                    mode === "Tagged" ? "rgb(0,0,0)" : "rgb(120,120,120)"
-                  }`,
-                }}
-                onClick={function () {
-                  setMode("Tagged");
-                }}
-              >
-                <LuUserSquare2 className="my-auto" />
-                <div>Tagged</div>
-              </li>
+              <Tab
+                mode={mode}
+                setMode={setMode}
+                icon={<IoMdGrid className="my-auto" />}
+                name="Posts"
+              />
+              <Tab
+                mode={mode}
+                setMode={setMode}
+                icon={<CiBookmark className="my-auto" />}
+                name="Saved"
+              />
+              <Tab
+                mode={mode}
+                setMode={setMode}
+                icon={<LuUserSquare2 className="my-auto" />}
+                name="Tagged"
+              />
             </ul>
           </div>
         </div>

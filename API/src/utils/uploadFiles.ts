@@ -5,8 +5,8 @@ import {
   getDownloadURL,
   uploadBytesResumable,
 } from "firebase/storage";
-import { firebaseConfig } from "../configs/firebase.config";
-initializeApp(firebaseConfig);
+import { firebase} from "../configs/firebase.config";
+initializeApp(firebase);
 const storage = getStorage();
 export class UploadFiles {
   private model: string;

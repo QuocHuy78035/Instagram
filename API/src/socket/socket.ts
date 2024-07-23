@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 import http from "http";
 import express from "express";
 import userService from "../services/user.service";
+import { socket } from "../configs/socket.config";
 
 class SocketConnection {
   server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
@@ -12,12 +13,12 @@ class SocketConnection {
   constructor() {
     const app = express();
     this.server = http.createServer(app);
-    this.server.listen(3000, () => {
-      console.log("server running at http://localhost:3000");
+    this.server.listen(socket.port, () => {
+      console.log(`server running at http://localhost:${socket.port}`);
     });
     SocketConnection.io = new Server(this.server, {
       cors: {
-        origin: ["http://localhost:4173"],
+        origin: [socket.cors_url],
         methods: ["GET", "POST"],
       },
     });

@@ -1,9 +1,8 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import { IUserModel } from "../interfaces/user.interface";
-import { UserName } from "../../utils/globalvariables";
-const DEFAULT_IMAGE =
-  "https://firebasestorage.googleapis.com/v0/b/insta-ebedc.appspot.com/o/users%2Fimages%2F143086968_2856368904622192_1959732218791162458_n.png?alt=media&token=77e45ba1-a6c1-444d-bbaf-05c13e01cf43";
+import { DEFAULT_IMAGE, UserName } from "../../utils/globalvariables";
+
 const userSchema: Schema<IUserModel> = new Schema<IUserModel>(
   {
     name: {
