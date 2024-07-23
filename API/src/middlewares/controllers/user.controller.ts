@@ -3,9 +3,23 @@ import RequestV2 from "../../data/interfaces/requestv2.interface";
 import userService from "../../services/user.service";
 import { UnauthorizedError } from "../../core/error.response";
 import { OK } from "../../core/success.response";
+import { Types } from "mongoose";
 
 class UserController {
   constructor() {}
+
+  getAnotherUserByUserId = async (req: Request, res: Response, next: NextFunction) => {
+    // if (!req.user) {
+    //   throw new UnauthorizedError("User not found! Please log in again!");
+    // }
+    const userId = new Types.ObjectId(req.params.userId);
+
+    const metadata = await userService.getAnotherUserById(userId);
+    new OK({
+      message: "Get user successfully!",
+      metadata,
+    }).send(res);
+  };
 
   getUserById = async (req: RequestV2, res: Response, next: NextFunction) => {
     if (!req.user) {
