@@ -6,7 +6,8 @@ class UserModel extends UserData {
       required super.email,
       required super.userName,
       required super.name,
-      required super.role, required super.avt});
+      required super.role,
+      required super.avt});
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
@@ -15,18 +16,17 @@ class UserModel extends UserData {
       'username': userName,
       'name': name,
       'role': role,
-      'avatar' : avt
+      'avatar': avt
     };
   }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['_id'],
-      email: json['email'],
-      userName: json['username'],
-      name: json['name'],
-      role: json['role'],
-      avt: json['avatar']
-    );
+        id: json['_id'],
+        email: json['email'],
+        userName: json['username'],
+        name: json['name'],
+        role: json['role'],
+        avt: json['avatar']);
   }
 }

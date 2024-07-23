@@ -4,9 +4,10 @@ import 'package:shimmer/shimmer.dart';
 
 class ChatItemFriend extends StatelessWidget {
   final String message;
+  final String avtUrl;
 
   const ChatItemFriend(
-      {super.key, required this.message});
+      {super.key, required this.message, required this.avtUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class ChatItemFriend extends StatelessWidget {
                   borderRadius: BorderRadius.circular(50),
                   child: CachedNetworkImage(
                     imageUrl:
-                    "https://firebasestorage.googleapis.com/v0/b/insta-ebedc.appspot.com/o/users%2Fimages%2F143086968_2856368904622192_1959732218791162458_n.png?alt=media&token=77e45ba1-a6c1-444d-bbaf-05c13e01cf43",
+                    avtUrl,
                     fit: BoxFit.fill,
                     placeholder: (context, url) => SizedBox(
                       width: 35,

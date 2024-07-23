@@ -11,6 +11,8 @@ import '../../../../../core/local_db_config/init_local_db.dart';
 import '../bloc/chat_bloc.dart';
 import '../bloc/chat_event.dart';
 
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+
 class DetailChatScreen extends StatefulWidget {
   final String conversationId;
   final String userChatAvt;
@@ -31,6 +33,9 @@ class _DetailChatScreenState extends State<DetailChatScreen>
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _textController = TextEditingController();
   ConversationModel? conversation;
+  dynamic userOnlId;
+
+  IO.Socket? socket;
 
   getConversation() {
     context
@@ -41,12 +46,14 @@ class _DetailChatScreenState extends State<DetailChatScreen>
   @override
   void initState() {
     super.initState();
+    //_initSocket();
     getConversation();
     WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
+    //_disconnectSocket();
     _scrollController.dispose();
     _textController.dispose();
     WidgetsBinding.instance.removeObserver(this);
@@ -73,12 +80,86 @@ class _DetailChatScreenState extends State<DetailChatScreen>
     );
   }
 
-  void _sendMessage() {
-    // Implement sending message logic here
-    // For example, add message to a list and clear text field
-    _textController.clear();
-    // Optionally scroll to bottom after sending message
-    _scrollToBottom();
+  // void _sendMessage(String userId) {
+  //   final message = _textController.text.trim();
+  //   if (message.isNotEmpty && socket != null) {
+  //     socket!.emit('sendMessage', {
+  //       'conversationId': widget.conversationId,
+  //       'senderId': userId, // Replace with actual sender ID
+  //       'message': message,
+  //     });
+  //     _textController.clear();
+  //     _scrollToBottom();
+  //   }
+  // }
+
+  List<Map<String, dynamic>> extractMessages(
+      Map<String, dynamic>? conversationJson) {
+    List<Map<String, dynamic>> result = [];
+
+    if (conversationJson != null && conversationJson.containsKey('messages')) {
+      final messages = conversationJson['messages'] as List?;
+
+      if (messages != null) {
+        for (var messageGroup in messages) {
+          final date = messageGroup['date'];
+          final messages = messageGroup['messages'] as List?;
+
+          if (messages != null) {
+            for (var message in messages) {
+              final messageId = message['_id'];
+              final senderId = message['senderId'];
+              final messageText = message['message'];
+
+              result.add({
+                'date': date,
+                'messageId': messageId,
+                'senderId': senderId,
+                'message': messageText,
+              });
+            }
+          }
+        }
+      }
+    }
+
+    return result;
+  }
+
+  void _initSocket() {
+    socket = IO.io('http://192.168.1.2:3000', <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': false,
+    });
+
+    socket?.onConnect((_) {
+      print('Socket connected');
+
+      socket?.on('newMessage', (data) {
+        print('New message received: $data');
+        // Refresh conversation or update state
+        getConversation();
+        _scrollToBottom(); // Optional: scroll to bottom when new message arrives
+      });
+    });
+
+    socket?.onDisconnect((_) {
+      print('Socket disconnected');
+    });
+
+
+
+    socket?.on('getOnlineUsers', (data){
+      print(data);
+    });
+
+    socket?.connect();
+  }
+
+  void _disconnectSocket() {
+    if (socket != null) {
+      socket?.disconnect();
+    }
   }
 
   @override
@@ -96,8 +177,7 @@ class _DetailChatScreenState extends State<DetailChatScreen>
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(50),
                 child: CachedNetworkImage(
-                  imageUrl:
-                      "https://firebasestorage.googleapis.com/v0/b/insta-ebedc.appspot.com/o/users%2Fimages%2F143086968_2856368904622192_1959732218791162458_n.png?alt=media&token=77e45ba1-a6c1-444d-bbaf-05c13e01cf43",
+                  imageUrl: widget.userChatAvt,
                   fit: BoxFit.fill,
                   placeholder: (context, url) => SizedBox(
                     width: 35,
@@ -145,39 +225,37 @@ class _DetailChatScreenState extends State<DetailChatScreen>
           BlocBuilder<ChatBloc, ChatState>(builder: (context, state) {
             if (state is GetConversationSuccess) {
               conversation = state.conversationModel;
-            } else if (state is ChatLoadingState) {
+            } else if (state is ChatLoadingState || conversation == null) {
               return const CircularProgressIndicator();
             }
+
+            final messages = extractMessages(conversation!.toJson());
+
             return Expanded(
               child: ListView.builder(
-                itemCount: conversation?.messages.length,
+                itemCount: messages.length,
                 reverse: true,
-                // Ensures the list scrolls to bottom by default
                 controller: _scrollController,
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 itemBuilder: (BuildContext context, int index) {
                   return Column(
                     children: [
-                      conversation!.messages[index].messages[0].senderId == userId
-                          ? ChatItemMe(
-                              message: conversation
-                                  ?.messages[index].messages[0].message ?? "")
+                      if (index == 0 ||
+                          messages[index]['date'] !=
+                              messages[index - 1]['date'])
+                        Column(
+                          children: [
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Text(messages[index]['date'])
+                          ],
+                        ),
+                      messages[index]['senderId'] == userId
+                          ? ChatItemMe(message: messages[index]['message'])
                           : ChatItemFriend(
-                              message: conversation
-                                  ?.messages[index].messages[0].message ?? "")
-
-                      // ChatItemFriend(message: 'fhkjlhkjlhkjh'),
-                      // ChatItemMe(message: "1234"),
-                      // ChatItemFriend(message: 'wqeurhkjasdhfjkhasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh'),
-                      // ChatItemMe(message: "1234"),
-                      // ChatItemFriend(message: 'hasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh'),
-                      // ChatItemMe(message: "1234hasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh"),
-                      // ChatItemFriend(message: 'fhkjlhkjlhkjh'),
-                      // ChatItemMe(message: "1234"),
-                      // ChatItemFriend(message: 'wqeurhkjasdhfjkhasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh'),
-                      // ChatItemMe(message: "1234"),
-                      // ChatItemFriend(message: 'hasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh'),
-                      // ChatItemMe(message: "1234hasduifyiuwyueyrusdfkjhaksdhfkalhsdkjlfhkjlhkjlhkjh"),
+                              avtUrl: widget.userChatAvt,
+                              message: messages[index]['message'])
                     ],
                   );
                 },
@@ -199,15 +277,17 @@ class _DetailChatScreenState extends State<DetailChatScreen>
                 Expanded(
                   child: TextFormField(
                     controller: _textController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Type your message...',
                       border: InputBorder.none,
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: _sendMessage,
+                  icon: const Icon(Icons.send),
+                  onPressed: () {
+                    //_sendMessage(userId);
+                  },
                 ),
               ],
             ),

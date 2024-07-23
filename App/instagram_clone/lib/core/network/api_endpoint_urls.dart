@@ -8,4 +8,5 @@ class ApiEndpointUrls {
   static const String createStory = 'story';
   static const String conversation = 'conversation';
   static const String message = 'message';
+  static const String user = 'user';
 }

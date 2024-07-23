@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:instagram_clone/src/modules/auth/data/models/user_model.dart';
 import 'package:instagram_clone/src/modules/chat/data/models/conversation_model.dart';
 
 @immutable
@@ -29,3 +30,10 @@ class GetAllConversationSuccess extends ChatState{
 }
 
 class GetAllConversationError extends ChatState{}
+
+class GetUserOnlineSuccess extends ChatState{
+  final List<UserModel> userModels;
+  GetUserOnlineSuccess({required this.userModels});
+}
+
+class GetUserOnlineError extends ChatState{}

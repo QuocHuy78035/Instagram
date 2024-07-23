@@ -33,3 +33,8 @@ class GetConversationEvent extends ChatEvent{
 }
 
 class GetAllConversationEvent extends ChatEvent{}
+
+class GetUserOnlineEvent extends ChatEvent{
+  final List<String> userId;
+  const GetUserOnlineEvent({required this.userId});
+}
