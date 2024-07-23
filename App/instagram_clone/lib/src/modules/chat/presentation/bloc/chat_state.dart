@@ -22,3 +22,10 @@ class GetConversationSuccess extends ChatState{
 }
 
 class GetConversationError extends ChatState{}
+
+class GetAllConversationSuccess extends ChatState{
+  final List<ConversationModel> listConversationModel;
+  GetAllConversationSuccess({required this.listConversationModel});
+}
+
+class GetAllConversationError extends ChatState{}

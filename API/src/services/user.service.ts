@@ -10,6 +10,14 @@ import keytokenService from "./keytoken.service";
 
 class UserService {
   constructor() {}
+
+  async getAnotherUserById(userId: Types.ObjectId) {
+    const user = await userRepo.findById(userId);
+    return {
+      user,
+    };
+  }
+
   async getUserById(userId: Types.ObjectId) {
     const user = await userRepo.findById(userId);
     return {

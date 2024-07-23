@@ -31,3 +31,5 @@ class GetConversationEvent extends ChatEvent{
   final String conversationId;
   const GetConversationEvent({required this.conversationId});
 }
+
+class GetAllConversationEvent extends ChatEvent{}
