@@ -5,11 +5,14 @@ import { UnauthorizedError } from "../core/error.response";
 import { OK } from "../core/success.response";
 import { Types } from "mongoose";
 
-
 class UserController {
   constructor() {}
 
-  getAnotherUserByUserId = async (req: Request, res: Response, next: NextFunction) => {
+  getAnotherUserByUserId = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
     // if (!req.user) {
     //   throw new UnauthorizedError("User not found! Please log in again!");
     // }
@@ -129,6 +132,7 @@ class UserController {
     if (!req.user) {
       throw new UnauthorizedError("User not found! Please log in again!");
     }
+    console.log("Hi" + req.user.userId);
     const metadata = await userService.findFollowingsByIdAndHaveStories(
       req.user.userId
     );
