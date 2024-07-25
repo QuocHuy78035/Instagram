@@ -3,13 +3,15 @@ import RequestV2 from "../data/interfaces/requestv2.interface";
 import messageService from "../services/message.service";
 import { BadRequestError, UnauthorizedError } from "../core/error.response";
 import { CREATED, OK } from "../core/success.response";
+import getMessageError from "../helpers/getMessageError";
+import getMessage from "../helpers/getMessage";
 
 class MessageController {
   constructor() {}
 
   sendMessage = async (req: RequestV2, res: Response, next: NextFunction) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await messageService.sendMessage({
       userId: req.user?.userId,
@@ -21,7 +23,7 @@ class MessageController {
     });
 
     new CREATED({
-      message: "Send message successfully!",
+      message: getMessage(207),
       metadata,
     }).send(res);
   };
@@ -32,7 +34,7 @@ class MessageController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
 
     const metadata = await messageService.answerMessageByAI({
@@ -42,7 +44,7 @@ class MessageController {
     });
 
     new CREATED({
-      message: "AI answers message successfully!",
+      message: getMessage(208),
       metadata,
     }).send(res);
   };
@@ -53,16 +55,16 @@ class MessageController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     if (!req.query.conversation) {
-      throw new BadRequestError("Please fill the conversation query!");
+      throw new BadRequestError(getMessageError(150));
     }
     if (!req.query.page) {
-      throw new BadRequestError("Please fill the page query!");
+      throw new BadRequestError(getMessageError(151));
     }
     if (typeof parseInt(req.query.page as string) !== "number") {
-      throw new BadRequestError("Page query is invalid!");
+      throw new BadRequestError(getMessageError(152));
     }
     const metadata = await messageService.findByConversation(
       req.user.userId,
@@ -71,18 +73,18 @@ class MessageController {
     );
 
     new OK({
-      message: "Find messages by conversation successfully!",
+      message: getMessage(209),
       metadata,
     }).send(res);
   };
 
   deleteMessage = async (req: RequestV2, res: Response, next: NextFunction) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     await messageService.deleteMessage(req.params.messageId);
     new OK({
-      message: "Delete message successfully!",
+      message: getMessage(210),
     }).send(res);
   };
 }

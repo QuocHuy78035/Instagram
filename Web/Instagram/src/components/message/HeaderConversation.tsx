@@ -4,16 +4,25 @@ import { TbPhoneCall } from "react-icons/tb";
 import useHeaderConversation from "../../hooks/useHeaderConversation";
 import useOpenConversationInformation from "../../zustand/useOpenConversationInformation";
 import { FaCircleInfo } from "react-icons/fa6";
-
-export default function HeaderConversation({ conversation }) {
-  const { state, name, avatar1, avatar2 } = useHeaderConversation(conversation);
+import { IconType } from "react-icons";
+function Button(body: { Icon: IconType; onClick: (e) => void }) {
+  return (
+    <button className="w-12 h-12 my-auto px-2 py-2" onClick={body.onClick}>
+      <body.Icon className="w-6 h-6 mx-auto" />
+    </button>
+  );
+}
+export default function HeaderConversation(body: { conversation: any }) {
+  const { state, name, avatar1, avatar2 } = useHeaderConversation(
+    body.conversation
+  );
   const { setIsOpenConversationInformation, isOpenConversationInformation } =
     useOpenConversationInformation();
   return (
     <div className="top-0 px-4">
       <div
         className={`flex justify-between border-b border-gray-200 ${
-          conversation.participants.length >= 3 ? "py-2" : "py-4"
+          body.conversation.participants.length >= 3 ? "py-2" : "py-4"
         }`}
       >
         <div className="relative flex">
@@ -22,7 +31,7 @@ export default function HeaderConversation({ conversation }) {
               src={avatar1}
               alt="Profile Picture"
               className={`w-12 h-12 rounded-full z-10 ${
-                conversation.participants.length >= 3 ? "mt-3 ml-3" : ""
+                body.conversation.participants.length >= 3 ? "mt-3 ml-3" : ""
               }`}
             />
           ) : (
@@ -44,24 +53,27 @@ export default function HeaderConversation({ conversation }) {
         </div>
 
         <div className="flex">
-          <button className="w-12 h-12 my-auto px-2 py-2">
-            <TbPhoneCall className="w-6 h-6 mx-auto" />
-          </button>
-          <button className="w-12 h-12 my-auto px-2 py-2">
-            <RiVideoOnLine className="w-6 h-6 mx-auto font-bold" />
-          </button>
-          <button
-            className="w-12 h-12 my-auto px-2 py-2"
-            onClick={() => {
-              setIsOpenConversationInformation(!isOpenConversationInformation);
-            }}
-          >
-            {!isOpenConversationInformation ? (
-              <ImInfo className="w-6 h-6 mx-auto" />
-            ) : (
-              <FaCircleInfo className="w-6 h-6 mx-auto" />
-            )}
-          </button>
+          <Button Icon={TbPhoneCall} onClick={() => {}} />
+          <Button Icon={RiVideoOnLine} onClick={() => {}} />
+          {!isOpenConversationInformation ? (
+            <Button
+              Icon={ImInfo}
+              onClick={() => {
+                setIsOpenConversationInformation(
+                  !isOpenConversationInformation
+                );
+              }}
+            />
+          ) : (
+            <Button
+              Icon={FaCircleInfo}
+              onClick={() => {
+                setIsOpenConversationInformation(
+                  !isOpenConversationInformation
+                );
+              }}
+            />
+          )}
         </div>
       </div>
     </div>

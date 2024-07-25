@@ -7,12 +7,16 @@ import { UploadFiles } from "../utils/uploadFiles";
 import { UpdatePassword } from "../validators/user.validator";
 import { IKeyTokenModel } from "../data/interfaces/keytoken.interface";
 import keytokenService from "./keytoken.service";
+import getMessageError from "../helpers/getMessageError";
 
 class UserService {
   constructor() {}
 
   async getAnotherUserById(userId: Types.ObjectId) {
     const user = await userRepo.findById(userId);
+    if (!user) {
+      throw new UnauthorizedError(getMessageError(101));
+    }
     return {
       user,
     };
@@ -20,6 +24,9 @@ class UserService {
 
   async getUserById(userId: Types.ObjectId) {
     const user = await userRepo.findById(userId);
+    if (!user) {
+      throw new UnauthorizedError(getMessageError(101));
+    }
     return {
       user,
     };
@@ -28,7 +35,7 @@ class UserService {
   async getUserByUserName(username: string) {
     const user = await userRepo.findByUsername(username);
     if (!user) {
-      throw new BadRequestError("User not found");
+      throw new BadRequestError(getMessageError(101));
     }
     return {
       user,
@@ -37,18 +44,18 @@ class UserService {
 
   async following(userId: Types.ObjectId, followedUserId: string) {
     if (!isValidObjectId(followedUserId)) {
-      throw new UnauthorizedError("Invalid followed user id");
+      throw new UnauthorizedError(getMessageError(102));
     }
     const followedUserObjectId: Types.ObjectId =
       convertStringToObjectId(followedUserId);
 
     const user = await userRepo.findById(userId);
     if (!user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     const followedUser = await userRepo.findById(followedUserObjectId);
     if (!followedUser) {
-      throw new UnauthorizedError("Followed user not found! Please try again!");
+      throw new UnauthorizedError(getMessageError(103));
     }
 
     const updatedUser = await userRepo.updateAddToFollowingById(
@@ -67,18 +74,18 @@ class UserService {
 
   async unfollowing(userId: Types.ObjectId, followedUserId: string) {
     if (!isValidObjectId(followedUserId)) {
-      throw new UnauthorizedError("Invalid followed user id");
+      throw new UnauthorizedError(getMessageError(102));
     }
     const followedUserObjectId: Types.ObjectId =
       convertStringToObjectId(followedUserId);
 
     const user = await userRepo.findById(userId);
     if (!user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     const followedUser = await userRepo.findById(followedUserObjectId);
     if (!followedUser) {
-      throw new UnauthorizedError("Followed user not found! Please try again!");
+      throw new UnauthorizedError(getMessageError(103));
     }
 
     const updatedUser = await userRepo.updateRemoveFromFollowingById(
@@ -98,7 +105,7 @@ class UserService {
   async turnOnModePrivate(userId: Types.ObjectId) {
     const user = await userRepo.findById(userId);
     if (!user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
 
     const updatedUser = await userRepo.updateModePrivateToOnById(userId);
@@ -109,7 +116,7 @@ class UserService {
   async turnOffModePrivate(userId: Types.ObjectId) {
     const user = await userRepo.findById(userId);
     if (!user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
 
     const updatedUser = await userRepo.updateModePrivateToOffById(userId);
@@ -121,7 +128,7 @@ class UserService {
   async findFollowingsById(userId: Types.ObjectId) {
     const user = await userRepo.findById(userId);
     if (!user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
 
     const followings = await userRepo.findFollowingsById(userId);
@@ -133,13 +140,13 @@ class UserService {
   async findFollowingsByIdAndHaveStories(userId: Types.ObjectId) {
     const user = await userRepo.findById(userId);
     if (!user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     let followings: Array<any> | undefined = await userRepo.findFollowingsById(
       userId
     );
     if (!followings) {
-      throw new BadRequestError("Following is not found!");
+      throw new BadRequestError(getMessageError(104));
     }
     followings = await Promise.all(
       followings.map(async function (following: any) {
@@ -180,7 +187,7 @@ class UserService {
   async searchUsers(search: string = "") {
     const users = await userRepo.searchUsers(search);
     if (users.length === 0) {
-      throw new BadRequestError("No results found!");
+      throw new BadRequestError(getMessageError(105));
     }
 
     return {
@@ -191,11 +198,11 @@ class UserService {
   }
   async updateLatestOnlineAt(userId: string) {
     if (!isValidObjectId(userId)) {
-      throw new UnauthorizedError("Invalid user id");
+      throw new UnauthorizedError(getMessageError(106));
     }
     const user = await userRepo.findById(convertStringToObjectId(userId));
     if (!user) {
-      throw new BadRequestError(`User with id ${userId} is not found!`);
+      throw new BadRequestError(getMessageError(101));
     }
 
     return await userRepo.updateLatestOnlineAt(user.id);
@@ -212,6 +219,10 @@ class UserService {
     },
     file?: Express.Multer.File
   ) {
+    const user = await userRepo.findById(userId);
+    if (!user) {
+      throw new UnauthorizedError(getMessageError(101));
+    }
     let avatar: string | undefined = undefined;
     if (file) {
       avatar = await new UploadFiles(
@@ -220,13 +231,13 @@ class UserService {
         file
       ).uploadFileAndDownloadURL();
     }
-    const user = await userRepo.updateProfile(userId, {
+    const updatedUser = await userRepo.updateProfile(userId, {
       ...body,
       avatar,
       show_account_suggestions: Boolean(body.show_account_suggestions),
     });
     return {
-      user,
+      user: updatedUser,
     };
   }
 
@@ -252,25 +263,19 @@ class UserService {
 
     const user = await userRepo.findByIdWithPassword(userId);
     if (!user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
 
     if (!(await user.matchPassword(body.currentPassword))) {
-      throw new BadRequestError(
-        "Current password is not correct! Please try again!"
-      );
+      throw new BadRequestError(getMessageError(107));
     }
 
     if (body.currentPassword === body.newPassword) {
-      throw new BadRequestError(
-        "Current password and new password must not be the same! Please try again!"
-      );
+      throw new BadRequestError(getMessageError(108));
     }
 
     if (body.newPassword !== body.retypeNewPassword) {
-      throw new BadRequestError(
-        "New password and retype new password must be the same! Please try again!"
-      );
+      throw new BadRequestError(getMessageError(109));
     }
 
     user.password = body.newPassword;
@@ -278,7 +283,7 @@ class UserService {
 
     //logout
     if (!keyStore) {
-      throw new UnauthorizedError("Not found keystore!");
+      throw new UnauthorizedError(getMessageError(110));
     }
     const delKey = await keytokenService.removeKeyById(keyStore.id);
     return {};

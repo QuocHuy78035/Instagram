@@ -3,6 +3,8 @@ import RequestV2 from "../data/interfaces/requestv2.interface";
 import conversationService from "../services/conversation.service";
 import { UnauthorizedError } from "../core/error.response";
 import { OK } from "../core/success.response";
+import getMessage from "../helpers/getMessage";
+import getMessageError from "../helpers/getMessageError";
 
 class ConversationController {
   constructor() {}
@@ -13,7 +15,7 @@ class ConversationController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await conversationService.createConversation(
       req.user.userId.toString(),
@@ -21,7 +23,7 @@ class ConversationController {
     );
 
     new OK({
-      message: "Create conversation successfully!",
+      message: getMessage(203),
       metadata,
     }).send(res);
   };
@@ -32,7 +34,7 @@ class ConversationController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await conversationService.getConversation(
       req.user.userId,
@@ -40,7 +42,7 @@ class ConversationController {
     );
 
     new OK({
-      message: "Get conversation successfully!",
+      message: getMessage(204),
       metadata,
     }).send(res);
   };
@@ -51,14 +53,14 @@ class ConversationController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await conversationService.getAllConversations(
       req.user.userId
     );
 
     new OK({
-      message: "Get all conversations successfully!",
+      message: getMessage(205),
       metadata,
     }).send(res);
   };
@@ -69,7 +71,7 @@ class ConversationController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     await conversationService.deleteConversation(
       req.user.userId,
@@ -77,7 +79,7 @@ class ConversationController {
     );
 
     new OK({
-      message: "Delete conversation successfully!",
+      message: getMessage(206),
     }).send(res);
   };
 }

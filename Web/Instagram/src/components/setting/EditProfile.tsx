@@ -2,6 +2,32 @@ import { useState } from "react";
 import UserInfo from "./UserInfo";
 import ChangePassword from "./ChangePassword";
 
+function Tab(body: {
+  num: number;
+  name: string;
+  tab: number;
+  setTab: (num: number) => void;
+}) {
+  return (
+    <li
+      className="mr-1 cursor-pointer"
+      onClick={function () {
+        body.setTab(body.num);
+      }}
+    >
+      <div
+        className={`inline-block ${
+          body.tab === body.num
+            ? "bg-white  border-l border-t border-r rounded-t"
+            : ""
+        } py-2 px-4 text-[#0099e6] font-semibold`}
+      >
+        {body.name}
+      </div>
+    </li>
+  );
+}
+
 export default function EditProfile() {
   const [tab, setTab] = useState(1);
   return (
@@ -12,48 +38,9 @@ export default function EditProfile() {
         </div>
       </div>{" "}
       <ul className="flex border-b">
-        <li
-          className="-mb-px mr-1 cursor-pointer"
-          onClick={function () {
-            setTab(1);
-          }}
-        >
-          <div
-            className={`inline-block ${
-              tab === 1 ? "bg-white  border-l border-t border-r rounded-t" : ""
-            } py-2 px-4 text-[#0099e6] font-semibold`}
-          >
-            User Info
-          </div>
-        </li>
-        <li
-          className="mr-1 cursor-pointer"
-          onClick={function () {
-            setTab(2);
-          }}
-        >
-          <div
-            className={`inline-block ${
-              tab === 2 ? "bg-white border-l border-t border-r rounded-t" : ""
-            } py-2 px-4 text-[#0099e6] font-semibold`}
-          >
-            Change Password
-          </div>
-        </li>
-        <li
-          className="mr-1 cursor-pointer"
-          onClick={function () {
-            setTab(3);
-          }}
-        >
-          <div
-            className={`inline-block ${
-              tab === 3 ? "bg-white border-l border-t border-r rounded-t" : ""
-            } py-2 px-4 text-[#0099e6] font-semibold`}
-          >
-            Tab
-          </div>
-        </li>
+        <Tab num={1} name="User Info" tab={tab} setTab={setTab} />
+        <Tab num={2} name="Change Password" tab={tab} setTab={setTab} />
+        <Tab num={3} name="Tab" tab={tab} setTab={setTab} />
       </ul>
       {tab === 1 ? <UserInfo /> : ""}
       {tab === 2 ? <ChangePassword /> : ""}

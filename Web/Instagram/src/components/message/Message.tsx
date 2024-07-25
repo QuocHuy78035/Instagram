@@ -4,8 +4,19 @@ import { GoReply } from "react-icons/go";
 import { AiOutlineMore } from "react-icons/ai";
 import useOpenNavigateMoreMessage from "../../zustand/useOpenNavigateMoreMessage";
 import useReplyMessage from "../../zustand/useReplyMessage";
-
-export default function Message({ message, userId, participants }) {
+import { IconType } from "react-icons";
+function Button(body: { id?: string; onClick: (e) => void; Icon: IconType }) {
+  return (
+    <button
+      className="flex flex-col justify-center w-[32px] h-[32px] hover:bg-[rgb(239,239,239)] rounded-full outline-none"
+      onClick={body.onClick}
+      id={body.id}
+    >
+      <body.Icon className="mx-auto text-[18px]" />
+    </button>
+  );
+}
+export default function Message(body:{ message: any, userId: string, participants: Array<any>}) {
   const [rightUser, setRightUser] = useState(true);
   const [sender, setSender] = useState<any>({});
   const [isOpenBar, setIsOpenBar] = useState<boolean>(false);
@@ -24,19 +35,22 @@ export default function Message({ message, userId, participants }) {
   const { setReplyMessage, setSenderReplyMessage } = useReplyMessage();
   const [replyMessageUser, setReplyMessageUser] = useState<any>();
   useEffect(() => {
-    setRightUser(userId === message.senderId ? true : false);
-  }, [userId, message]);
+    setRightUser(body.userId === body.message.senderId ? true : false);
+  }, [body.userId, body.message]);
   useEffect(() => {
-    setSender(participants.find((participant) => participant._id === userId));
-    if (message.replyMessage)
+    setSender(
+      body.participants.find((participant) => participant._id === body.userId)
+    );
+    if (body.message.replyMessage)
       setReplyMessageUser(
-        participants.find(
-          (participant) => participant._id === message.replyMessage.senderId
+        body.participants.find(
+          (participant) =>
+            participant._id === body.message.replyMessage.senderId
         )
       );
   }, []);
   function reply() {
-    setReplyMessage(message);
+    setReplyMessage(body.message);
     setSenderReplyMessage(sender);
   }
   return (
@@ -49,11 +63,11 @@ export default function Message({ message, userId, participants }) {
           marginLeft: `${rightUser ? "0px" : "12px"}`,
         }}
       >
-        {message.replyMessage && replyMessageUser
+        {body.message.replyMessage && replyMessageUser
           ? `You replied to ${replyMessageUser?.name}`
           : ""}
       </div>
-      {message.replyMessage ? (
+      {body.message.replyMessage ? (
         <div
           className="flex"
           style={{
@@ -67,14 +81,14 @@ export default function Message({ message, userId, participants }) {
           <div
             className={`mx-3 text-[15px] py-2 px-[12px] my-auto bg-[rgb(239,239,239)] text-black rounded-lg max-w-[400px]`}
           >
-            {message.replyMessage.message}
+            {body.message.replyMessage.message}
           </div>
         </div>
       ) : (
         ""
       )}
       <div
-        id={`message__${message._id}`}
+        id={`message__${body.message._id}`}
         className={`flex relative w-full my-[5px]`}
         style={{
           flexDirection: `${rightUser ? "row-reverse" : "row"}`,
@@ -94,16 +108,16 @@ export default function Message({ message, userId, participants }) {
         ) : (
           ""
         )}
-        {message.image ? (
+        {body.message.image ? (
           <img
-            src={message.image}
+            src={body.message.image}
             alt="Message Image"
             className="rounded-lg"
             style={{
               marginRight: rightUser ? "12px" : "0px",
             }}
           />
-        ) : message.message === "❤️" ? (
+        ) : body.message.message === "❤️" ? (
           <div
             className="text-[60px]"
             style={{
@@ -123,7 +137,7 @@ export default function Message({ message, userId, participants }) {
               marginRight: rightUser ? "12px" : "0px",
             }}
           >
-            {message.message}
+            {body.message.message}
           </div>
         )}
         <div
@@ -131,35 +145,24 @@ export default function Message({ message, userId, participants }) {
             !isOpenBar ? "hidden" : ""
           } my-auto py-auto`}
         >
-          <button className="flex flex-col justify-center w-[32px] h-[32px] hover:bg-[rgb(239,239,239)] rounded-full outline-none">
-            <CiFaceSmile className="mx-auto text-[18px]" />
-          </button>
-          <button
-            className="flex flex-col justify-center w-[32px] h-[32px] hover:bg-[rgb(239,239,239)] rounded-full outline-none"
-            onClick={reply}
-          >
-            <GoReply className="mx-auto text-[18px]" />
-          </button>
-          <button
-            id={`messageMore_${message._id}`}
-            className={
-              "flex flex-col justify-center w-[32px] h-[32px] hover:bg-[rgb(239,239,239)] rounded-full outline-none"
-            }
+          <Button onClick={function () {}} Icon={CiFaceSmile} />
+          <Button onClick={reply} Icon={GoReply} />
+          <Button
+            id={`messageMore_${body.message._id}`}
             onClick={function (e) {
-              if (selectedMessage?._id === message._id) {
+              if (selectedMessage?._id === body.message._id) {
                 setIsOpenNavigateMoreMessage(!isOpenNavigateMoreMessage);
               } else {
                 setTop(e.currentTarget.getBoundingClientRect().top);
                 setLeft(e.currentTarget.getBoundingClientRect().left);
                 setRight(e.currentTarget.getBoundingClientRect().right);
-                setSelectedMessage(message);
+                setSelectedMessage(body.message);
                 setIsOpenNavigateMoreMessage(true);
                 setIsRight(rightUser);
               }
             }}
-          >
-            <AiOutlineMore className="mx-auto text-[18px]" />
-          </button>
+            Icon={AiOutlineMore}
+          />
         </div>
       </div>
     </div>

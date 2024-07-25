@@ -3,13 +3,15 @@ import RequestV2 from "../data/interfaces/requestv2.interface";
 import storyService from "../services/story.service";
 import { BadRequestError, UnauthorizedError } from "../core/error.response";
 import { CREATED, OK } from "../core/success.response";
+import getMessageError from "../helpers/getMessageError";
+import getMessage from "../helpers/getMessage";
 
 class StoryController {
   constructor() {}
 
   createStory = async (req: RequestV2, res: Response, next: NextFunction) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     const story = await storyService.createStory(
       req.user.userId,
@@ -18,7 +20,7 @@ class StoryController {
     );
 
     new CREATED({
-      message: "Create story successfully!",
+      message: getMessage(215),
       metadata: {
         story,
       },
@@ -31,7 +33,7 @@ class StoryController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     if (!req.query.otherUserId) {
       throw new BadRequestError("Please fill the otherUserId query!");
@@ -45,7 +47,7 @@ class StoryController {
     );
 
     new OK({
-      message: "Find stories by user successfully!",
+      message: getMessage(216),
       metadata: {
         stories,
       },
@@ -58,25 +60,25 @@ class StoryController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await storyService.updateUserViewedById(
       req.user.userId,
       req.params.id
     );
     new OK({
-      message: "Update user viewed by id successfully!",
+      message: getMessage(217),
       metadata,
     }).send(res);
   };
 
   deleteStory = async (req: RequestV2, res: Response, next: NextFunction) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     await storyService.deleteStory(req.user.userId, req.params.id);
     new OK({
-      message: "Delete story successfully!",
+      message: getMessage(218),
     }).send(res);
   };
 }

@@ -26,6 +26,7 @@ import { createTokenPair } from "../auth/authUtils";
 import crypto from "crypto";
 import { IKeyTokenModel } from "../data/interfaces/keytoken.interface";
 import conversationRepo from "../repos/conversation.repo";
+import getMessageError from "../helpers/getMessageError";
 const CHATAI_ID = "668d01b84330936b4d5b427a";
 class AuthenService {
   constructor() {}
@@ -40,7 +41,7 @@ class AuthenService {
     const keytoken = await keytokenService.createKeyToken(body.userId);
 
     if (!keytoken) {
-      throw new UnauthorizedError("Keytoken error!");
+      throw new UnauthorizedError(getMessageError(128));
     }
     const tokens = await createTokenPair(
       body,
@@ -66,11 +67,11 @@ class AuthenService {
     }
 
     if (!body.mobile && !body.email) {
-      throw new BadRequestError("Please just fill mobile phone or email!");
+      throw new BadRequestError(getMessageError(129));
     }
 
     if (body.mobile && body.email) {
-      throw new BadRequestError("Can not fill both mobile phone and email");
+      throw new BadRequestError(getMessageError(130));
     }
 
     if (body.mobile) {
@@ -78,7 +79,7 @@ class AuthenService {
         body.mobile
       );
       if (checkMobileExists) {
-        throw new BadRequestError("Mobile existed!");
+        throw new BadRequestError(getMessageError(131));
       }
     }
 
@@ -87,7 +88,7 @@ class AuthenService {
         body.email
       );
       if (checkEmailExists) {
-        throw new BadRequestError("Email existed!");
+        throw new BadRequestError(getMessageError(132));
       }
     }
 
@@ -95,7 +96,7 @@ class AuthenService {
       body.username as string
     );
     if (checkUsernameExists) {
-      throw new BadRequestError("Username existed!");
+      throw new BadRequestError(getMessageError(133));
     }
 
     let newUser:
@@ -133,9 +134,7 @@ class AuthenService {
       try {
         await new Email("OTP", body.email, OTP).sendEmail();
       } catch (err) {
-        throw new InternalServerError(
-          "There was an error sending the email. Try again later!"
-        );
+        throw new InternalServerError(getMessageError(134));
       }
     }
 
@@ -143,16 +142,13 @@ class AuthenService {
       try {
         await new SMS("OTP", body.mobile, OTP).sendSMS();
       } catch (err) {
-        throw new InternalServerError(
-          "There was an error sending the SMS. Try again later!" + err
-        );
+        throw new InternalServerError(getMessageError(135));
       }
     }
 
     // testing
     if (process.env.NODE_ENV === "development") {
-      if (!isOldUser)
-        await userRepo.findByIdAndDelete(newUser.id);
+      if (!isOldUser) await userRepo.findByIdAndDelete(newUser.id);
     }
 
     return {
@@ -169,7 +165,7 @@ class AuthenService {
       throw new BadRequestError(error.message);
     }
     if (!body.mobile && !body.email && !body.username) {
-      throw new BadRequestError("Please fill mobile phone, email or username!");
+      throw new BadRequestError(getMessageError(136));
     }
     let user:
       | (Document<unknown, {}, IUserModel> &
@@ -181,21 +177,21 @@ class AuthenService {
     if (body.mobile) {
       user = await userRepo.findOneByMobileAndActiveUser(body.mobile);
       if (!user) {
-        throw new BadRequestError("Mobile does not exist or is unverified!");
+        throw new BadRequestError(getMessageError(137));
       }
     }
 
     if (body.email) {
       user = await userRepo.findOneByEmailAndActiveUser(body.email);
       if (!user) {
-        throw new BadRequestError("Email does not exist or is unverified!");
+        throw new BadRequestError(getMessageError(138));
       }
     }
 
     if (body.username) {
       user = await userRepo.findOneByUsernameAndActiveUser(body.username);
       if (!user) {
-        throw new BadRequestError("Username does not exist or is unverified!");
+        throw new BadRequestError(getMessageError(139));
       }
     }
     if (!user) {
@@ -217,9 +213,7 @@ class AuthenService {
       try {
         await new Email("LINK", body.email, resetURL).sendEmail();
       } catch (err) {
-        throw new InternalServerError(
-          "There was an error sending the email. Try again later!"
-        );
+        throw new InternalServerError(getMessageError(134));
       }
     }
 
@@ -227,9 +221,7 @@ class AuthenService {
       try {
         await new SMS("LINK", body.mobile, resetURL).sendSMS();
       } catch (err) {
-        throw new InternalServerError(
-          "There was an error sending the SMS. Try again later!" + err
-        );
+        throw new InternalServerError(getMessageError(135));
       }
     }
 
@@ -238,17 +230,13 @@ class AuthenService {
         try {
           await new Email("LINK", user.email, resetURL).sendEmail();
         } catch (err) {
-          throw new InternalServerError(
-            "There was an error sending the email. Try again later!"
-          );
+          throw new InternalServerError(getMessageError(134));
         }
       } else if (user.mobile) {
         try {
           await new SMS("LINK", user.mobile, resetURL).sendSMS();
         } catch (err) {
-          throw new InternalServerError(
-            "There was an error sending the SMS. Try again later!" + err
-          );
+          throw new InternalServerError(getMessageError(135));
         }
       }
     }
@@ -266,11 +254,11 @@ class AuthenService {
     }
 
     if (!body.mobile && !body.email) {
-      throw new BadRequestError("Please fill mobile phone or email!");
+      throw new BadRequestError(getMessageError(129));
     }
 
     if (body.mobile && body.email) {
-      throw new BadRequestError("Can not fill both mobile phone and email");
+      throw new BadRequestError(getMessageError(130));
     }
 
     let user:
@@ -283,36 +271,34 @@ class AuthenService {
     if (body.mobile) {
       user = await userRepo.findOneByMobileAndActiveUser(body.mobile);
       if (user) {
-        throw new BadRequestError("Mobile existed!");
+        throw new BadRequestError(getMessageError(131));
       }
       user = await userRepo.findOneByMobileAndUnverifiedUser(body.mobile);
       if (!user) {
-        throw new BadRequestError("User with this mobile does not exist!");
+        throw new BadRequestError(getMessageError(140));
       }
     }
 
     if (body.email) {
       user = await userRepo.findOneByEmailAndActiveUser(body.email);
       if (user) {
-        throw new BadRequestError("Email existed!");
+        throw new BadRequestError(getMessageError(132));
       }
 
       user = await userRepo.findOneByEmailAndUnverifiedUser(body.email);
       if (!user) {
-        throw new BadRequestError("User with this email does not exist!");
+        throw new BadRequestError(getMessageError(141));
       }
     }
     if (!user) {
       return {};
     }
     if (user.OTPExpires && user.OTPExpires.getTime() < Date.now()) {
-      throw new BadRequestError("OTP has expired! Please send code again!");
+      throw new BadRequestError(getMessageError(142));
     }
 
     if (user.OTP !== hashString(body.OTP)) {
-      throw new BadRequestError(
-        "Your entered OTP is invalid! Please try again!"
-      );
+      throw new BadRequestError(getMessageError(143));
     }
 
     user.OTP = undefined;
@@ -366,7 +352,7 @@ class AuthenService {
     }
 
     if (!body.mobile && !body.email && !body.username) {
-      throw new BadRequestError("Please fill mobile phone, email or username");
+      throw new BadRequestError(getMessageError(144));
     }
 
     let user:
@@ -379,19 +365,19 @@ class AuthenService {
     if (body.username) {
       user = await userRepo.findOneByUsernameAndActiveUser(body.username);
       if (!user || !(await user.matchPassword(body.password as string))) {
-        throw new BadRequestError("Username or password does not exist!");
+        throw new BadRequestError(getMessageError(145));
       }
     }
     if (body.email) {
       user = await userRepo.findOneByEmailAndActiveUser(body.email);
       if (!user || !(await user.matchPassword(body.password as string))) {
-        throw new BadRequestError("Email or password does not exist!");
+        throw new BadRequestError(getMessageError(146));
       }
     }
     if (body.mobile) {
       user = await userRepo.findOneByMobileAndActiveUser(body.mobile);
       if (!user || !(await user.matchPassword(body.password as string))) {
-        throw new BadRequestError("Mobile or password does not exist!");
+        throw new BadRequestError(getMessageError(147));
       }
     }
     if (user) {
@@ -430,11 +416,11 @@ class AuthenService {
     const passwordResetToken = hashString(resetToken);
     const user = await userRepo.findOneByPasswordResetToken(passwordResetToken);
     if (!user) {
-      throw new BadRequestError("Your token is invalid or has expired!");
+      throw new BadRequestError(getMessageError(148));
     }
 
     if (body.password !== body.passwordConfirm) {
-      throw new UnauthorizedError("Passwords does not match!");
+      throw new UnauthorizedError(getMessageError(149));
     }
 
     user.passwordResetExpires = undefined;
@@ -474,7 +460,7 @@ class AuthenService {
       | null
   ) {
     if (!keyStore) {
-      throw new UnauthorizedError("Not found keystore!");
+      throw new UnauthorizedError(getMessageError(110));
     }
     const delKey = await keytokenService.removeKeyById(keyStore.id);
     console.log({ delKey });

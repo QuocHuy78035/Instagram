@@ -9,7 +9,7 @@ export const GlobalErrorMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log("Error", error.status);
+  console.log("Error", error.status, error.stack);
   const statusCode = error.status || statusCodes.INTERNAL_SERVER_ERROR;
   return res.status(statusCode).json({
     status: "error",

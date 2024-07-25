@@ -4,6 +4,8 @@ import userService from "../services/user.service";
 import { BadRequestError, UnauthorizedError } from "../core/error.response";
 import { OK } from "../core/success.response";
 import { Types } from "mongoose";
+import getMessageError from "../helpers/getMessageError";
+import getMessage from "../helpers/getMessage";
 
 class UserController {
   constructor() {}
@@ -17,25 +19,25 @@ class UserController {
     //   throw new UnauthorizedError("User not found! Please log in again!");
     // }
     if (!req.query.userId) {
-      throw new BadRequestError("Query userId does not exist!");
+      throw new BadRequestError(getMessageError(153));
     }
     const userId = new Types.ObjectId(req.query.userId as string);
 
     const metadata = await userService.getAnotherUserById(userId);
     new OK({
-      message: "Get user successfully!",
+      message: getMessage(219),
       metadata,
     }).send(res);
   };
 
   getUserById = async (req: RequestV2, res: Response, next: NextFunction) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
 
     const metadata = await userService.getUserById(req.user.userId);
     new OK({
-      message: "Get user successfully!",
+      message: getMessage(219),
       metadata,
     }).send(res);
   };
@@ -46,14 +48,12 @@ class UserController {
     next: NextFunction
   ) => {
     const metadata = await userService.getUserByUserName(req.params.username);
-    new OK({ message: "Get user by username successfully!", metadata }).send(
-      res
-    );
+    new OK({ message: getMessage(220), metadata }).send(res);
   };
 
   following = async (req: RequestV2, res: Response, next: NextFunction) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await userService.following(
       req.user.userId,
@@ -61,14 +61,14 @@ class UserController {
     );
 
     new OK({
-      message: "Following user successfully!",
+      message: getMessage(221),
       metadata,
     }).send(res);
   };
 
   unfollowing = async (req: RequestV2, res: Response, next: NextFunction) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await userService.unfollowing(
       req.user.userId,
@@ -76,7 +76,7 @@ class UserController {
     );
 
     new OK({
-      message: "Following user successfully!",
+      message: getMessage(222),
       metadata,
     }).send(res);
   };
@@ -87,12 +87,12 @@ class UserController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
 
     const metadata = await userService.turnOnModePrivate(req.user.userId);
     new OK({
-      message: "Turn on mode private successfully!",
+      message: getMessage(223),
       metadata,
     }).send(res);
   };
@@ -103,12 +103,12 @@ class UserController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
 
     const metadata = await userService.turnOffModePrivate(req.user.userId);
     new OK({
-      message: "Turn off mode private successfully!",
+      message: getMessage(224),
       metadata,
     }).send(res);
   };
@@ -119,11 +119,11 @@ class UserController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await userService.findFollowingsById(req.user.userId);
     new OK({
-      message: "Find followings successfully!",
+      message: getMessage(225),
       metadata,
     }).send(res);
   };
@@ -133,14 +133,13 @@ class UserController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
-    console.log("Hi" + req.user.userId);
     const metadata = await userService.findFollowingsByIdAndHaveStories(
       req.user.userId
     );
     new OK({
-      message: "Find followings by user id and have stories successfully!",
+      message: getMessage(226),
       metadata,
     }).send(res);
   };
@@ -148,14 +147,14 @@ class UserController {
     const metadata = await userService.searchUsers(req.query.search as string);
 
     new OK({
-      message: "Search users successfully!",
+      message: getMessage(227),
       metadata,
     }).send(res);
   };
 
   updateProfile = async (req: RequestV2, res: Response, next: NextFunction) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await userService.updateProfile(
       req.user.userId,
@@ -164,7 +163,7 @@ class UserController {
     );
 
     new OK({
-      message: "Update profile successfully!",
+      message: getMessage(228),
       metadata,
     }).send(res);
   };
@@ -175,12 +174,12 @@ class UserController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
 
     await userService.updatePassword(req.user.userId, req.body, req.keyStore);
     new OK({
-      message: "Update password successfully!",
+      message: getMessage(229),
     }).send(res);
   };
 }

@@ -1,16 +1,19 @@
 import { IconType } from "react-icons";
 
 export default function TabWithText(body: {
+  className?: string;
   name: string;
   style?: object;
   onClick: (e) => void;
   Icon?: IconType;
-  to: string;
+  to?: string;
   avatar?: JSX.Element;
 }) {
   return (
     <button
-      className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+      className={`flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none ${
+        body.className || ""
+      }`}
       style={
         body.name === "Search"
           ? body.style

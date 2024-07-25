@@ -8,6 +8,22 @@ import {
 } from "../../api/recentSearchAPI";
 import { useNavigate } from "react-router-dom";
 
+function Information(body: {user: any}){
+  return (
+    <>
+      <img
+        src={body.user.avatar}
+        alt="Profile Picture"
+        className="w-12 h-12 rounded-full"
+      />
+      <div>
+        <h4 className="font-medium text-[14px]">{body.user.name}</h4>
+        <p className="mt-[3px] text-gray-500 text-[13px]">{body.user.username}</p>
+      </div>
+    </>
+  );
+}
+
 export default function Search() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
@@ -75,17 +91,7 @@ export default function Search() {
               }}
             >
               <div className="flex items-center space-x-4">
-                <img
-                  src={user.avatar}
-                  alt="Profile"
-                  className="w-12 h-12 rounded-full"
-                />
-                <div>
-                  <h4 className="font-medium text-[14px]">{user.name}</h4>
-                  <p className="mt-[3px] text-gray-500 text-[13px]">
-                    {user.username}
-                  </p>
-                </div>
+                <Information user={user} />
                 <div className="absolute top-5 right-5">
                   <HiMiniXMark
                     className="my-auto fill-black text-[25px]"
@@ -120,17 +126,7 @@ export default function Search() {
               }}
             >
               <div className="flex items-center space-x-4">
-                <img
-                  src={user.avatar}
-                  alt="Profile Picture"
-                  className="w-12 h-12 rounded-full"
-                />
-                <div>
-                  <h4 className="font-medium text-[14px]">{user.name}</h4>
-                  <p className="mt-[3px] text-gray-500 text-[13px]">
-                    {user.username}
-                  </p>
-                </div>
+                <Information user={user} />
               </div>
               <label htmlFor={`${user._id}`} className="hidden"></label>
             </div>

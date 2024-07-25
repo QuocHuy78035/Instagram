@@ -11,11 +11,11 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { findByConversation } from "../../api";
 import usePage from "../../zustand/usePage";
 
-export default function Messages({
-  conversation,
-  messages,
-  setMessages,
-  param,
+export default function Messages(body: {
+  conversation: any;
+  messages: Array<any>;
+  setMessages: (arr: Array<any>) => void;
+  param: any;
 }) {
   const { socket } = useSocketContext();
   const { userId } = useAuthContext();
@@ -25,16 +25,18 @@ export default function Messages({
   useEffect(() => {
     socket?.on("newMessage", (newMessage) => {
       newMessage.shouldShake = true;
-      setMessages(changeMessageToMessageWithDay(newMessage, messages));
+      body.setMessages(
+        changeMessageToMessageWithDay(newMessage, body.messages)
+      );
     });
 
     return () => {
       socket?.off("newMessage");
     };
-  }, [socket, setMessages, messages]);
+  }, [socket, body.setMessages, body.messages]);
 
   useEffect(() => {
-    messages.forEach((messageWithDays) => {
+    body.messages.forEach((messageWithDays) => {
       messageWithDays.messages.forEach((message) => {
         const messageEle = document.getElementById(`message__${message._id}`);
         if (messageEle) {
@@ -63,21 +65,18 @@ export default function Messages({
         }
       });
     });
-  }, [messages]);
+  }, [body.messages]);
 
   useEffect(() => {
     (async () => {
-      if (!param.id) return;
+      if (!body.param.id) return;
       if (page === 1) {
         setIsLoading(true);
-        const dataMessages = await findByConversation(param.id, 1);
+        const dataMessages = await findByConversation(body.param.id, 1);
         if (dataMessages.status === 200) {
           if (dataMessages.metadata.messages.length) {
-            setMessages(
-              concatTwoMessagesWithDay(
-                [],
-                dataMessages.metadata.messages
-              )
+            body.setMessages(
+              concatTwoMessagesWithDay([], dataMessages.metadata.messages)
             );
           } else {
             setHasMore(false);
@@ -87,12 +86,15 @@ export default function Messages({
         // return;
       } else {
         let messagesClone: Array<any> = [];
-        const nextPageMessages = await findByConversation(param.id, page + 1);
+        const nextPageMessages = await findByConversation(
+          body.param.id,
+          page + 1
+        );
         if (!nextPageMessages.metadata.messages.length) {
           setHasMore(false);
         }
         for (let i = 1; i <= page; i++) {
-          const dataMessages = await findByConversation(param.id, i);
+          const dataMessages = await findByConversation(body.param.id, i);
           if (dataMessages.status === 200) {
             if (dataMessages.metadata.messages.length) {
               messagesClone = concatTwoMessagesWithDay(
@@ -102,7 +104,7 @@ export default function Messages({
             }
           }
         }
-        setMessages([...messagesClone]);
+        body.setMessages([...messagesClone]);
       }
     })();
   }, [page]);
@@ -116,10 +118,10 @@ export default function Messages({
     <>
       {!isLoading ? (
         <div id="messages">
-          {!hasMore ? <HeaderMessages conversation={conversation} /> : ""}
+          {!hasMore ? <HeaderMessages conversation={body.conversation} /> : ""}
           <div className="flex flex-col">
             <InfiniteScroll
-              dataLength={messages.length}
+              dataLength={body.messages.length}
               next={fetchMoreData}
               inverse={true}
               hasMore={hasMore}
@@ -138,12 +140,12 @@ export default function Messages({
                 1200 - page * 200 >= 0 ? 1200 - page * 200 : 0
               }px`}
             >
-              {messages.map((message) => {
+              {body.messages.map((message) => {
                 return (
                   <MessageWithDays
                     messageWithDays={message}
                     userId={userId}
-                    conversation={conversation}
+                    conversation={body.conversation}
                   />
                 );
               })}

@@ -8,9 +8,28 @@ import { useParams } from "react-router-dom";
 import useMessages from "../../zustand/useMessages";
 import useOpenNavigateMoreMessage from "../../zustand/useOpenNavigateMoreMessage";
 import { GoReport } from "react-icons/go";
+import { IconType } from "react-icons";
+
+function Tab(body: {
+  name: string;
+  className?: string;
+  onClick: (e) => void;
+  Icon: IconType;
+}) {
+  return (
+    <div
+      className={`px-2 py-2 flex justify-between hover:bg-[rgb(239,239,239)] rounded-md ${body.className}`}
+      onClick={body.onClick}
+    >
+      <div>{body.name}</div>
+      <body.Icon className="my-auto text-[15px]" />
+    </div>
+  );
+}
 
 export default function NavigateMoreMessage({ className, style, message }) {
-  const { setIsOpenNavigateMoreMessage, isRight } = useOpenNavigateMoreMessage();
+  const { setIsOpenNavigateMoreMessage, isRight } =
+    useOpenNavigateMoreMessage();
   const { page } = usePage();
   const { setMessages } = useMessages();
   const param = useParams();
@@ -47,31 +66,27 @@ export default function NavigateMoreMessage({ className, style, message }) {
         {changeDateToString(new Date(message.createdAt))}
       </div>
       <div className="py-2 border-t-[1px] border-b-[1px] border-gray-200">
-        <div className="px-2 py-2 flex justify-between hover:bg-[rgb(239,239,239)] rounded-md ">
-          <div>Forward</div>
-          <TiArrowForwardOutline className="my-auto text-[15px]" />
-        </div>
-        <div className="px-2 py-2 flex justify-between hover:bg-[rgb(239,239,239)] rounded-md">
-          <div>Copy</div>
-          <FaRegCopy className="my-auto text-[15px]" />
-        </div>
+        <Tab
+          name="Forward"
+          Icon={TiArrowForwardOutline}
+          onClick={function () {}}
+        />
+        <Tab name="Copy" Icon={FaRegCopy} onClick={function () {}} />
       </div>
       {isRight ? (
-        <div
-          className="my-2 px-2 py-2 flex justify-between text-[red] hover:bg-[rgb(239,239,239)] rounded-md"
+        <Tab
+          className="text-[red]"
+          name="Unsend"
+          Icon={RiDeleteBinLine}
           onClick={unsend}
-        >
-          <div>Unsend</div>
-          <RiDeleteBinLine className="my-auto text-[15px]" />
-        </div>
+        />
       ) : (
-        <div
-          className="my-2 px-2 py-2 flex justify-between text-[red] hover:bg-[rgb(239,239,239)] rounded-md"
-          // onClick={unsend}
-        >
-          <div>Report</div>
-          <GoReport className="my-auto text-[15px]" />
-        </div>
+        <Tab
+          className="text-[red]"
+          name="Report"
+          Icon={GoReport}
+          onClick={function () {}}
+        />
       )}
     </div>
   );

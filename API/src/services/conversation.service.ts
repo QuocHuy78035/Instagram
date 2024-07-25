@@ -5,13 +5,14 @@ import conversationRepo from "../repos/conversation.repo";
 import { convertStringToObjectId, messagesWithDays } from "../utils";
 import { IUserModel } from "../data/interfaces/user.interface";
 import messageRepo from "../repos/message.repo";
+import getMessageError from "../helpers/getMessageError";
 
 class ConversationService {
   constructor() {}
 
   async createConversation(userId: string, participantIds: Array<string>) {
     if (participantIds.length === 0) {
-      throw new BadRequestError("Please add at least 1 participants.");
+      throw new BadRequestError(getMessageError(127));
     }
     if (!participantIds.includes(userId)) {
       participantIds = [userId, ...participantIds];
@@ -19,11 +20,11 @@ class ConversationService {
     const participantObjectIds: Types.ObjectId[] = await Promise.all(
       participantIds.map(async (id) => {
         if (!isValidObjectId(id)) {
-          return new BadRequestError("User id is invalid!");
+          throw new BadRequestError(getMessageError(106));
         }
         const user = await userRepo.findById(convertStringToObjectId(id));
         if (!user) {
-          throw new BadRequestError(`User with id ${id} not found`);
+          throw new BadRequestError(getMessageError(101));
         }
         return user.id;
       })
@@ -40,7 +41,7 @@ class ConversationService {
 
   async getConversation(userId: Types.ObjectId, conversationId: string) {
     if (!isValidObjectId(conversationId)) {
-      throw new BadRequestError("Conversation id is invalid!");
+      throw new BadRequestError(getMessageError(120));
     }
     const conversation = await conversationRepo.findByIdAndUser(
       convertStringToObjectId(conversationId),
@@ -48,9 +49,7 @@ class ConversationService {
     );
 
     if (!conversation) {
-      throw new BadRequestError(
-        `Conversation with id ${conversationId} is not found!`
-      );
+      throw new BadRequestError(getMessageError(123));
     }
     const [selectedConversation, messages]: [any, any] = await Promise.all([
       conversationRepo.getConversation(conversation.id),
@@ -80,7 +79,7 @@ class ConversationService {
 
   async deleteConversation(userId: Types.ObjectId, conversationId: string) {
     if (!isValidObjectId(conversationId)) {
-      throw new BadRequestError("Conversation id is invalid!");
+      throw new BadRequestError(getMessageError(120));
     }
     const conversation = await conversationRepo.findByIdAndUser(
       convertStringToObjectId(conversationId),
@@ -88,9 +87,7 @@ class ConversationService {
     );
 
     if (!conversation) {
-      throw new BadRequestError(
-        `Conversation with id ${conversationId} is not found!`
-      );
+      throw new BadRequestError(getMessageError(123));
     }
     await messageRepo.deleteMessagesByConversation(conversation.id);
     await conversationRepo.deleteConversation(conversation.id);

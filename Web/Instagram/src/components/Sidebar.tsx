@@ -15,7 +15,7 @@ import TabWithText from "./sidebar/TabWithText";
 import ButtonMore from "./sidebar/ButtonMore";
 import Avatar from "./sidebar/Avatar";
 
-export default function Sidebar({ isFullContent }) {
+export default function Sidebar(body: { isFullContent: boolean }) {
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const { isOpenSearch, setIsOpenSearch } = useOpenSearch();
@@ -34,11 +34,11 @@ export default function Sidebar({ isFullContent }) {
       <div
         className={`relative bg-white border-r border-gray-200 flex flex-col justify-between items-center p-4`}
         style={{
-          width: `${!isFullContent ? "80" : "240"}px`,
-          minWidth: `${!isFullContent ? "80" : "240"}px`,
+          width: `${!body.isFullContent ? "80" : "240"}px`,
+          minWidth: `${!body.isFullContent ? "80" : "240"}px`,
         }}
       >
-        {!isFullContent ? (
+        {!body.isFullContent ? (
           <Tab onClick={direct("/")} Icon={FaInstagram} />
         ) : (
           <img
@@ -49,7 +49,7 @@ export default function Sidebar({ isFullContent }) {
         )}
 
         <div className="w-full">
-          {!isFullContent ? (
+          {!body.isFullContent ? (
             <>
               <Tab message={"Home"} onClick={direct("/")} Icon={GoHome} />
               <Tab
@@ -160,7 +160,7 @@ export default function Sidebar({ isFullContent }) {
             </div>
           )}
         </div>
-        {!isFullContent ? (
+        {!body.isFullContent ? (
           <Tooltip message="More">
             <ButtonMore hasText={false} />
           </Tooltip>

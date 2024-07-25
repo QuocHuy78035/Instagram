@@ -8,6 +8,7 @@ import SocketConnection from "../socket/socket";
 import { UploadFiles } from "../utils/uploadFiles";
 import resizeImage from "../utils/resizeImage";
 import { answerMessage } from "../utils/chatAI";
+import getMessageError from "../helpers/getMessageError";
 const CHATAI_ID = "668d01b84330936b4d5b427a";
 class MessageService {
   constructor() {}
@@ -21,36 +22,21 @@ class MessageService {
     react?: string;
   }) {
     if ((body.message === "" || !body.message) && !body.file) {
-      throw new BadRequestError("Message and image must not be empty!");
+      throw new BadRequestError(getMessageError(118));
     }
     if (body.message !== "" && body.message && body.file) {
-      throw new BadRequestError(
-        "Message and image can not appear at the same time!"
-      );
+      throw new BadRequestError(getMessageError(119));
     }
     if (!isValidObjectId(body.conversationId)) {
-      throw new BadRequestError(
-        `Conversation with id ${body.conversationId} is invalid!`
-      );
+      throw new BadRequestError(getMessageError(120));
     }
 
-    let image: string | undefined = undefined;
-    if (body.file) {
-      body.file.buffer = await resizeImage(body.file.buffer);
-      image = await new UploadFiles(
-        "messages",
-        "images",
-        body.file
-      ).uploadFileAndDownloadURL();
-    }
     let user: any = undefined;
     let conversation: any = undefined;
     let replyMessage: any = undefined;
     if (body.replyMessageId) {
       if (!isValidObjectId(body.replyMessageId)) {
-        throw new BadRequestError(
-          `Reply message with id ${body.replyMessageId} is invalid!`
-        );
+        throw new BadRequestError(getMessageError(121));
       }
       [user, conversation, replyMessage] = await Promise.all([
         userRepo.findById(body.userId),
@@ -62,9 +48,7 @@ class MessageService {
       ]);
 
       if (!replyMessage) {
-        throw new BadRequestError(
-          `Reply with ${body.replyMessageId} is not found!`
-        );
+        throw new BadRequestError(getMessageError(122));
       }
     } else {
       [user, conversation] = await Promise.all([
@@ -77,13 +61,21 @@ class MessageService {
     }
 
     if (!user) {
-      throw new BadRequestError("User not found! Please log in again!");
+      throw new BadRequestError(getMessageError(101));
     }
 
     if (!conversation) {
-      throw new BadRequestError(
-        `Conversation with id ${body.conversationId} is not found!`
-      );
+      throw new BadRequestError(getMessageError(123));
+    }
+
+    let image: string | undefined = undefined;
+    if (body.file) {
+      body.file.buffer = await resizeImage(body.file.buffer);
+      image = await new UploadFiles(
+        "messages",
+        "images",
+        body.file
+      ).uploadFileAndDownloadURL();
     }
     const newMessage = await messageRepo.createMessage({
       senderId: body.userId,
@@ -113,7 +105,6 @@ class MessageService {
 
     return {
       message: newMessage,
-      // conversation: updatedConversation,
     };
   }
 
@@ -123,9 +114,7 @@ class MessageService {
     message: string;
   }) {
     if (!isValidObjectId(body.conversationId)) {
-      throw new BadRequestError(
-        `Conversation with id ${body.conversationId} is invalid!`
-      );
+      throw new BadRequestError(getMessageError(120));
     }
 
     const conversation = await conversationRepo.findByIdAndUser(
@@ -134,9 +123,7 @@ class MessageService {
     );
 
     if (!conversation) {
-      throw new BadRequestError(
-        `Conversation with id ${body.conversationId} is not found!`
-      );
+      throw new BadRequestError(getMessageError(123));
     }
 
     if (
@@ -144,7 +131,7 @@ class MessageService {
         .map((participant) => participant.toString())
         .includes(CHATAI_ID)
     ) {
-      throw new BadRequestError("Conversation is not for chatting with AI!");
+      throw new BadRequestError(getMessageError(124));
     }
 
     const oldMessages = await messageRepo.findByConversation(conversation.id);
@@ -191,9 +178,7 @@ class MessageService {
     page: number
   ) {
     if (!isValidObjectId(conversationId)) {
-      throw new BadRequestError(
-        `Conversation with id ${conversationId} is invalid!`
-      );
+      throw new BadRequestError(getMessageError(120));
     }
     const conversation = await conversationRepo.findByIdAndUser(
       convertStringToObjectId(conversationId),
@@ -201,9 +186,7 @@ class MessageService {
     );
 
     if (!conversation) {
-      throw new BadRequestError(
-        `Conversation with id ${conversationId} is not found!`
-      );
+      throw new BadRequestError(getMessageError(123));
     }
     const messages = messagesWithDays(
       await messageRepo.findByConversation(conversation.id, page)
@@ -215,13 +198,13 @@ class MessageService {
 
   async deleteMessage(messageId: string) {
     if (!isValidObjectId(messageId)) {
-      throw new BadRequestError(`Message with id ${messageId} is invalid!`);
+      throw new BadRequestError(getMessageError(125));
     }
     const message = await messageRepo.findById(
       convertStringToObjectId(messageId)
     );
     if (!message) {
-      throw new BadRequestError(`Message with id ${messageId} is not found!`);
+      throw new BadRequestError(getMessageError(126));
     }
     await messageRepo.deleteMessage(message.id);
   }

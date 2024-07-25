@@ -3,6 +3,8 @@ import RequestV2 from "../data/interfaces/requestv2.interface";
 import recentsearchService from "../services/recentsearch.service";
 import { UnauthorizedError } from "../core/error.response";
 import { OK } from "../core/success.response";
+import getMessageError from "../helpers/getMessageError";
+import getMessage from "../helpers/getMessage";
 
 class RecentSearchController {
   constructor() {}
@@ -12,13 +14,13 @@ class RecentSearchController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await recentsearchService.findRecentSearchByUser(
       req.user?.userId
     );
     new OK({
-      message: "Find recent search by user successfully!",
+      message: getMessage(211),
       metadata,
     }).send(res);
   };
@@ -28,7 +30,7 @@ class RecentSearchController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     const metadata =
       await recentsearchService.removeSearchedUserFromRecentSearch(
@@ -37,7 +39,7 @@ class RecentSearchController {
       );
 
     new OK({
-      message: "Remove searched user from recent search successfully!",
+      message: getMessage(212),
       metadata,
     }).send(res);
   };
@@ -47,14 +49,14 @@ class RecentSearchController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     const metadata =
       await recentsearchService.removeAllSearchedUsersFromRecentSearch(
         req.user.userId
       );
     new OK({
-      message: "Remove all searched users from recent search successfully!",
+      message: getMessage(213),
       metadata,
     }).send(res);
   };
@@ -65,14 +67,14 @@ class RecentSearchController {
     next: NextFunction
   ) => {
     if (!req.user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await recentsearchService.addSearchedUserToRecentSearch(
       req.user.userId,
       req.params.searchedUser
     );
     new OK({
-      message: "Add searched user to recent search successfully!",
+      message: getMessage(214),
       metadata,
     }).send(res);
   };

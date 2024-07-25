@@ -1,5 +1,26 @@
 import { useEffect, useState } from "react";
 
+function InputPassword(body: {
+  name: string;
+  value: string;
+  setValue: (val: string) => void;
+}) {
+  return (
+    <>
+      <label className="font-bold text-[17px]">{body.name}</label>
+      <input
+        type="password"
+        placeholder={body.name}
+        className="w-full px-3 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 mt-3 mb-6"
+        value={body.value}
+        onChange={(e) => {
+          body.setValue(e.target.value);
+        }}
+      />
+    </>
+  );
+}
+
 export default function ChangePassword() {
   const [disabledBtn, setDisabledBtn] = useState(true);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -22,35 +43,20 @@ export default function ChangePassword() {
         Your password must be at least 8 characters and should include a
         combination of numbers, letters and special characters (!$@%).
       </div>
-      <label className="font-bold text-[17px]">Current Password</label>
-      <input
-        type="password"
-        placeholder="Current password"
-        className="w-full px-3 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 mt-3 mb-6"
+      <InputPassword
+        name="Current Password"
         value={currentPassword}
-        onChange={(e) => {
-          setCurrentPassword(e.target.value);
-        }}
+        setValue={setCurrentPassword}
       />
-      <label className="font-bold text-[17px]">New Password</label>
-      <input
-        type="password"
-        placeholder="New password"
-        className="w-full px-3 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 mt-3 mb-6"
+      <InputPassword
+        name="New Password"
         value={newPassword}
-        onChange={(e) => {
-          setNewPassword(e.target.value);
-        }}
+        setValue={setNewPassword}
       />
-      <label className="font-bold text-[17px]">Re-type new password</label>
-      <input
-        type="password"
-        placeholder="Re-type new password"
-        className="w-full px-3 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 mt-3 mb-6"
+      <InputPassword
+        name="Re-type new password"
         value={retypeNewPassword}
-        onChange={(e) => {
-          setRetypeNewPassword(e.target.value);
-        }}
+        setValue={setRetypeNewPassword}
       />
       <a
         href="/forgotPassword"

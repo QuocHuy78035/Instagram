@@ -10,6 +10,15 @@ import { FaRegCircleXmark } from "react-icons/fa6";
 import useReplyMessage from "../../zustand/useReplyMessage";
 import { HiXMark } from "react-icons/hi2";
 import useConversation from "../../zustand/useConversation";
+import { IconType } from "react-icons";
+
+function Button(body: { onClick: (e) => void; Icon: IconType }) {
+  return (
+    <button className="w-12 h-12 my-auto px-2 py-2" onClick={body.onClick}>
+      <body.Icon className="w-6 h-6 mx-auto" />
+    </button>
+  );
+}
 
 export default function MessageInput({
   messages,
@@ -210,9 +219,7 @@ export default function MessageInput({
           ""
         )}
         <div className="flex">
-          <button className="mr-4 w-8 h-8 my-auto">
-            <BsEmojiSmile className="w-6 h-6 mx-auto" />
-          </button>
+          <Button onClick={function () {}} Icon={BsEmojiSmile} />
           <form className="grow my-auto me-1" onSubmit={handleSubmit}>
             <div className="relative">
               <input
@@ -231,9 +238,7 @@ export default function MessageInput({
               </button>
             </div>
           </form>
-          <button className="w-12 h-12 my-auto px-2 py-2">
-            <GrMicrophone className="w-6 h-6 mx-auto" />
-          </button>
+          <Button onClick={function () {}} Icon={GrMicrophone} />
           <button className="w-12 h-12 my-auto px-2 py-2">
             <input
               type="file"
@@ -261,12 +266,7 @@ export default function MessageInput({
               <GrImage className="w-6 h-6 mx-auto" />
             </label>
           </button>
-          <button
-            className="w-12 h-12 my-auto px-2 py-2"
-            onClick={createHeartMessage}
-          >
-            <FiHeart className="w-6 h-6 mx-auto" />
-          </button>
+          <Button onClick={createHeartMessage} Icon={FiHeart}/>
         </div>
       </div>
     </>

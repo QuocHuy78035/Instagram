@@ -8,6 +8,7 @@ import { useCookies } from "react-cookie";
 import { useAuthContext } from "../context/AuthContext";
 import useOpenNavigateMore from "../zustand/useOpenNavigateMore";
 import { useNavigate } from "react-router-dom";
+import TabWithText from "./sidebar/TabWithText";
 
 export default function NavigateMore() {
   const navigate = useNavigate();
@@ -33,42 +34,41 @@ export default function NavigateMore() {
       }}
     >
       <div className="px-2 py-2 bg-white">
-        <button
-          className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none"
+        <TabWithText
           onClick={function () {
             navigate("/accounts/edit");
           }}
-        >
-          <IoSettingsSharp className="w-[24px] h-[24px] ms-[10px] my-auto" />
-          <div className="ms-[10px] my-auto">Settings</div>
-        </button>
-        <button className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none">
-          <LuActivitySquare className="w-[24px] h-[24px] ms-[10px] my-auto" />
-          <div className="ms-[10px] my-auto">Your activity</div>
-        </button>
-        <button className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none">
-          <FiBookmark className="w-[24px] h-[24px] ms-[10px] my-auto" />
-          <div className="ms-[10px] my-auto">Saved</div>
-        </button>
-        <button className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none">
-          <CiLight className="w-[24px] h-[24px] ms-[10px] my-auto" />
-          <div className="ms-[10px] my-auto">Switch appearance</div>
-        </button>
-        <button className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none">
-          <RiErrorWarningLine className="w-[24px] h-[24px] ms-[10px] my-auto" />
-          <div className="ms-[10px] my-auto">Report a problem</div>
-        </button>
+          Icon={IoSettingsSharp}
+          name="Settings"
+        />
+        <TabWithText
+          onClick={function () {}}
+          Icon={LuActivitySquare}
+          name="Your activity"
+        />
+        <TabWithText onClick={function () {}} Icon={FiBookmark} name="Saved" />
+        <TabWithText
+          onClick={function () {}}
+          Icon={CiLight}
+          name="Switch appearance"
+        />
+        <TabWithText
+          onClick={function () {}}
+          Icon={RiErrorWarningLine}
+          name="Report a problem"
+        />
       </div>
       <div className="px-2 py-2 bg-white">
-        <button className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-t-md outline-none border-b-[1px] border-gray-200">
-          <div className="ms-[10px] my-auto">Switch accounts</div>
-        </button>
-        <button
-          className="flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-b-md outline-none border-t-[1px] border-gray-200"
+        <TabWithText
+          onClick={function () {}}
+          className="rounded-none rounded-t-md border-b-[1px] border-gray-200"
+          name="Switch accounts"
+        />
+        <TabWithText
           onClick={logOutClick}
-        >
-          <div className="ms-[10px] my-auto">Log out</div>
-        </button>
+          className="rounded-none rounded-b-md border-t-[1px] border-gray-200"
+          name="Log out"
+        />
       </div>
     </div>
   );

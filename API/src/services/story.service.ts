@@ -6,6 +6,7 @@ import storyRepo from "../repos/story.repo";
 import { UploadFiles } from "../utils/uploadFiles";
 import { StoryName, typesOfFile } from "../utils/globalvariables";
 import { convertStringToObjectId } from "../utils";
+import getMessageError from "../helpers/getMessageError";
 
 class StoryService {
   constructor() {}
@@ -17,10 +18,10 @@ class StoryService {
   ) {
     const user = await userRepo.findById(userId);
     if (!user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
     if (!file) {
-      throw new BadRequestError("File not found!");
+      throw new BadRequestError(getMessageError(111));
     }
     let image: string | undefined = undefined;
     let video: string | undefined = undefined;
@@ -45,7 +46,7 @@ class StoryService {
 
   async findStoriesOfOtherUser(userId: Types.ObjectId, otherUserId: string) {
     if (!isValidObjectId(otherUserId)) {
-      throw new UnauthorizedError("Invalid followed user id");
+      throw new UnauthorizedError(getMessageError(102));
     }
     const otherUserObjectId: Types.ObjectId =
       convertStringToObjectId(otherUserId);
@@ -55,13 +56,11 @@ class StoryService {
       userRepo.findById(otherUserObjectId),
     ]);
     if (!user) {
-      throw new UnauthorizedError("User not found! Please log in again!");
+      throw new UnauthorizedError(getMessageError(101));
     }
 
     if (!otherUser) {
-      throw new UnauthorizedError(
-        `User with id ${otherUserId} not found! Please try again!`
-      );
+      throw new UnauthorizedError(getMessageError(112));
     }
 
     if (userId.toString() === otherUserObjectId.toString()) {
@@ -83,26 +82,26 @@ class StoryService {
 
   async updateUserViewedById(userId: Types.ObjectId, storyId: string) {
     if (!isValidObjectId(storyId)) {
-      throw new BadRequestError("Story id is invalid!");
+      throw new BadRequestError(getMessageError(113));
     }
     const story = await storyRepo.findById(convertStringToObjectId(storyId));
     if (!story) {
-      throw new BadRequestError(`Story with id ${storyId} is not found!`);
+      throw new BadRequestError(getMessageError(114));
     }
     return { story: await storyRepo.updateUserViewedById(userId, story.id) };
   }
 
   async deleteStory(userId: Types.ObjectId, storyId: string) {
     if (!isValidObjectId(storyId)) {
-      throw new BadRequestError("Story id is invalid!");
+      throw new BadRequestError(getMessageError(113));
     }
     const story = await storyRepo.findById(convertStringToObjectId(storyId));
     if (!story) {
-      throw new BadRequestError(`Story with id ${storyId} is not found!`);
+      throw new BadRequestError(getMessageError(114));
     }
 
     if (!story.userId.equals(userId)) {
-      throw new UnauthorizedError("You are not the owner of this story!");
+      throw new UnauthorizedError(getMessageError(115));
     }
     await storyRepo.deleteStory(story.id);
   }

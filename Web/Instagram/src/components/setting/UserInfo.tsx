@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuthContext } from "../../context/AuthContext";
 import { updateProfile } from "../../api";
+import CheckBox from "../global/CheckBox";
 
 export default function UserInfo() {
   const { user } = useAuthContext();
@@ -61,6 +62,20 @@ export default function UserInfo() {
       setBio(bio);
       setDisabledBtn(true);
     }
+  }
+
+  function Button(body: { name: string }) {
+    return (
+      <button
+        className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 w-full"
+        onClick={function (e) {
+          e.preventDefault();
+          setGender(body.name);
+        }}
+      >
+        {body.name}
+      </button>
+    );
   }
 
   return (
@@ -169,33 +184,9 @@ export default function UserInfo() {
             className="dropdown-menu absolute right-0 -bottom-[110px] transition-[opacity,margin] duration w-[90%] hidden z-10 mt-2 min-w-60 bg-white shadow-md rounded-lg p-2"
             aria-labelledby="dropdown-example"
           >
-            <button
-              className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 w-full"
-              onClick={function (e) {
-                e.preventDefault();
-                setGender("Female");
-              }}
-            >
-              Female
-            </button>
-            <button
-              className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 w-full"
-              onClick={function (e) {
-                e.preventDefault();
-                setGender("Male");
-              }}
-            >
-              Male
-            </button>
-            <button
-              className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 w-full"
-              onClick={function (e) {
-                e.preventDefault();
-                setGender("Prefer not to say");
-              }}
-            >
-              Prefer not to say
-            </button>
+            <Button name="Female" />
+            <Button name="Male" />
+            <Button name="Prefer not to say" />
           </div>
         </div>
       </div>
@@ -214,19 +205,12 @@ export default function UserInfo() {
           </div>
         </div>
         <div className="my-auto">
-          <label className="flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={show_account_suggestions}
-              className="hidden peer"
-            />
-            <div
-              className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 dark:peer-focus:ring-black rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-black"
-              onClick={function () {
-                setShow_account_suggestions(!show_account_suggestions);
-              }}
-            ></div>
-          </label>
+          <CheckBox
+            checked={show_account_suggestions as boolean}
+            onClick={function () {
+              setShow_account_suggestions(!show_account_suggestions);
+            }}
+          />
         </div>
       </div>
       <button

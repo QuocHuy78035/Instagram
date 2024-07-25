@@ -1,10 +1,38 @@
+import { IconType } from "react-icons";
 import { FaUserAltSlash } from "react-icons/fa";
 import { FaRegCircleUser, FaRegComment } from "react-icons/fa6";
 import { FiLock } from "react-icons/fi";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { MdBlockFlipped } from "react-icons/md";
 import { TbMessageCircle2Filled } from "react-icons/tb";
-import { useNavigate, useParams } from "react-router-dom";
+import {
+  NavigateFunction,
+  Params,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
+
+function Button(body: {
+  name: string;
+  params: Readonly<Params<string>>;
+  mode: string;
+  navigate: NavigateFunction;
+  Icon: IconType;
+}) {
+  return (
+    <button
+      className={`flex w-full h-[52px] hover:bg-[rgb(239,239,239)] bg-[${
+        body.params.mode === body.mode ? "rgb(239,239,239)" : "white"
+      }] rounded-lg outline-none px-3 text-[15px]`}
+      onClick={function () {
+        body.navigate(`/accounts/${body.mode}`);
+      }}
+    >
+      <body.Icon className="w-[26px] h-[26px] ms-[10px] my-auto" />
+      <div className="ms-[10px] my-auto">{body.name}</div>
+    </button>
+  );
+}
 
 export default function SidebarSetting() {
   const params = useParams();
@@ -17,108 +45,55 @@ export default function SidebarSetting() {
             <h2 className="font-bold text-[20px]">Settings</h2>
           </div>
         </div>
-        <button
-          className="flex w-full h-[52px] hover:bg-[rgb(239,239,239)] rounded-lg outline-none px-3 text-[15px]"
-          style={{
-            backgroundColor: `${
-              params.mode === "edit" ? "rgb(239,239,239)" : "white"
-            }`,
-          }}
-          onClick={function () {
-            navigate("/accounts/edit");
-          }}
-        >
-          <FaRegCircleUser className="w-[26px] h-[26px] ms-[10px] my-auto" />
-          <div className="ms-[10px] my-auto">Edit Profiles</div>
-        </button>
-        <button
-          className="flex w-full h-[52px] hover:bg-[rgb(239,239,239)] rounded-lg outline-none px-3 text-[15px]"
-          style={{
-            backgroundColor: `${
-              params.mode === "notifications" ? "rgb(239,239,239)" : "white"
-            }`,
-          }}
-          onClick={function () {
-            navigate("/accounts/notifications");
-          }}
-        >
-          <IoMdNotificationsOutline className="w-[26px] h-[26px] ms-[10px] my-auto" />
-          <div className="ms-[10px] my-auto">Notifications</div>
-        </button>
-        <button
-          className="flex w-full h-[52px] hover:bg-[rgb(239,239,239)] rounded-lg outline-none px-3 text-[15px]"
-          style={{
-            backgroundColor: `${
-              params.mode === "privacy_setting" ? "rgb(239,239,239)" : "white"
-            }`,
-          }}
-          onClick={function () {
-            navigate("/accounts/privacy_setting");
-          }}
-        >
-          <FiLock className="w-[26px] h-[26px] ms-[10px] my-auto" />
-          <div className="ms-[10px] my-auto">Account Privacy</div>
-        </button>
-        <button
-          className="flex w-full h-[52px] hover:bg-[rgb(239,239,239)] rounded-lg outline-none px-3 text-[15px]"
-          style={{
-            backgroundColor: `${
-              params.mode === "blocked_accounts" ? "rgb(239,239,239)" : "white"
-            }`,
-          }}
-          onClick={function () {
-            navigate("/accounts/blocked_accounts");
-          }}
-        >
-          <MdBlockFlipped className="w-[26px] h-[26px] ms-[10px] my-auto" />
-          <div className="ms-[10px] my-auto">Blocked</div>
-        </button>
-        <button
-          className="flex w-full h-[52px] hover:bg-[rgb(239,239,239)] rounded-lg outline-none px-3 text-[15px]"
-          style={{
-            backgroundColor: `${
-              params.mode === "messages_and_story_replies"
-                ? "rgb(239,239,239)"
-                : "white"
-            }`,
-          }}
-          onClick={function () {
-            navigate("/accounts/messages_and_story_replies");
-          }}
-        >
-          <TbMessageCircle2Filled className="w-[26px] h-[26px] ms-[10px] my-auto" />
-          <div className="ms-[10px] my-auto">Messages and story replies</div>
-        </button>
-        <button
-          className="flex w-full h-[52px] hover:bg-[rgb(239,239,239)] rounded-lg outline-none px-3 text-[15px]"
-          style={{
-            backgroundColor: `${
-              params.mode === "comments" ? "rgb(239,239,239)" : "white"
-            }`,
-          }}
-          onClick={function () {
-            navigate("/accounts/comments");
-          }}
-        >
-          <FaRegComment className="w-[26px] h-[26px] ms-[10px] my-auto" />
-          <div className="ms-[10px] my-auto">Comments</div>
-        </button>
-        <button
-          className="flex w-full h-[52px] hover:bg-[rgb(239,239,239)] rounded-lg outline-none px-3 text-[15px]"
-          style={{
-            backgroundColor: `${
-              params.mode === "restricted_accounts"
-                ? "rgb(239,239,239)"
-                : "white"
-            }`,
-          }}
-          onClick={function () {
-            navigate("/accounts/restricted_accounts");
-          }}
-        >
-          <FaUserAltSlash className="w-[26px] h-[26px] ms-[10px] my-auto" />
-          <div className="ms-[10px] my-auto">Restricted accounts</div>
-        </button>
+        <Button
+          name="Edit Profiles"
+          params={params}
+          mode="edit"
+          navigate={navigate}
+          Icon={FaRegCircleUser}
+        />
+        <Button
+          name="Notifications"
+          params={params}
+          mode="notifications"
+          navigate={navigate}
+          Icon={IoMdNotificationsOutline}
+        />
+        <Button
+          name="Account Privacy"
+          params={params}
+          mode="privacy_setting"
+          navigate={navigate}
+          Icon={FiLock}
+        />
+        <Button
+          name="Blocked"
+          params={params}
+          mode="blocked_accounts"
+          navigate={navigate}
+          Icon={MdBlockFlipped}
+        />
+        <Button
+          name="Messages and story replies"
+          params={params}
+          mode="messages_and_story_replies"
+          navigate={navigate}
+          Icon={TbMessageCircle2Filled}
+        />
+        <Button
+          name="Comments"
+          params={params}
+          mode="comments"
+          navigate={navigate}
+          Icon={FaRegComment}
+        />
+        <Button
+          name="Restricted accounts"
+          params={params}
+          mode="restricted_accounts"
+          navigate={navigate}
+          Icon={FaUserAltSlash}
+        />
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import authenService from "../services/authen.service";
 import { CREATED, OK } from "../core/success.response";
 import RequestV2 from "../data/interfaces/requestv2.interface";
+import getMessage from "../helpers/getMessage";
 class AuthenController {
   constructor() {}
 
@@ -17,7 +18,7 @@ class AuthenController {
     const metadata = await authenService.verifyOTP(req.body);
 
     new CREATED({
-      message: "Sign up successfully!",
+      message: getMessage(200),
       metadata,
     }).send(res);
   };
@@ -26,7 +27,7 @@ class AuthenController {
     console.log("Body:::", req.body);
     const metadata = await authenService.logIn(req.body);
     new OK({
-      message: "Log in successfully!",
+      message: getMessage(201),
       metadata,
     }).send(res);
   };
@@ -44,7 +45,7 @@ class AuthenController {
       req.params.resetToken
     );
     new OK({
-      message: "Reset password successfully!",
+      message: getMessage(202),
       metadata,
     }).send(res);
   };

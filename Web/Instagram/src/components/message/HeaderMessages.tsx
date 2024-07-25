@@ -1,6 +1,8 @@
+import { useNavigate } from "react-router-dom";
 import useHeaderConversation from "../../hooks/useHeaderConversation";
 
 export default function HeaderMessages({ conversation }) {
+  const navigate = useNavigate();
   const { name, username, avatar1, avatar2 } =
     useHeaderConversation(conversation);
   return (
@@ -41,7 +43,12 @@ export default function HeaderMessages({ conversation }) {
         {conversation.participants.length >= 3 ? (
           ""
         ) : (
-          <button className="text-[14px] mt-4 px-3 py-1 bg-gray-200 text-black rounded font-semibold">
+          <button
+            className="text-[14px] mt-4 px-3 py-1 bg-gray-200 hover:bg-gray-300 text-black rounded font-semibold"
+            onClick={function () {
+              navigate(`/profile/${username}`);
+            }}
+          >
             View profile
           </button>
         )}
