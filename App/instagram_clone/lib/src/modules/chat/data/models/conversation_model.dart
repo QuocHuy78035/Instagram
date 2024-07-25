@@ -14,19 +14,6 @@ class ConversationModel {
     required this.messages,
   });
 
-  // factory ConversationModel.fromJson(Map<String, dynamic> json) {
-  //   return ConversationModel(
-  //     id: json['_id'],
-  //     participants: (json['participants'] as List)
-  //         .map((participant) => ParticipantModel.fromJson(participant))
-  //         .toList(),
-  //     type: json['type'],
-  //     messages: (json['messages'] as List)
-  //         .map((messageGroup) => MessageGroupModel.fromJson(messageGroup))
-  //         .toList(),
-  //   );
-  // }
-
   factory ConversationModel.fromJson(Map<String, dynamic> json) {
     // Check if 'messages' key exists and if it's a non-empty list
     final messagesList = json['messages'] as List?;

@@ -17,5 +17,4 @@ class GetConversationRepoImpl implements GetConversationRepo{
       return Left(Failure(e.toString()));
     }
   }
-
 }

@@ -12,18 +12,23 @@ import 'package:instagram_clone/src/modules/chat/data/datasources/get_all_conver
 import 'package:instagram_clone/src/modules/chat/data/datasources/get_all_conversation_data_src_impl.dart';
 import 'package:instagram_clone/src/modules/chat/data/datasources/get_conversation_data_src.dart';
 import 'package:instagram_clone/src/modules/chat/data/datasources/get_conversation_data_src_impl.dart';
+import 'package:instagram_clone/src/modules/chat/data/datasources/get_user_data_src.dart';
+import 'package:instagram_clone/src/modules/chat/data/datasources/get_user_data_src_impl.dart';
 import 'package:instagram_clone/src/modules/chat/data/datasources/send_message_data_src.dart';
 import 'package:instagram_clone/src/modules/chat/data/datasources/send_message_data_src_impl.dart';
 import 'package:instagram_clone/src/modules/chat/data/repos/get_all_conversation_repo_impl.dart';
 import 'package:instagram_clone/src/modules/chat/data/repos/get_conversation_repo_impl.dart';
+import 'package:instagram_clone/src/modules/chat/data/repos/get_user_repo_impl.dart';
 import 'package:instagram_clone/src/modules/chat/data/repos/send_message_repo_impl.dart';
 import 'package:instagram_clone/src/modules/chat/domain/repos/create_conversation_repo.dart';
 import 'package:instagram_clone/src/modules/chat/domain/repos/get_all_conversation_repo.dart';
 import 'package:instagram_clone/src/modules/chat/domain/repos/get_conversation_repo.dart';
+import 'package:instagram_clone/src/modules/chat/domain/repos/get_user_repo.dart';
 import 'package:instagram_clone/src/modules/chat/domain/repos/send_message_repo.dart';
 import 'package:instagram_clone/src/modules/chat/domain/usecase/user_create_conversation.dart';
 import 'package:instagram_clone/src/modules/chat/domain/usecase/user_get_all_conversation.dart';
 import 'package:instagram_clone/src/modules/chat/domain/usecase/user_get_conversation.dart';
+import 'package:instagram_clone/src/modules/chat/domain/usecase/user_get_user_onl.dart';
 import 'package:instagram_clone/src/modules/chat/domain/usecase/user_send_message.dart';
 import 'package:instagram_clone/src/modules/chat/presentation/bloc/chat_bloc.dart';
 import 'package:instagram_clone/src/modules/home/data/datasources/create_story_data_src_impl.dart';
@@ -66,10 +71,14 @@ Future<void> init() async {
       userGetYourStory: sl(),
     ),
   );
-  sl.registerLazySingleton(() => ChatBloc(
-      userCreateConversation: sl(),
-      userSendMessage: sl(),
-      userGetConversation: sl(), userGetAllConversation: sl()));
+  sl.registerLazySingleton(
+    () => ChatBloc(
+        userCreateConversation: sl(),
+        userSendMessage: sl(),
+        userGetConversation: sl(),
+        userGetAllConversation: sl(),
+        userGetUserOnl: sl(),
+  ));
 
   // Use cases
   sl.registerLazySingleton(() => UserLogin(sl()));
@@ -83,6 +92,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UserSendMessage(sl()));
   sl.registerLazySingleton(() => UserGetConversation(sl()));
   sl.registerLazySingleton(() => UserGetAllConversation(sl()));
+  sl.registerLazySingleton(() => UserGetUserOnl(sl()));
 
   // Repository
   sl.registerLazySingleton<AuthRepo>(() => AuthRepoImpl(sl()));
@@ -94,8 +104,11 @@ Future<void> init() async {
   sl.registerLazySingleton<CreateConversationRepo>(
       () => CreateConversationRepoImpl(sl()));
   sl.registerLazySingleton<SendMessageRepo>(() => SendMessageRepoImpl(sl()));
-  sl.registerLazySingleton<GetConversationRepo>(() => GetConversationRepoImpl(sl()));
-  sl.registerLazySingleton<GetAllConversationRepo>(() => GetAllConversationRepoImpl(sl()));
+  sl.registerLazySingleton<GetConversationRepo>(
+      () => GetConversationRepoImpl(sl()));
+  sl.registerLazySingleton<GetAllConversationRepo>(
+      () => GetAllConversationRepoImpl(sl()));
+  sl.registerLazySingleton<GetUserRepo>(() => GetUserRepoImpl(sl()));
 
   // Data sources
   sl.registerLazySingleton<AuthRemoteDataSrc>(
@@ -111,13 +124,17 @@ Future<void> init() async {
       () => CreateConversationDataSrcImpl(sl()));
   sl.registerLazySingleton<SendMessageDataSrc>(
       () => SendMessageDataSrcImpl(sl()));
-  sl.registerLazySingleton<GetConversationDataSrc>(() => GetConversationDataSrcImpl(sl()));
-  sl.registerLazySingleton<GetAllConversationDataSrc>(() => GetAllConversationDataSrcImpl(sl()));
+  sl.registerLazySingleton<GetConversationDataSrc>(
+      () => GetConversationDataSrcImpl(sl()));
+  sl.registerLazySingleton<GetAllConversationDataSrc>(
+      () => GetAllConversationDataSrcImpl(sl()));
+  sl.registerLazySingleton<GetUserDataSrc>(() => GetUserDataSrcImpl(sl()));
 
   //datasource impl
   sl.registerLazySingleton(() => SendMessageDataSrcImpl(sl()));
   sl.registerLazySingleton(() => GetConversationDataSrcImpl(sl()));
   sl.registerLazySingleton(() => GetAllConversationDataSrcImpl(sl()));
+  sl.registerLazySingleton(() => GetUserDataSrcImpl(sl()));
 
   //network
   sl.registerLazySingleton<ApiClient>(() => ApiClient());
