@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSocketContext } from "../../context/SocketContext";
 import HeaderMessages from "./HeaderMessages";
 import { useAuthContext } from "../../context/AuthContext";
@@ -16,12 +16,14 @@ export default function Messages(body: {
   messages: Array<any>;
   setMessages: (arr: Array<any>) => void;
   param: any;
+  hasMore: boolean;
+  setHasMore: (hasMore: boolean) => void;
 }) {
   const { socket } = useSocketContext();
   const { userId } = useAuthContext();
-  const [hasMore, setHasMore] = useState(true);
+
   const { page, setPage } = usePage();
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     socket?.on("newMessage", (newMessage) => {
       newMessage.shouldShake = true;
@@ -70,91 +72,77 @@ export default function Messages(body: {
   useEffect(() => {
     (async () => {
       if (!body.param.id) return;
-      if (page === 1) {
-        setIsLoading(true);
-        const dataMessages = await findByConversation(body.param.id, 1);
+      if (page === 1) return;
+      let messagesClone: Array<any> = [];
+      const nextPageMessages = await findByConversation(
+        body.param.id,
+        page + 1
+      );
+      if (!nextPageMessages.metadata.messages.length) {
+        body.setHasMore(false);
+      }
+      for (let i = 1; i <= page; i++) {
+        const dataMessages = await findByConversation(body.param.id, i);
         if (dataMessages.status === 200) {
           if (dataMessages.metadata.messages.length) {
-            body.setMessages(
-              concatTwoMessagesWithDay([], dataMessages.metadata.messages)
+            messagesClone = concatTwoMessagesWithDay(
+              messagesClone,
+              dataMessages.metadata.messages
             );
-          } else {
-            setHasMore(false);
           }
         }
-        setIsLoading(false);
-        // return;
-      } else {
-        let messagesClone: Array<any> = [];
-        const nextPageMessages = await findByConversation(
-          body.param.id,
-          page + 1
-        );
-        if (!nextPageMessages.metadata.messages.length) {
-          setHasMore(false);
-        }
-        for (let i = 1; i <= page; i++) {
-          const dataMessages = await findByConversation(body.param.id, i);
-          if (dataMessages.status === 200) {
-            if (dataMessages.metadata.messages.length) {
-              messagesClone = concatTwoMessagesWithDay(
-                messagesClone,
-                dataMessages.metadata.messages
-              );
-            }
-          }
-        }
-        body.setMessages([...messagesClone]);
       }
+      body.setMessages([...messagesClone]);
     })();
+    // }
   }, [page]);
 
   const fetchMoreData = () => {
-    if (!hasMore) return;
+    if (!body.hasMore) return;
     setPage(page + 1);
     console.log("Loading!");
   };
   return (
     <>
-      {!isLoading ? (
-        <div id="messages">
-          {!hasMore ? <HeaderMessages conversation={body.conversation} /> : ""}
-          <div className="flex flex-col">
-            <InfiniteScroll
-              dataLength={body.messages.length}
-              next={fetchMoreData}
-              inverse={true}
-              hasMore={hasMore}
-              style={{ display: "flex", flexDirection: "column-reverse" }}
-              loader={
-                hasMore ? (
-                  <div className="absolute top-[90px] w-full">
-                    <div className="loader mx-auto"></div>
-                  </div>
-                ) : (
-                  ""
-                )
-              }
-              scrollableTarget="scroll__messages"
-              scrollThreshold={`${
-                1200 - page * 200 >= 0 ? 1200 - page * 200 : 0
-              }px`}
-            >
-              {body.messages.map((message) => {
-                return (
-                  <MessageWithDays
-                    messageWithDays={message}
-                    userId={userId}
-                    conversation={body.conversation}
-                  />
-                );
-              })}
-            </InfiniteScroll>
-          </div>
+      <div id="messages">
+        {!body.hasMore ? (
+          <HeaderMessages conversation={body.conversation} />
+        ) : (
+          ""
+        )}
+        <div className="flex flex-col">
+          <InfiniteScroll
+            dataLength={body.messages.length}
+            next={fetchMoreData}
+            inverse={true}
+            hasMore={body.hasMore}
+            style={{ display: "flex", flexDirection: "column-reverse" }}
+            loader={
+              body.hasMore ? (
+                <div className="absolute top-[90px] w-full">
+                  <div className="loader mx-auto"></div>
+                </div>
+              ) : (
+                ""
+              )
+            }
+            scrollableTarget="scroll__messages"
+            scrollThreshold={`${
+              1200 - page * 200 >= 0 ? 1200 - page * 200 : 0
+            }px`}
+          >
+            {body.messages.map((message) => {
+              return (
+                <MessageWithDays
+                  messageWithDays={message}
+                  userId={userId}
+                  conversation={body.conversation}
+                />
+              );
+            })}
+          </InfiniteScroll>
         </div>
-      ) : (
-        ""
-      )}
+      </div>
     </>
   );
 }

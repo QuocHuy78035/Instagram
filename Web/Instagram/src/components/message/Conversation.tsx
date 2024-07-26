@@ -1,29 +1,52 @@
 import { createRef, useEffect, useState } from "react";
 import MessageInput from "./MessageInput";
-import { getConversation } from "../../api";
+import { findByConversation, getConversation } from "../../api";
 import HeaderConversation from "./HeaderConversation";
 import Messages from "./Messages";
 import { useParams } from "react-router-dom";
 import useConversation from "../../zustand/useConversation";
 import usePage from "../../zustand/usePage";
 import useMessages from "../../zustand/useMessages";
+import { concatTwoMessagesWithDay } from "../../utils";
 
 export default function Conversation() {
   const param = useParams();
   const { conversation, setConversation } = useConversation();
   const [isLoading, setIsLoading] = useState(true);
   const { messages, setMessages } = useMessages();
+  const [hasMore, setHasMore] = useState(true);
   const { setPage } = usePage();
   useEffect(() => {
     (async () => {
-      if (!param.id) return;
       setIsLoading(true);
-      const dataConversation = await getConversation(param.id);
+      if (!param.id) return;
+      const [dataConversation, dataMessages] = await Promise.all([
+        getConversation(param.id),
+        findByConversation(param.id, 1),
+      ]);
       if (dataConversation.status === 200) {
         setConversation(dataConversation.metadata.conversation);
       }
+      if (dataMessages.status === 200) {
+        if (dataMessages.metadata.messages.length) {
+          setMessages(
+            concatTwoMessagesWithDay([], dataMessages.metadata.messages)
+          );
+        } else {
+          setHasMore(false);
+        }
+      }
       setIsLoading(false);
     })();
+
+    // (async () => {
+    //   if (!param.id) return;
+
+    //   const dataConversation = await getConversation(param.id);
+    //   if (dataConversation.status === 200) {
+    //     setConversation(dataConversation.metadata.conversation);
+    //   }
+    // })();
   }, [setConversation, param.id]);
   useEffect(() => {
     setMessages([]);
@@ -63,6 +86,8 @@ export default function Conversation() {
               messages={messages}
               setMessages={setMessages}
               param={param}
+              hasMore={hasMore}
+              setHasMore={setHasMore}
             />
           </div>
           <MessageInput

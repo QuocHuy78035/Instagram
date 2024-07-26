@@ -12,12 +12,15 @@ class RecentSearchService {
   async findRecentSearchByUser(
     userId: Types.ObjectId
   ): Promise<{ recentSearch: IRecentSearchModel }> {
-    const user: IUserModel | null = await userRepo.findById(userId);
+
+    let [user, recentSearch]: [IUserModel | null, IRecentSearchModel | null] =
+      await Promise.all([
+        userRepo.findById(userId),
+        recentsearchRepo.findRecentSearchByUser(userId),
+      ]);
     if (!user) {
       throw new UnauthorizedError(getMessageError(101));
     }
-    let recentSearch: IRecentSearchModel | null =
-      await recentsearchRepo.findRecentSearchByUser(userId);
     if (!recentSearch) {
       recentSearch = await recentsearchRepo.createRecentSearch(userId);
     }

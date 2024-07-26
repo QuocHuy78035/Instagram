@@ -1,32 +1,19 @@
 import { FaRegEdit } from "react-icons/fa";
 import { GoChevronDown } from "react-icons/go";
 import { useAuthContext } from "../../context/AuthContext";
-import { useEffect, useState } from "react";
-import { getAllConversations } from "../../api";
 import { useNavigate, useParams } from "react-router-dom";
-import useConversations from "../../zustand/useConversations";
 import { distanceBetweenTwoDates } from "../../utils";
 import { useSocketContext } from "../../context/SocketContext";
 import useOpenConversation from "../../zustand/useOpenConversation";
+import useConversations from "../../zustand/useConversations";
 
 export default function Conversations() {
   const param = useParams();
   const { user } = useAuthContext();
-  const { conversations, setConversations } = useConversations();
-  const [isLoading, setIsLoading] = useState(true);
   const { onlineUsers } = useSocketContext();
   const navigate = useNavigate();
-  useEffect(() => {
-    (async () => {
-      setIsLoading(true);
-      const data = await getAllConversations();
-      if (data.status === 200) {
-        setConversations(data.metadata.conversations);
-        setIsLoading(false);
-      }
-    })();
-  }, []);
   const { setIsOpenConversation } = useOpenConversation();
+  const { conversations } = useConversations();
   function openForm() {
     setIsOpenConversation(true);
   }
@@ -42,7 +29,7 @@ export default function Conversations() {
   return (
     <>
       {/* <!-- Conversations List --> */}
-      {!isLoading ? (
+      {
         <div className="flex flex-col w-[396px] h-full bg-white border-r border-gray-200 pt-7">
           <div className="flex justify-between ps-6">
             <div className="flex py-2">
@@ -122,9 +109,7 @@ export default function Conversations() {
             </div>
           </div>
         </div>
-      ) : (
-        ""
-      )}
+      }
     </>
   );
 }

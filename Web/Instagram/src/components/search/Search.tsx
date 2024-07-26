@@ -29,6 +29,7 @@ export default function Search() {
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState<Array<any>>([]);
   const [searchedUsers, setSearchedUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     (async () => {
       const data = await searchUser(search);
@@ -43,13 +44,16 @@ export default function Search() {
   }, [search]);
   useEffect(() => {
     (async () => {
+      setIsLoading(true);
       const data = await findRecentSearchByUser();
       if (data.status === 200) {
         setSearchedUsers(data.metadata.recentSearch.searchedUsers);
       }
+      setIsLoading(false);
     })();
   }, []);
-
+  if (isLoading) 
+    return "";
   return (
     <div
       className="absolute left-[80px] w-[400px] bg-gray-50 h-screen shadow rounded-r-[20px] z-[999997]"

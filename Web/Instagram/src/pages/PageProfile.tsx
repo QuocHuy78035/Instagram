@@ -10,6 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getProfile } from "../api";
 import Button from "../components/profile/Button";
 import Tab from "../components/profile/Tab";
+import Search from "../components/search/Search";
 
 export default function PageProfile() {
   const params = useParams();
@@ -18,6 +19,7 @@ export default function PageProfile() {
   const [isFullContent, setIsFullContent] = useState(true);
   const [mode, setMode] = useState("Posts");
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [isLoading, setIsLoading]  = useState(true);
   const { user } = useAuthContext();
   useEffect(() => {
     setIsFullContent(!isOpenSearch);
@@ -25,16 +27,20 @@ export default function PageProfile() {
 
   useEffect(() => {
     (async () => {
+      setIsLoading(true);
       const data = await getProfile(params.username as string);
       if (data.status === 200) {
         setUserProfile(data.metadata.user);
       }
+      setIsLoading(false);
     })();
   }, [params.username]);
 
+  if (isLoading) return "";
   return (
     <div className="bg-gray-50 flex h-screen relative">
       <Sidebar isFullContent={isFullContent} />
+      {isOpenSearch ? <Search /> : ""}
       <div className="flex-grow px-[160px] overflow-y-scroll">
         <div className="h-[100%] w-[100%]">
           <div className="h-[400px] w-[100%]">

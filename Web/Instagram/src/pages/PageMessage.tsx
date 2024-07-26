@@ -7,14 +7,18 @@ import useOpenConversationInformation from "../zustand/useOpenConversationInform
 import useConversation from "../zustand/useConversation";
 import NavigateMore from "../components/message/NavigateMoreMessage";
 import useOpenNavigateMoreMessage from "../zustand/useOpenNavigateMoreMessage";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useOpenSearch from "../zustand/useOpenSearch";
 import Search from "../components/search/Search";
+import useConversations from "../zustand/useConversations";
+import { getAllConversations } from "../api";
 
 export default function PageMessage({ children }) {
   const { isOpenConversation } = useOpenConversation();
   const { isOpenConversationInformation } = useOpenConversationInformation();
   const { conversation } = useConversation();
+  const { setConversations } = useConversations();
+  const [isLoading, setIsLoading] = useState(true);
   const {
     isOpenNavigateMoreMessage,
     setIsOpenNavigateMoreMessage,
@@ -50,6 +54,18 @@ export default function PageMessage({ children }) {
   useEffect(() => {
     window.addEventListener("wheel", () => setIsOpenNavigateMoreMessage(false));
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      setIsLoading(true);
+      const data = await getAllConversations();
+      if (data.status === 200) {
+        setConversations(data.metadata.conversations);
+        setIsLoading(false);
+      }
+    })();
+  }, []);
+  if (isLoading) return "";
   return (
     <>
       <div className="bg-gray-50 flex h-screen relative">
