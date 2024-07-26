@@ -4,23 +4,30 @@ import {
   ref,
   getDownloadURL,
   uploadBytesResumable,
+  FirebaseStorage,
+  StorageReference,
+  UploadTaskSnapshot,
 } from "firebase/storage";
-import { firebase} from "../configs/firebase.config";
+import { firebase } from "../configs/firebase.config";
 initializeApp(firebase);
-const storage = getStorage();
+const storage: FirebaseStorage = getStorage();
 export class UploadFiles {
   private model: string;
   private type: string;
   private file: Express.Multer.File | undefined;
 
-  constructor(model: string, type: string, file: Express.Multer.File | undefined) {
+  constructor(
+    model: string,
+    type: string,
+    file: Express.Multer.File | undefined
+  ) {
     this.model = model;
     this.type = type;
     this.file = file;
   }
   async uploadFileAndDownloadURL(): Promise<string | undefined> {
     if (this.file?.mimetype && this.file?.buffer) {
-      const storageRef = ref(
+      const storageRef: StorageReference = ref(
         storage,
         `${this.model.toLowerCase()}/${this.type.toLowerCase()}/${Date.now()}`
       );
@@ -28,13 +35,13 @@ export class UploadFiles {
         contentType: this.file.mimetype,
       };
 
-      const snapshot = await uploadBytesResumable(
+      const snapshot: UploadTaskSnapshot = await uploadBytesResumable(
         storageRef,
         this.file.buffer,
         metadata
       );
 
-      const downloadURL = await getDownloadURL(snapshot.ref);
+      const downloadURL: string = await getDownloadURL(snapshot.ref);
       return downloadURL;
     }
     return undefined;

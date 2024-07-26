@@ -8,6 +8,8 @@ import { asyncHandler } from "../../helpers/asyncHandler";
 import userRepo from "../../repos/user.repo";
 import { isValidObjectId } from "mongoose";
 import { convertStringToObjectId } from "../../utils";
+import { IUserModel } from "../../data/interfaces/user.interface";
+import { IKeyTokenModel } from "../../data/interfaces/keytoken.interface";
 const HEADER = {
   API_KEY: "x-api-key",
   CLIENT_ID: "x-client-id",
@@ -17,14 +19,14 @@ const HEADER = {
 
 export const authentication = asyncHandler(
   async (req: RequestV2, res: Response, next: NextFunction) => {
-    const userId: string | undefined = req.headers[HEADER.CLIENT_ID] as string;
+    const userId: string | undefined = req.headers[HEADER.CLIENT_ID] as string | undefined;
     if (!userId) {
       throw new UnauthorizedError("Invalid Request!");
     }
     if (!isValidObjectId(userId)) {
       throw new BadRequestError("User id is invalid!");
     }
-    const [user, keyStore] = await Promise.all([
+    const [user, keyStore]: [IUserModel | null, IKeyTokenModel | null] = await Promise.all([
       userRepo.findById(convertStringToObjectId(userId)),
       keytokenRepo.findByUserId(userId),
     ]);
@@ -36,7 +38,7 @@ export const authentication = asyncHandler(
     }
 
     if (req.headers[HEADER.REFRESHTOKEN]) {
-      const refreshToken = req.headers[HEADER.REFRESHTOKEN]?.toString();
+      const refreshToken = req.headers[HEADER.REFRESHTOKEN] as string;
       if (!refreshToken) {
         throw new UnauthorizedError("Invalid Request!");
       }

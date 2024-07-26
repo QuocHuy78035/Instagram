@@ -1,18 +1,19 @@
 import { Types } from "mongoose";
 import User from "../data/models/user.model";
+import { IUserModel } from "../data/interfaces/user.interface";
 
 class UserRepo {
   constructor() {}
 
-  async findById(id: Types.ObjectId) {
+  async findById(id: Types.ObjectId): Promise<IUserModel | null> {
     return await User.findById(id);
   }
 
-  async findByIdWithPassword(id: Types.ObjectId) {
+  async findByIdWithPassword(id: Types.ObjectId): Promise<IUserModel | null> {
     return await User.findById(id).select("+password");
   }
 
-  async findByUsername(username: string) {
+  async findByUsername(username: string): Promise<IUserModel | null> {
     return await User.findOne({ username }).select({
       _id: 1,
       name: 1,
@@ -24,29 +25,39 @@ class UserRepo {
     });
   }
 
-  async findOneByUsernameAndActiveUser(username: string) {
+  async findOneByUsernameAndActiveUser(
+    username: string
+  ): Promise<IUserModel | null> {
     return await User.findOne({ username, status: "active" }).select(
       "+password"
     );
   }
 
-  async findOneByMobileAndActiveUser(mobile: string) {
+  async findOneByMobileAndActiveUser(
+    mobile: string
+  ): Promise<IUserModel | null> {
     return await User.findOne({ mobile, status: "active" }).select("+password");
   }
 
-  async findOneByMobileAndUnverifiedUser(mobile: string) {
+  async findOneByMobileAndUnverifiedUser(
+    mobile: string
+  ): Promise<IUserModel | null> {
     return await User.findOne({ mobile, status: "unverified" });
   }
 
-  async findOneByEmailAndActiveUser(email: string) {
+  async findOneByEmailAndActiveUser(email: string): Promise<IUserModel | null> {
     return await User.findOne({ email, status: "active" }).select("+password");
   }
 
-  async findOneByEmailAndUnverifiedUser(email: string) {
+  async findOneByEmailAndUnverifiedUser(
+    email: string
+  ): Promise<IUserModel | null> {
     return await User.findOne({ email, status: "unverified" });
   }
 
-  async findOneByPasswordResetToken(passwordResetToken: string) {
+  async findOneByPasswordResetToken(
+    passwordResetToken: string
+  ): Promise<IUserModel | null> {
     return await User.findOne({
       passwordResetToken,
       passwordResetExpires: {
@@ -55,7 +66,9 @@ class UserRepo {
     }).select("+passwordChangedAt");
   }
 
-  async findFollowingsById(userId: Types.ObjectId) {
+  async findFollowingsById(
+    userId: Types.ObjectId
+  ): Promise<(Types.ObjectId | IUserModel)[] | undefined> {
     const user = await User.findById(userId)
       .populate({
         path: "following",
@@ -65,7 +78,7 @@ class UserRepo {
     return user?.following;
   }
 
-  async findByIdAndDelete(userId: Types.ObjectId) {
+  async findByIdAndDelete(userId: Types.ObjectId): Promise<IUserModel | null> {
     return await User.findByIdAndDelete(userId);
   }
 
@@ -75,24 +88,24 @@ class UserRepo {
     name: string;
     username: string;
     password: string;
-  }) {
+  }): Promise<IUserModel> {
     return await User.create(body);
   }
 
-  async updateUserToActiveByEmail(email: string) {
-    await User.findOneAndUpdate({ email }, { status: "active" });
+  async updateUserToActiveByEmail(email: string): Promise<IUserModel | null> {
+    return await User.findOneAndUpdate({ email }, { status: "active" });
   }
 
-  async updateUserToActiveByMobile(mobile: string) {
-    await User.findOneAndUpdate({ mobile }, { status: "active" });
+  async updateUserToActiveByMobile(mobile: string): Promise<IUserModel | null> {
+    return await User.findOneAndUpdate({ mobile }, { status: "active" });
   }
 
   async updatePasswordReset(
     userId: Types.ObjectId,
     passwordResetToken: string,
     passwordResetExpires: Date
-  ) {
-    await User.findByIdAndUpdate(userId, {
+  ): Promise<IUserModel | null> {
+    return await User.findByIdAndUpdate(userId, {
       passwordResetToken,
       passwordResetExpires,
     });
@@ -101,7 +114,7 @@ class UserRepo {
   async updateAddToFollowingById(
     userId: Types.ObjectId,
     followedUserId: Types.ObjectId
-  ) {
+  ): Promise<IUserModel | null> {
     return await User.findByIdAndUpdate(
       userId,
       {
@@ -116,7 +129,7 @@ class UserRepo {
   async updateRemoveFromFollowingById(
     userId: Types.ObjectId,
     followedUserId: Types.ObjectId
-  ) {
+  ): Promise<IUserModel | null> {
     return await User.findByIdAndUpdate(
       userId,
       {
@@ -131,7 +144,7 @@ class UserRepo {
   async updateAddToFollowersById(
     userId: Types.ObjectId,
     followedUserId: Types.ObjectId
-  ) {
+  ): Promise<IUserModel | null> {
     return await User.findByIdAndUpdate(
       followedUserId,
       {
@@ -146,7 +159,7 @@ class UserRepo {
   async updateRemoveFromFollowersById(
     userId: Types.ObjectId,
     followedUserId: Types.ObjectId
-  ) {
+  ): Promise<IUserModel | null> {
     return await User.findByIdAndUpdate(
       followedUserId,
       {
@@ -158,7 +171,9 @@ class UserRepo {
     );
   }
 
-  async updateModePrivateToOnById(userId: Types.ObjectId) {
+  async updateModePrivateToOnById(
+    userId: Types.ObjectId
+  ): Promise<IUserModel | null> {
     return await User.findByIdAndUpdate(
       userId,
       {
@@ -168,7 +183,9 @@ class UserRepo {
     );
   }
 
-  async updateModePrivateToOffById(userId: Types.ObjectId) {
+  async updateModePrivateToOffById(
+    userId: Types.ObjectId
+  ): Promise<IUserModel | null> {
     return await User.findByIdAndUpdate(
       userId,
       {
@@ -178,7 +195,9 @@ class UserRepo {
     );
   }
 
-  async updateLatestOnlineAt(userId: Types.ObjectId) {
+  async updateLatestOnlineAt(
+    userId: Types.ObjectId
+  ): Promise<IUserModel | null> {
     return await User.findByIdAndUpdate(
       userId,
       {
@@ -198,11 +217,11 @@ class UserRepo {
       gender?: string;
       show_account_suggestions?: boolean;
     }
-  ) {
+  ): Promise<IUserModel | null> {
     return await User.findByIdAndUpdate(userId, body, { new: true });
   }
 
-  async searchUsers(search: string) {
+  async searchUsers(search: string): Promise<IUserModel[]>{
     const users = await User.aggregate([
       {
         $search: {

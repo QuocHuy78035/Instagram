@@ -5,6 +5,7 @@ import { UnauthorizedError } from "../core/error.response";
 import { OK } from "../core/success.response";
 import getMessageError from "../helpers/getMessageError";
 import getMessage from "../helpers/getMessage";
+import { Types } from "mongoose";
 
 class RecentSearchController {
   constructor() {}
@@ -17,7 +18,7 @@ class RecentSearchController {
       throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await recentsearchService.findRecentSearchByUser(
-      req.user?.userId
+      req.user?.userId as Types.ObjectId
     );
     new OK({
       message: getMessage(211),
@@ -34,7 +35,7 @@ class RecentSearchController {
     }
     const metadata =
       await recentsearchService.removeSearchedUserFromRecentSearch(
-        req.user.userId,
+        req.user.userId as Types.ObjectId,
         req.params.searchedUser
       );
 
@@ -53,7 +54,7 @@ class RecentSearchController {
     }
     const metadata =
       await recentsearchService.removeAllSearchedUsersFromRecentSearch(
-        req.user.userId
+        req.user.userId as Types.ObjectId
       );
     new OK({
       message: getMessage(213),
@@ -70,7 +71,7 @@ class RecentSearchController {
       throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await recentsearchService.addSearchedUserToRecentSearch(
-      req.user.userId,
+      req.user.userId as Types.ObjectId,
       req.params.searchedUser
     );
     new OK({

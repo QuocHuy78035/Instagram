@@ -12,7 +12,10 @@ export const createTokenPair = async (
   },
   privateKey: string,
   publicKey: string
-) => {
+): Promise<{
+  accessToken: string;
+  refreshToken: string;
+}> => {
   try {
     const accessToken = await JWT.sign(payload, publicKey, {
       expiresIn: "2 days",

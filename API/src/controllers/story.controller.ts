@@ -5,6 +5,7 @@ import { BadRequestError, UnauthorizedError } from "../core/error.response";
 import { CREATED, OK } from "../core/success.response";
 import getMessageError from "../helpers/getMessageError";
 import getMessage from "../helpers/getMessage";
+import { Types } from "mongoose";
 
 class StoryController {
   constructor() {}
@@ -14,7 +15,7 @@ class StoryController {
       throw new UnauthorizedError(getMessageError(101));
     }
     const story = await storyService.createStory(
-      req.user.userId,
+      req.user.userId as Types.ObjectId,
       req.file,
       req.body.text
     );
@@ -42,7 +43,7 @@ class StoryController {
       throw new BadRequestError("The otherUserId query is invalid!");
     }
     const stories = await storyService.findStoriesOfOtherUser(
-      req.user.userId,
+      req.user.userId as Types.ObjectId,
       req.query.otherUserId
     );
 
@@ -63,7 +64,7 @@ class StoryController {
       throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await storyService.updateUserViewedById(
-      req.user.userId,
+      req.user.userId as Types.ObjectId,
       req.params.id
     );
     new OK({
@@ -76,7 +77,10 @@ class StoryController {
     if (!req.user) {
       throw new UnauthorizedError(getMessageError(101));
     }
-    await storyService.deleteStory(req.user.userId, req.params.id);
+    await storyService.deleteStory(
+      req.user.userId as Types.ObjectId,
+      req.params.id
+    );
     new OK({
       message: getMessage(218),
     }).send(res);

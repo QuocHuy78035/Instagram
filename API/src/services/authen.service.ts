@@ -37,17 +37,15 @@ class AuthenService {
     mobile?: string;
     username?: string;
     role: string;
-  }) {
-    const keytoken = await keytokenService.createKeyToken(body.userId);
+  }): Promise<{ accessToken: string; refreshToken: string }> {
+    const keytoken: IKeyTokenModel | null =
+      await keytokenService.createKeyToken(body.userId);
 
     if (!keytoken) {
       throw new UnauthorizedError(getMessageError(128));
     }
-    const tokens = await createTokenPair(
-      body,
-      keytoken.privateKey,
-      keytoken.publicKey
-    );
+    const tokens: { accessToken: string; refreshToken: string } =
+      await createTokenPair(body, keytoken.privateKey, keytoken.publicKey);
     keytoken.refreshToken = tokens.refreshToken;
     await keytoken.save({ validateBeforeSave: false });
 
@@ -60,7 +58,7 @@ class AuthenService {
     name?: string;
     username?: string;
     password?: string;
-  }) {
+  }): Promise<{ message: string }> {
     const { error } = SignUpValidator(body);
     if (error) {
       throw new BadRequestError(error.message);
@@ -75,44 +73,35 @@ class AuthenService {
     }
 
     if (body.mobile) {
-      const checkMobileExists = await userRepo.findOneByMobileAndActiveUser(
-        body.mobile
-      );
+      const checkMobileExists: IUserModel | null =
+        await userRepo.findOneByMobileAndActiveUser(body.mobile);
       if (checkMobileExists) {
         throw new BadRequestError(getMessageError(131));
       }
     }
 
     if (body.email) {
-      const checkEmailExists = await userRepo.findOneByEmailAndActiveUser(
-        body.email
-      );
+      const checkEmailExists: IUserModel | null =
+        await userRepo.findOneByEmailAndActiveUser(body.email);
       if (checkEmailExists) {
         throw new BadRequestError(getMessageError(132));
       }
     }
 
-    const checkUsernameExists = await userRepo.findOneByUsernameAndActiveUser(
-      body.username as string
-    );
+    const checkUsernameExists: IUserModel | null =
+      await userRepo.findOneByUsernameAndActiveUser(body.username as string);
     if (checkUsernameExists) {
       throw new BadRequestError(getMessageError(133));
     }
 
-    let newUser:
-      | (Document<unknown, {}, IUserModel> &
-          IUserModel &
-          Required<{
-            _id: unknown;
-          }>)
-      | null = null;
+    let newUser: IUserModel | null = null;
     if (body.email) {
       newUser = await userRepo.findOneByEmailAndUnverifiedUser(body.email);
     }
     if (body.mobile) {
       newUser = await userRepo.findOneByMobileAndUnverifiedUser(body.mobile);
     }
-    let isOldUser = newUser ? true : false;
+    let isOldUser: boolean = newUser ? true : false;
     newUser =
       newUser ||
       (await userRepo.createUser({
@@ -123,9 +112,9 @@ class AuthenService {
         password: body.password as string,
       }));
 
-    const OTP = generateOTP(6);
-    const hashOTP = hashString(OTP);
-    const EXPIRE_TIME = 15 * 60 * 1000;
+    const OTP: string = generateOTP(6);
+    const hashOTP: string = hashString(OTP);
+    const EXPIRE_TIME: number = 15 * 60 * 1000;
     newUser.OTP = hashOTP;
     newUser.OTPExpires = new Date(Date.now() + EXPIRE_TIME);
 
@@ -159,7 +148,7 @@ class AuthenService {
     mobile?: string;
     email?: string;
     username?: string;
-  }) {
+  }): Promise<{ message?: string }> {
     const { error } = ForgotPasswordValidator(body);
     if (error) {
       throw new BadRequestError(error.message);
@@ -167,13 +156,7 @@ class AuthenService {
     if (!body.mobile && !body.email && !body.username) {
       throw new BadRequestError(getMessageError(136));
     }
-    let user:
-      | (Document<unknown, {}, IUserModel> &
-          IUserModel &
-          Required<{
-            _id: unknown;
-          }>)
-      | null = null;
+    let user: IUserModel | null = null;
     if (body.mobile) {
       user = await userRepo.findOneByMobileAndActiveUser(body.mobile);
       if (!user) {
@@ -197,17 +180,17 @@ class AuthenService {
     if (!user) {
       return {};
     }
-    const EXPIRE_TIME = 10 * 60 * 1000;
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    const passwordResetToken = hashString(resetToken);
-    const passwordResetExpires = new Date(Date.now() + EXPIRE_TIME);
+    const EXPIRE_TIME: number = 10 * 60 * 1000;
+    const resetToken: string = crypto.randomBytes(32).toString("hex");
+    const passwordResetToken: string = hashString(resetToken);
+    const passwordResetExpires: Date = new Date(Date.now() + EXPIRE_TIME);
 
     await userRepo.updatePasswordReset(
       user.id,
       passwordResetToken,
       passwordResetExpires
     );
-    const resetURL = `${process.env.CLIENT_DOMAIN}/resetPassword/${resetToken}`;
+    const resetURL: string = `${process.env.CLIENT_DOMAIN}/resetPassword/${resetToken}`;
 
     if (body.email) {
       try {
@@ -247,7 +230,21 @@ class AuthenService {
       }!`,
     };
   }
-  async verifyOTP(body: { mobile?: string; email?: string; OTP: string }) {
+  async verifyOTP(body: {
+    mobile?: string;
+    email?: string;
+    OTP: string;
+  }): Promise<{
+    user?: {
+      _id: string;
+      email: string;
+      mobile: string;
+      username: string;
+      name: string;
+      role: string;
+    };
+    tokens?: { accessToken: string; refreshToken: string };
+  }> {
     const { error } = VerifyCodeValidator(body);
     if (error) {
       throw new BadRequestError(error.message);
@@ -261,13 +258,7 @@ class AuthenService {
       throw new BadRequestError(getMessageError(130));
     }
 
-    let user:
-      | (Document<unknown, {}, IUserModel> &
-          IUserModel &
-          Required<{
-            _id: unknown;
-          }>)
-      | null = null;
+    let user: IUserModel | null = null;
     if (body.mobile) {
       user = await userRepo.findOneByMobileAndActiveUser(body.mobile);
       if (user) {
@@ -314,13 +305,14 @@ class AuthenService {
       await userRepo.updateUserToActiveByMobile(body.mobile);
     }
 
-    const tokens = await this.getTokens({
-      userId: user.id,
-      email: body.email,
-      mobile: body.mobile,
-      username: user.username,
-      role: user.role,
-    });
+    const tokens: { accessToken: string; refreshToken: string } =
+      await this.getTokens({
+        userId: user.id,
+        email: body.email,
+        mobile: body.mobile,
+        username: user.username,
+        role: user.role,
+      });
 
     await conversationRepo.createConversation([
       user.id,
@@ -335,7 +327,14 @@ class AuthenService {
         "username",
         "name",
         "role",
-      ]),
+      ]) as {
+        _id: string;
+        email: string;
+        mobile: string;
+        username: string;
+        name: string;
+        role: string;
+      },
       tokens,
     };
   }
@@ -345,7 +344,18 @@ class AuthenService {
     email?: string;
     username?: string;
     password?: string;
-  }) {
+  }): Promise<{
+    user?: {
+      _id: string;
+      email: string;
+      mobile: string;
+      username: string;
+      name: string;
+      role: string;
+      avatar: string;
+    };
+    tokens?: { accessToken: string; refreshToken: string };
+  }> {
     const { error } = LoginValidator(body);
     if (error) {
       throw new BadRequestError(error.message);
@@ -355,13 +365,7 @@ class AuthenService {
       throw new BadRequestError(getMessageError(144));
     }
 
-    let user:
-      | (Document<unknown, {}, IUserModel> &
-          IUserModel &
-          Required<{
-            _id: unknown;
-          }>)
-      | null = null;
+    let user: IUserModel | null = null;
     if (body.username) {
       user = await userRepo.findOneByUsernameAndActiveUser(body.username);
       if (!user || !(await user.matchPassword(body.password as string))) {
@@ -381,13 +385,14 @@ class AuthenService {
       }
     }
     if (user) {
-      const tokens = await this.getTokens({
-        userId: user.id,
-        email: body.email,
-        mobile: body.mobile,
-        username: user.username,
-        role: user.role,
-      });
+      const tokens: { accessToken: string; refreshToken: string } =
+        await this.getTokens({
+          userId: user.id,
+          email: body.email,
+          mobile: body.mobile,
+          username: user.username,
+          role: user.role,
+        });
       return {
         user: getInfoData(user, [
           "_id",
@@ -397,7 +402,15 @@ class AuthenService {
           "name",
           "role",
           "avatar",
-        ]),
+        ]) as {
+          _id: string;
+          email: string;
+          mobile: string;
+          username: string;
+          name: string;
+          role: string;
+          avatar: string;
+        },
         tokens,
       };
     }
@@ -408,13 +421,25 @@ class AuthenService {
   async resetPassword(
     body: { password: string; passwordConfirm: string },
     resetToken: string
-  ) {
+  ): Promise<{
+    user?: {
+      _id: string;
+      email: string;
+      mobile: string;
+      username: string;
+      name: string;
+      role: string;
+    };
+    tokens?: { accessToken: string; refreshToken: string };
+  }> {
     const { error } = ResetPasswordValidator(body);
     if (error) {
       throw new BadRequestError(error.message);
     }
-    const passwordResetToken = hashString(resetToken);
-    const user = await userRepo.findOneByPasswordResetToken(passwordResetToken);
+    const passwordResetToken: string = hashString(resetToken);
+    const user: IUserModel | null = await userRepo.findOneByPasswordResetToken(
+      passwordResetToken
+    );
     if (!user) {
       throw new BadRequestError(getMessageError(148));
     }
@@ -429,13 +454,14 @@ class AuthenService {
     user.passwordChangedAt = new Date(Date.now());
     await user.save({ validateBeforeSave: false });
 
-    const tokens = await this.getTokens({
-      userId: user.id,
-      email: user.email,
-      mobile: user.mobile,
-      username: user.username,
-      role: user.role,
-    });
+    const tokens: { accessToken: string; refreshToken: string } =
+      await this.getTokens({
+        userId: user.id,
+        email: user.email,
+        mobile: user.mobile,
+        username: user.username,
+        role: user.role,
+      });
 
     return {
       user: getInfoData(user, [
@@ -445,25 +471,24 @@ class AuthenService {
         "username",
         "name",
         "role",
-      ]),
+      ]) as {
+        _id: string;
+        email: string;
+        mobile: string;
+        username: string;
+        name: string;
+        role: string;
+      },
       tokens,
     };
   }
 
-  async logOut(
-    keyStore?:
-      | (Document<unknown, {}, IKeyTokenModel> &
-          IKeyTokenModel &
-          Required<{
-            _id: unknown;
-          }>)
-      | null
-  ) {
+  async logOut(keyStore?: IKeyTokenModel | null) {
     if (!keyStore) {
       throw new UnauthorizedError(getMessageError(110));
     }
-    const delKey = await keytokenService.removeKeyById(keyStore.id);
-    console.log({ delKey });
+    const delKey: IKeyTokenModel | null = await keytokenService.removeKeyById(keyStore.id);
+    console.log(delKey);
     return {
       message: "Log out successfully!",
     };

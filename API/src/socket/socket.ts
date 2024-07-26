@@ -24,7 +24,7 @@ class SocketConnection {
     });
   }
 
-  static getReceiverSocketId = (receiverId: string) => {
+  static getReceiverSocketId = (receiverId: string): string => {
     return SocketConnection.userSocketMap[receiverId];
   };
 

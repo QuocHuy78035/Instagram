@@ -5,6 +5,7 @@ import { BadRequestError, UnauthorizedError } from "../core/error.response";
 import { CREATED, OK } from "../core/success.response";
 import getMessageError from "../helpers/getMessageError";
 import getMessage from "../helpers/getMessage";
+import { Types } from "mongoose";
 
 class MessageController {
   constructor() {}
@@ -14,7 +15,7 @@ class MessageController {
       throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await messageService.sendMessage({
-      userId: req.user?.userId,
+      userId: req.user?.userId as Types.ObjectId,
       conversationId: req.body.conversation,
       message: req.body.message,
       file: req.file,
@@ -38,7 +39,7 @@ class MessageController {
     }
 
     const metadata = await messageService.answerMessageByAI({
-      userId: req.user?.userId,
+      userId: req.user?.userId as Types.ObjectId,
       conversationId: req.body.conversation,
       message: req.body.message,
     });
@@ -67,7 +68,7 @@ class MessageController {
       throw new BadRequestError(getMessageError(152));
     }
     const metadata = await messageService.findByConversation(
-      req.user.userId,
+      req.user.userId as Types.ObjectId,
       req.query.conversation as string,
       parseInt(req.query.page as string)
     );

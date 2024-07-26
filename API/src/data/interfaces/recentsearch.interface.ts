@@ -1,8 +1,12 @@
+import { Document } from "mongoose";
 import { Types } from "mongoose";
+import { IUserModel } from "./user.interface";
 
 interface RecentSearchInterface {
-  user: Types.ObjectId;
-  searchedUsers: Array<Types.ObjectId>;
+  user: Types.ObjectId | IUserModel;
+  searchedUsers: Array<Types.ObjectId | IUserModel>;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export default interface IRecentSearchModel

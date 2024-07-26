@@ -1,4 +1,6 @@
-const codes = {
+import Codes from "../data/codes.class";
+
+const codes: Codes = {
   101: "User not found!",
   102: "Invalid followed user id!",
   103: "Followed user not found!",
@@ -55,5 +57,6 @@ const codes = {
 };
 
 export default function getMessageError(textCode: number): string {
+  if (!codes[textCode]) return "";
   return codes[textCode];
 }

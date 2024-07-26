@@ -1,5 +1,4 @@
 import Joi from "joi";
-import { textChangeRangeNewSpan } from "typescript";
 const typeVerifyCode = {
   SIGN_UP: "signup",
   FORGOT_PWD: "forgotpwd",

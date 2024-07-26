@@ -1,10 +1,13 @@
 import { Types } from "mongoose";
 import RecentSearch from "../data/models/recentsearch.model";
 import { Type } from "typescript";
+import IRecentSearchModel from "../data/interfaces/recentsearch.interface";
 
 class RecentSearchRepo {
   constructor() {}
-  async findRecentSearchByUser(user: Types.ObjectId) {
+  async findRecentSearchByUser(
+    user: Types.ObjectId
+  ): Promise<IRecentSearchModel | null> {
     return await RecentSearch.findOne({ user }).populate({
       path: "searchedUsers",
       select: {
@@ -18,7 +21,7 @@ class RecentSearchRepo {
   async removeSearchedUserFromRecentSearch(
     userId: Types.ObjectId,
     searchedUserId: Types.ObjectId
-  ) {
+  ): Promise<IRecentSearchModel | null> {
     return await RecentSearch.findOneAndUpdate(
       { user: userId },
       {
@@ -38,7 +41,9 @@ class RecentSearchRepo {
     });
   }
 
-  async removeAllSearchedUsersFromRecentSearch(userId: Types.ObjectId) {
+  async removeAllSearchedUsersFromRecentSearch(
+    userId: Types.ObjectId
+  ): Promise<IRecentSearchModel | null> {
     return await RecentSearch.findOneAndUpdate(
       { user: userId },
       {
@@ -61,7 +66,7 @@ class RecentSearchRepo {
   async addSearchedUserToRecentSearch(
     userId: Types.ObjectId,
     searchedUserId: Types.ObjectId
-  ) {
+  ): Promise<IRecentSearchModel | null> {
     return await RecentSearch.findOneAndUpdate(
       { user: userId },
       {
@@ -84,7 +89,7 @@ class RecentSearchRepo {
   async findSearchUserInRecentSearch(
     userId: Types.ObjectId,
     searchedUserId: Types.ObjectId
-  ) {
+  ): Promise<IRecentSearchModel | null> {
     return await RecentSearch.findOne(
       { user: userId },
       {
@@ -93,7 +98,9 @@ class RecentSearchRepo {
     );
   }
 
-  async createRecentSearch(userId: Types.ObjectId) {
+  async createRecentSearch(
+    userId: Types.ObjectId
+  ): Promise<IRecentSearchModel> {
     return await RecentSearch.create({ user: userId });
   }
 }

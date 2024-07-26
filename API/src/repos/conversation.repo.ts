@@ -1,17 +1,23 @@
 import { Types } from "mongoose";
 import Conversation from "../data/models/conversation.model";
+import IConversationModel from "../data/interfaces/conversation.interface";
 
 class ConversationRepo {
   constructor() {}
 
-  async findByIdAndUser(id: Types.ObjectId, userId: Types.ObjectId) {
+  async findByIdAndUser(
+    id: Types.ObjectId,
+    userId: Types.ObjectId
+  ): Promise<IConversationModel | null> {
     return await Conversation.findOne({
       _id: id,
       participants: { $in: [userId] },
     });
   }
 
-  async createConversation(participantIds: Array<Types.ObjectId>) {
+  async createConversation(
+    participantIds: Array<Types.ObjectId>
+  ): Promise<IConversationModel> {
     return await Conversation.create({
       participants: participantIds,
     });
@@ -20,7 +26,7 @@ class ConversationRepo {
   async addMessageToConversation(
     conversationId: Types.ObjectId,
     messageId: Types.ObjectId
-  ) {
+  ): Promise<IConversationModel | null> {
     return await Conversation.findByIdAndUpdate(
       conversationId,
       {
@@ -32,7 +38,9 @@ class ConversationRepo {
     );
   }
 
-  async getConversation(conversationId: Types.ObjectId) {
+  async getConversation(
+    conversationId: Types.ObjectId
+  ): Promise<IConversationModel | null> {
     const conversation = await Conversation.findById(conversationId)
       .populate({
         path: "participants",
@@ -42,7 +50,9 @@ class ConversationRepo {
     return conversation;
   }
 
-  async getAllConversations(userId: Types.ObjectId) {
+  async getAllConversations(
+    userId: Types.ObjectId
+  ): Promise<IConversationModel[]> {
     return await Conversation.find({
       participants: { $in: [userId] },
     }).populate({
@@ -51,8 +61,8 @@ class ConversationRepo {
     });
   }
 
-  async deleteConversation(conversationId: Types.ObjectId) {
-    return await Conversation.findByIdAndDelete(conversationId);
+  async deleteConversation(conversationId: Types.ObjectId): Promise<void> {
+    await Conversation.findByIdAndDelete(conversationId);
   }
 }
 

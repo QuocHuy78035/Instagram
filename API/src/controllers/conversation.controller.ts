@@ -5,6 +5,7 @@ import { UnauthorizedError } from "../core/error.response";
 import { OK } from "../core/success.response";
 import getMessage from "../helpers/getMessage";
 import getMessageError from "../helpers/getMessageError";
+import { Types } from "mongoose";
 
 class ConversationController {
   constructor() {}
@@ -37,7 +38,7 @@ class ConversationController {
       throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await conversationService.getConversation(
-      req.user.userId,
+      req.user.userId as Types.ObjectId,
       req.params.conversation
     );
 
@@ -56,7 +57,7 @@ class ConversationController {
       throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await conversationService.getAllConversations(
-      req.user.userId
+      req.user.userId as Types.ObjectId
     );
 
     new OK({
@@ -74,7 +75,7 @@ class ConversationController {
       throw new UnauthorizedError(getMessageError(101));
     }
     await conversationService.deleteConversation(
-      req.user.userId,
+      req.user.userId as Types.ObjectId,
       req.params.conversation
     );
 

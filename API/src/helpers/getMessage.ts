@@ -1,4 +1,6 @@
-const code = {
+import Codes from "../data/codes.class";
+
+const codes: Codes = {
   200: "Sign up successfully!",
   201: "Log in successfully!",
   202: "Reset password successfully!",
@@ -32,5 +34,6 @@ const code = {
 };
 
 export default function getMessage(textCode: number): string {
-  return code[textCode];
+  if (!codes[textCode]) return "";
+  return codes[textCode];
 }

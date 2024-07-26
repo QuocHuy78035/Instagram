@@ -35,7 +35,9 @@ class UserController {
       throw new UnauthorizedError(getMessageError(101));
     }
 
-    const metadata = await userService.getUserById(req.user.userId);
+    const metadata = await userService.getUserById(
+      req.user.userId as Types.ObjectId
+    );
     new OK({
       message: getMessage(219),
       metadata,
@@ -56,7 +58,7 @@ class UserController {
       throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await userService.following(
-      req.user.userId,
+      req.user.userId as Types.ObjectId,
       req.params.followedUserId
     );
 
@@ -71,7 +73,7 @@ class UserController {
       throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await userService.unfollowing(
-      req.user.userId,
+      req.user.userId as Types.ObjectId,
       req.params.followedUserId
     );
 
@@ -90,7 +92,9 @@ class UserController {
       throw new UnauthorizedError(getMessageError(101));
     }
 
-    const metadata = await userService.turnOnModePrivate(req.user.userId);
+    const metadata = await userService.turnOnModePrivate(
+      req.user.userId as Types.ObjectId
+    );
     new OK({
       message: getMessage(223),
       metadata,
@@ -106,7 +110,9 @@ class UserController {
       throw new UnauthorizedError(getMessageError(101));
     }
 
-    const metadata = await userService.turnOffModePrivate(req.user.userId);
+    const metadata = await userService.turnOffModePrivate(
+      req.user.userId as Types.ObjectId
+    );
     new OK({
       message: getMessage(224),
       metadata,
@@ -121,7 +127,9 @@ class UserController {
     if (!req.user) {
       throw new UnauthorizedError(getMessageError(101));
     }
-    const metadata = await userService.findFollowingsById(req.user.userId);
+    const metadata = await userService.findFollowingsById(
+      req.user.userId as Types.ObjectId
+    );
     new OK({
       message: getMessage(225),
       metadata,
@@ -136,7 +144,7 @@ class UserController {
       throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await userService.findFollowingsByIdAndHaveStories(
-      req.user.userId
+      req.user.userId as Types.ObjectId
     );
     new OK({
       message: getMessage(226),
@@ -157,7 +165,7 @@ class UserController {
       throw new UnauthorizedError(getMessageError(101));
     }
     const metadata = await userService.updateProfile(
-      req.user.userId,
+      req.user.userId as Types.ObjectId,
       req.body,
       req.file
     );
@@ -177,7 +185,11 @@ class UserController {
       throw new UnauthorizedError(getMessageError(101));
     }
 
-    await userService.updatePassword(req.user.userId, req.body, req.keyStore);
+    await userService.updatePassword(
+      req.user.userId as Types.ObjectId,
+      req.body,
+      req.keyStore
+    );
     new OK({
       message: getMessage(229),
     }).send(res);

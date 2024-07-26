@@ -2,6 +2,8 @@ import crypto from "crypto";
 import _, { times } from "lodash";
 import { SchemaTypes } from "mongoose";
 import { Types } from "mongoose";
+import IMessageModel from "../data/interfaces/message.interface";
+import PartialConversation from "../data/interfaces/partialconversation.interface";
 
 export const getInfoData = (
   object: Object | null = {},
@@ -11,32 +13,32 @@ export const getInfoData = (
   return _.pick(object, fields);
 };
 
-export const formatErrorString = (str: string) => {
-  const formatStr = str
+export const formatErrorString = (str: string): string => {
+  const formatStr: string = str
     .split("")
     .filter((c) => c !== '"')
     .join("");
   return formatStr[0].toUpperCase() + formatStr.slice(1);
 };
 
-export function generateOTP(num: number) {
-  let OTP = "";
+export function generateOTP(num: number): string {
+  let OTP: string = "";
   for (let i = 0; i < num; i++) {
-    const randomDigit = Math.floor(Math.random() * 10);
+    const randomDigit: number = Math.floor(Math.random() * 10);
     OTP += randomDigit;
   }
   return OTP;
 }
 
-export const hashString = (str: string) => {
+export const hashString = (str: string): string => {
   return crypto.createHash("sha256").update(str).digest("hex");
 };
 
-export const convertStringToObjectId = (id: string) => {
+export const convertStringToObjectId = (id: string): Types.ObjectId => {
   return new Types.ObjectId(id);
 };
 
-export const changeDateToString = (date: Date) => {
+export const changeDateToString = (date: Date): string => {
   const now = new Date(Date.now());
   const timeStr: string = date
     .toTimeString()
@@ -64,13 +66,15 @@ export const changeDateToString = (date: Date) => {
   return dateStr + ", " + timeStr;
 };
 
-export const messagesWithDays = (messages: any) => {
-  let messagesWithDays: Array<any> = [];
+export const messagesWithDays = (
+  messages: IMessageModel[]
+): PartialConversation[] => {
+  let messagesWithDays: Array<PartialConversation> = [];
   if (messages.length === 0) {
     return [];
   }
   let date: Date = new Date(messages[0].createdAt);
-  let messes: Array<any> = [messages[0]];
+  let messes: Array<IMessageModel> = [messages[0]];
   for (let i = 1; i < messages.length; i++) {
     if (i === messages.length - 1) {
       if (new Date(messages[i].createdAt).getHours() === date.getHours()) {
@@ -108,4 +112,4 @@ export const messagesWithDays = (messages: any) => {
   }
 
   return messagesWithDays;
-}
+};
