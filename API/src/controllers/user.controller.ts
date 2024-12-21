@@ -6,6 +6,7 @@ import { OK } from "../core/success.response";
 import { Types } from "mongoose";
 import getMessageError from "../helpers/getMessageError";
 import getMessage from "../helpers/getMessage";
+import RedisJson from "../helpers/redis/RedisJson";
 
 class UserController {
   constructor() {}
@@ -34,13 +35,26 @@ class UserController {
     if (!req.user) {
       throw new UnauthorizedError(getMessageError(101));
     }
-
-    const metadata = await userService.getUserById(
+    const redisJson = new RedisJson("user", req.user.userId.toString());
+    const userCache = await redisJson.getData();
+    if (userCache) {
+      new OK({
+        message: getMessage(219),
+        metadata: {
+          user: userCache,
+        },
+      }).send(res);
+      return;
+    }
+    const { user } = await userService.getUserById(
       req.user.userId as Types.ObjectId
     );
+    await redisJson.setData(user);
     new OK({
       message: getMessage(219),
-      metadata,
+      metadata: {
+        user,
+      },
     }).send(res);
   };
 
@@ -192,6 +206,46 @@ class UserController {
     );
     new OK({
       message: getMessage(229),
+    }).send(res);
+  };
+
+  suggestedUsers = async (
+    req: RequestV2,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (!req.user) {
+      throw new UnauthorizedError(getMessageError(101));
+    }
+
+    if (isNaN(Number(req.query.limit))) {
+      throw new BadRequestError(getMessageError(155));
+    }
+    const redisJson = new RedisJson(
+      "suggestedUsers",
+      req.user.userId.toString()
+    );
+    const suggestedUsersCache = await redisJson.getData();
+    if (suggestedUsersCache) {
+      new OK({
+        message: getMessage(230),
+        metadata: {
+          users: suggestedUsersCache,
+        },
+      }).send(res);
+      return;
+    }
+
+    const { users } = await userService.suggestedUsers(
+      req.user.userId as Types.ObjectId,
+      Number(req.query.limit)
+    );
+    await redisJson.setData(users);
+    new OK({
+      message: getMessage(230),
+      metadata: {
+        users,
+      },
     }).send(res);
   };
 }

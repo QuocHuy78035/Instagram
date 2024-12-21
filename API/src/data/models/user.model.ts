@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import { IUserModel } from "../interfaces/user.interface";
-import { DEFAULT_IMAGE, UserName } from "../../utils/globalvariables";
+import { DEFAULT_IMAGE, UserName } from "../../helpers/modelNames";
 
 const userSchema: Schema<IUserModel> = new Schema<IUserModel>(
   {
@@ -58,10 +58,10 @@ const userSchema: Schema<IUserModel> = new Schema<IUserModel>(
       select: false,
     },
     passwordChangedAt: { type: Date, select: false },
-    passwordResetToken: String,
-    passwordResetExpires: Date,
-    OTP: String,
-    OTPExpires: Date,
+    passwordResetToken: { type: String, select: false },
+    passwordResetExpires: { type: Date, select: false },
+    OTP: { type: String, select: false },
+    OTPExpires: { type: Date, select: false },
     following: {
       type: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
       default: [],
@@ -84,7 +84,9 @@ userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 12);
 });
-userSchema.methods.matchPassword = async function (enteredPassword: string): Promise<boolean> {
+userSchema.methods.matchPassword = async function (
+  enteredPassword: string
+): Promise<boolean> {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 const User = model<IUserModel>(UserName.DOCUMENT_NAME, userSchema);

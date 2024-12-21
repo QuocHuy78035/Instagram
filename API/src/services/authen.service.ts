@@ -242,6 +242,7 @@ class AuthenService {
       username: string;
       name: string;
       role: string;
+      avatar: string;
     };
     tokens?: { accessToken: string; refreshToken: string };
   }> {
@@ -327,6 +328,7 @@ class AuthenService {
         "username",
         "name",
         "role",
+        "avatar",
       ]) as {
         _id: string;
         email: string;
@@ -334,6 +336,7 @@ class AuthenService {
         username: string;
         name: string;
         role: string;
+        avatar: string;
       },
       tokens,
     };
@@ -429,6 +432,7 @@ class AuthenService {
       username: string;
       name: string;
       role: string;
+      avatar: string;
     };
     tokens?: { accessToken: string; refreshToken: string };
   }> {
@@ -471,6 +475,7 @@ class AuthenService {
         "username",
         "name",
         "role",
+        "avatar",
       ]) as {
         _id: string;
         email: string;
@@ -478,6 +483,7 @@ class AuthenService {
         username: string;
         name: string;
         role: string;
+        avatar: string;
       },
       tokens,
     };
@@ -487,7 +493,9 @@ class AuthenService {
     if (!keyStore) {
       throw new UnauthorizedError(getMessageError(110));
     }
-    const delKey: IKeyTokenModel | null = await keytokenService.removeKeyById(keyStore.id);
+    const delKey: IKeyTokenModel | null = await keytokenService.removeKeyById(
+      keyStore.id
+    );
     console.log(delKey);
     return {
       message: "Log out successfully!",

@@ -8,7 +8,7 @@ const instance = axios.create({
 instance.interceptors.request.use((config) => {
   const token = getCookie("jwt");
   const user = getCookie("user");
-  if (token) {
+  if (token && user) {
     config.headers["authorization"] = `${token}`;
     config.headers["x-client-id"] = `${user}`;
   }

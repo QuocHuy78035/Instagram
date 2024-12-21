@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import IConversationModel from "../interfaces/conversation.interface";
-import { ConversationName } from "../../utils/globalvariables";
+import { ConversationName } from "../../helpers/modelNames";
+
 
 const conversationSchema: Schema<IConversationModel> =
   new Schema<IConversationModel>(

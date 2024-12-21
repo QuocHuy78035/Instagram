@@ -42,6 +42,7 @@ class UserRouter {
     this.router
       .route("/modePrivate/off")
       .patch(asyncHandler(userController.turnOffModePrivate));
+    this.router.route("/suggests").get(asyncHandler(userController.suggestedUsers));
   }
 }
 

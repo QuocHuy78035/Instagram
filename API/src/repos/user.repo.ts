@@ -5,6 +5,23 @@ import { IUserModel } from "../data/interfaces/user.interface";
 class UserRepo {
   constructor() {}
 
+  async findAll(
+    id: Types.ObjectId,
+    following: Array<Types.ObjectId>,
+    limit?: number
+  ) {
+    if (!limit) {
+      return await User.find({
+        $and: [{ _id: { $ne: id } }, { _id: { $nin: following } }],
+      }).select("+_id +username +avatar +name");
+    }
+    return await User.find({
+      $and: [{ _id: { $ne: id } }, { _id: { $nin: following } }],
+    })
+      .select("+_id +username +avatar +name")
+      .limit(limit);
+  }
+
   async findById(id: Types.ObjectId): Promise<IUserModel | null> {
     return await User.findById(id);
   }
@@ -42,7 +59,9 @@ class UserRepo {
   async findOneByMobileAndUnverifiedUser(
     mobile: string
   ): Promise<IUserModel | null> {
-    return await User.findOne({ mobile, status: "unverified" });
+    return await User.findOne({ mobile, status: "unverified" }).select(
+      "+OTP +OTPExpires"
+    );
   }
 
   async findOneByEmailAndActiveUser(email: string): Promise<IUserModel | null> {
@@ -52,7 +71,9 @@ class UserRepo {
   async findOneByEmailAndUnverifiedUser(
     email: string
   ): Promise<IUserModel | null> {
-    return await User.findOne({ email, status: "unverified" });
+    return await User.findOne({ email, status: "unverified" }).select(
+      "+OTP +OTPExpires"
+    );
   }
 
   async findOneByPasswordResetToken(
@@ -221,7 +242,7 @@ class UserRepo {
     return await User.findByIdAndUpdate(userId, body, { new: true });
   }
 
-  async searchUsers(search: string): Promise<IUserModel[]>{
+  async searchUsers(search: string): Promise<IUserModel[]> {
     const users = await User.aggregate([
       {
         $search: {

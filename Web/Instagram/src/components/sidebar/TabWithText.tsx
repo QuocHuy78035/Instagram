@@ -1,4 +1,6 @@
 import { IconType } from "react-icons";
+import { useAuthContext } from "../../context/AuthContext";
+import User from "../../interfaces/user.interface";
 
 export default function TabWithText(body: {
   className?: string;
@@ -9,14 +11,22 @@ export default function TabWithText(body: {
   to?: string;
   avatar?: JSX.Element;
 }) {
+  const { user } = useAuthContext();
   return (
     <button
       className={`flex w-full h-[48px] hover:bg-[rgb(239,239,239)] rounded-md outline-none ${
         body.className || ""
       }`}
       style={
-        body.name === "Search"
+        body.name === "Home" && !window.location.href.split("/")[3]
+          ? {
+              fontWeight: "700",
+            }
+          : body.name === "Search"
           ? body.style
+          : body.name === "Profile" &&
+            window.location.href.split("/")[4] !== (user as User)?.username
+          ? { fontWeight: "400" }
           : {
               fontWeight: `${
                 window.location.href.split("/")[3] === body.to ? "700" : "400"

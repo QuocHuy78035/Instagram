@@ -12,9 +12,9 @@ export const GlobalErrorMiddleware = (
   console.log("Error", error.status, error.stack);
   const statusCode = error.status || statusCodes.INTERNAL_SERVER_ERROR;
   return res.status(statusCode).json({
-    status: "error",
-    code: statusCode,
-    // err: error.stack,
     message: formatErrorString(error.message) || "Internal Server Error",
+    status: statusCode,
+    // code: statusCode,
+    // err: error.stack,
   });
 };

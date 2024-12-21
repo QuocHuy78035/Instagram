@@ -28,7 +28,12 @@ export const VerifyCodeValidator = (data: Object) => {
         "string.pattern.base": `Phone number must have 10 digits.`,
       }),
     email: Joi.string().email(),
-    OTP: Joi.string().length(6).required(),
+    OTP: Joi.string()
+      .length(6)
+      .pattern(/^[0-9]+$/)
+      .required().messages({
+        "string.pattern.base": "OTP must be a string with 6 digits."
+      }),
   });
 
   return userSchema.validate(data);

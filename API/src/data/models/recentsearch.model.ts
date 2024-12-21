@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import IRecentSearchModel from "../interfaces/recentsearch.interface";
-import { RecentSearchName } from "../../utils/globalvariables";
+import { RecentSearchName } from "../../helpers/modelNames";
 
 
 const recentSearchSchema: Schema<IRecentSearchModel> =

@@ -9,4 +9,5 @@ export default interface User {
   gender: string;
   avatar: string;
   role: string;
+  following: string[];
 }

@@ -28,6 +28,16 @@ export const RecentSearchName = {
   DOCUMENT_NAME: "RecentSearch",
 };
 
+export const PostName = {
+  COLLECTION_NAME: "posts",
+  DOCUMENT_NAME: "Post",
+};
+
+export const CommentName = {
+  COLLECTION_NAME: "comments",
+  DOCUMENT_NAME: "Comment",
+}
+
 export const typesOfFile = {
   IMAGES: "images",
   VIDEOS: "videos",

@@ -1,6 +1,5 @@
 import crypto from "crypto";
-import _, { times } from "lodash";
-import { SchemaTypes } from "mongoose";
+import _ from "lodash";
 import { Types } from "mongoose";
 import IMessageModel from "../data/interfaces/message.interface";
 import PartialConversation from "../data/interfaces/partialconversation.interface";
@@ -112,4 +111,11 @@ export const messagesWithDays = (
   }
 
   return messagesWithDays;
+};
+
+export const removeUndefinedInObject = (obj: { [key: string]: any }) => {
+  Object.keys(obj).forEach((key) => {
+    if (obj[key] === undefined) delete obj[key];
+  });
+  return obj;
 };

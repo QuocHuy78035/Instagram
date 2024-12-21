@@ -1,4 +1,4 @@
-import { Document, Types, isValidObjectId } from "mongoose";
+import { Types, isValidObjectId } from "mongoose";
 import { BadRequestError, UnauthorizedError } from "../core/error.response";
 import userRepo from "../repos/user.repo";
 import { convertStringToObjectId, getInfoData } from "../utils";
@@ -57,7 +57,7 @@ class UserService {
     user: { _id: string; username: string; following: Array<string> };
   }> {
     if (!isValidObjectId(followedUserId)) {
-      throw new UnauthorizedError(getMessageError(102));
+      throw new BadRequestError(getMessageError(102));
     }
     const followedUserObjectId: Types.ObjectId =
       convertStringToObjectId(followedUserId);
@@ -71,7 +71,7 @@ class UserService {
       throw new UnauthorizedError(getMessageError(101));
     }
     if (!followedUser) {
-      throw new UnauthorizedError(getMessageError(103));
+      throw new BadRequestError(getMessageError(103));
     }
 
     const [updatedUser, _]: [IUserModel | null, IUserModel | null] =
@@ -114,7 +114,7 @@ class UserService {
       throw new UnauthorizedError(getMessageError(101));
     }
     if (!followedUser) {
-      throw new UnauthorizedError(getMessageError(103));
+      throw new BadRequestError(getMessageError(103));
     }
 
     const [updatedUser, _]: [IUserModel | null, IUserModel | null] =
@@ -122,14 +122,6 @@ class UserService {
         userRepo.updateRemoveFromFollowingById(userId, followedUserObjectId),
         userRepo.updateRemoveFromFollowersById(userId, followedUserObjectId),
       ]);
-    // const updatedUser = await userRepo.updateRemoveFromFollowingById(
-    //   userId,
-    //   followedUserObjectId
-    // );
-    // await userRepo.updateRemoveFromFollowersById(
-    //   userId,
-    //   followedUserObjectId
-    // );
 
     return {
       user: getInfoData(updatedUser, ["_id", "username", "following"]) as {
@@ -214,7 +206,9 @@ class UserService {
     }
     followings = await Promise.all(
       followings.map(async function (following: IUserModel) {
-        following.stories = await storyRepo.findStoriesByUser(following.id);
+        following.stories = await storyRepo.findStoriesByUser(
+          following._id as Types.ObjectId
+        );
         return following;
       })
     );
@@ -255,6 +249,7 @@ class UserService {
       avatar: string;
     }[];
   }> {
+    if (search === "") return { users: [] };
     const users: IUserModel[] = await userRepo.searchUsers(search);
     if (users.length === 0) {
       throw new BadRequestError(getMessageError(105));
@@ -301,6 +296,13 @@ class UserService {
     if (!user) {
       throw new UnauthorizedError(getMessageError(101));
     }
+    if (body.username) {
+      const userWithUsername = await userRepo.findByUsername(body.username);
+      if (userWithUsername && userWithUsername.username !== user.username) {
+        throw new BadRequestError(getMessageError(133));
+      }
+    }
+
     let avatar: string | undefined = undefined;
     if (file) {
       avatar = await new UploadFiles(
@@ -362,6 +364,32 @@ class UserService {
     }
     const delKey = await keytokenService.removeKeyById(keyStore.id);
     return {};
+  }
+
+  async suggestedUsers(userId: Types.ObjectId, limit?: number) {
+    const user: IUserModel | null = await userRepo.findById(userId);
+    if (!user) {
+      throw new UnauthorizedError(getMessageError(101));
+    }
+    if (limit === undefined) {
+      return {
+        users: await userRepo.findAll(
+          userId,
+          user.following as Types.ObjectId[],
+          limit
+        ),
+      };
+    }
+    if (limit <= 0) {
+      throw new BadRequestError(getMessageError(154));
+    }
+    return {
+      users: await userRepo.findAll(
+        userId,
+        user.following as Types.ObjectId[],
+        limit
+      ),
+    };
   }
 }
 

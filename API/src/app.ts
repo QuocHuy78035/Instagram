@@ -9,8 +9,10 @@ import { DBConnection } from "./dbs/initDB";
 import { NotFoundMiddleware } from "./middlewares/errors/notfound.middlewares";
 import { GlobalErrorMiddleware } from "./middlewares/errors/globalerror.middleware";
 import router from "./routers";
+import RedisClient from "./redis/redis";
 export default class Server {
   constructor(app: express.Application) {
+    RedisClient.getInstance();
     DBConnection.getInstance();
     this.config(app);
   }

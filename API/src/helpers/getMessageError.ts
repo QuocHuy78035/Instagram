@@ -54,6 +54,8 @@ const codes: Codes = {
   151: "Please fill the page query!",
   152: "Invalid page query!",
   153: "Please fill the userId query!",
+  154: "Limit must be greater than 0!",
+  155: "Limit must be a number!",
 };
 
 export default function getMessageError(textCode: number): string {

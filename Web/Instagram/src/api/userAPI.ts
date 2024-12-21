@@ -68,3 +68,48 @@ export const updateProfile = async (body: {
     if (err) return err.response?.data;
   }
 };
+
+export const getSuggestedUsers = async (limit?: number) => {
+  try {
+    let res;
+    if (limit) {
+      res = await axios.get(
+        `${
+          import.meta.env.VITE_SERVER_DOMAIN
+        }/api/v1/user/suggests?limit=${limit}`
+      );
+    } else {
+      res = await axios.get(
+        `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/user/suggests`
+      );
+    }
+    return res.data;
+  } catch (err: any) {
+    console.log(err);
+    if (err) return err.response?.data;
+  }
+};
+
+export const followingUser = async (userId: string) => {
+  try {
+    const res = await axios.patch(
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/user/following/${userId}`
+    );
+    return res.data;
+  } catch (err: any) {
+    console.log(err);
+    if (err) return err.response?.data;
+  }
+};
+
+export const unfollowingUser = async (userId: string) => {
+  try {
+    const res = await axios.patch(
+      `${import.meta.env.VITE_SERVER_DOMAIN}/api/v1/user/unfollowing/${userId}`
+    );
+    return res.data;
+  } catch (err: any) {
+    console.log(err);
+    if (err) return err.response?.data;
+  }
+};

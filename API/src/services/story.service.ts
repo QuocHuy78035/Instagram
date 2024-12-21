@@ -4,7 +4,7 @@ import { BadRequestError, UnauthorizedError } from "../core/error.response";
 
 import storyRepo from "../repos/story.repo";
 import { UploadFiles } from "../utils/uploadFiles";
-import { StoryName, typesOfFile } from "../utils/globalvariables";
+import { StoryName, typesOfFile } from "../helpers/modelNames";
 import { convertStringToObjectId } from "../utils";
 import getMessageError from "../helpers/getMessageError";
 import { IUserModel } from "../data/interfaces/user.interface";
@@ -56,7 +56,7 @@ class StoryService {
     otherUserId: string
   ): Promise<IStoryModel[]> {
     if (!isValidObjectId(otherUserId)) {
-      throw new UnauthorizedError(getMessageError(102));
+      throw new BadRequestError(getMessageError(102));
     }
     const otherUserObjectId: Types.ObjectId =
       convertStringToObjectId(otherUserId);

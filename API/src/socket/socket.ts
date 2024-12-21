@@ -48,7 +48,7 @@ class SocketConnection {
           "getOnlineUsers",
           Object.keys(SocketConnection.userSocketMap)
         );
-        userService.updateLatestOnlineAt(userId);
+        if (userId) userService.updateLatestOnlineAt(userId);
       });
     });
 

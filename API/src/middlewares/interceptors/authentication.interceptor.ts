@@ -19,17 +19,20 @@ const HEADER = {
 
 export const authentication = asyncHandler(
   async (req: RequestV2, res: Response, next: NextFunction) => {
-    const userId: string | undefined = req.headers[HEADER.CLIENT_ID] as string | undefined;
+    const userId: string | undefined = req.headers[HEADER.CLIENT_ID] as
+      | string
+      | undefined;
     if (!userId) {
       throw new UnauthorizedError("Invalid Request!");
     }
     if (!isValidObjectId(userId)) {
-      throw new BadRequestError("User id is invalid!");
+      throw new UnauthorizedError("User id is invalid!");
     }
-    const [user, keyStore]: [IUserModel | null, IKeyTokenModel | null] = await Promise.all([
-      userRepo.findById(convertStringToObjectId(userId)),
-      keytokenRepo.findByUserId(userId),
-    ]);
+    const [user, keyStore]: [IUserModel | null, IKeyTokenModel | null] =
+      await Promise.all([
+        userRepo.findById(convertStringToObjectId(userId)),
+        keytokenRepo.findByUserId(userId),
+      ]);
     if (!user) {
       throw new UnauthorizedError("User not found!");
     }

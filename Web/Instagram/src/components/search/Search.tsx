@@ -8,9 +8,9 @@ import {
 } from "../../api/recentSearchAPI";
 import { useNavigate } from "react-router-dom";
 
-function Information(body: {user: any}){
+function Information(body: { user: any }) {
   return (
-    <>
+    <div className="flex items-center space-x-4">
       <img
         src={body.user.avatar}
         alt="Profile Picture"
@@ -18,9 +18,11 @@ function Information(body: {user: any}){
       />
       <div>
         <h4 className="font-medium text-[14px]">{body.user.name}</h4>
-        <p className="mt-[3px] text-gray-500 text-[13px]">{body.user.username}</p>
+        <p className="mt-[3px] text-gray-500 text-[13px]">
+          {body.user.username}
+        </p>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -52,8 +54,7 @@ export default function Search() {
       setIsLoading(false);
     })();
   }, []);
-  if (isLoading) 
-    return "";
+  if (isLoading) return "";
   return (
     <div
       className="absolute left-[80px] w-[400px] bg-gray-50 h-screen shadow rounded-r-[20px] z-[999997]"
@@ -89,7 +90,7 @@ export default function Search() {
           </div>
           {searchedUsers.map((user: any) => (
             <div
-              className={`relative flex justify-between hover:bg-[rgb(239,239,239)] px-6 py-[10px]`}
+              className={`relative flex justify-between hover:bg-[rgb(239,239,239)] px-6 py-[10px] cursor-pointer`}
               onClick={function () {
                 navigate(`/profile/${user.username}`);
               }}
@@ -129,9 +130,7 @@ export default function Search() {
                 navigate(`/profile/${user.username}`);
               }}
             >
-              <div className="flex items-center space-x-4">
-                <Information user={user} />
-              </div>
+              <Information user={user} />
               <label htmlFor={`${user._id}`} className="hidden"></label>
             </div>
           ))}

@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import IMessageModel from "../interfaces/message.interface";
-import { MessageName } from "../../utils/globalvariables";
+import { MessageName } from "../../helpers/modelNames";
 
 const messageSchema: Schema<IMessageModel> = new Schema<IMessageModel>(
   {

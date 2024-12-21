@@ -7,10 +7,11 @@ import Sidebar from "../components/Sidebar";
 import useOpenSearch from "../zustand/useOpenSearch";
 import { useAuthContext } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
-import { getProfile } from "../api";
-import Button from "../components/profile/Button";
+import { followingUser, getProfile, unfollowingUser } from "../api";
+import Button from "../components/global/Button";
 import Tab from "../components/profile/Tab";
 import Search from "../components/search/Search";
+import User from "../interfaces/user.interface";
 
 export default function PageProfile() {
   const params = useParams();
@@ -19,11 +20,18 @@ export default function PageProfile() {
   const [isFullContent, setIsFullContent] = useState(true);
   const [mode, setMode] = useState("Posts");
   const [userProfile, setUserProfile] = useState<any>(null);
-  const [isLoading, setIsLoading]  = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuthContext();
+  const [following, setFollowing] = useState<string[]>([]);
+  const [isFollow, setIsFollow] = useState(false);
   useEffect(() => {
+    console.log(isOpenSearch);
     setIsFullContent(!isOpenSearch);
   }, [isOpenSearch]);
+
+  useEffect(() => {
+    setFollowing((user as User).following);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -31,10 +39,26 @@ export default function PageProfile() {
       const data = await getProfile(params.username as string);
       if (data.status === 200) {
         setUserProfile(data.metadata.user);
+        setIsFollow(following.includes(data.metadata.user._id));
       }
       setIsLoading(false);
     })();
   }, [params.username]);
+
+  async function followingUserClick() {
+    const data = await followingUser(userProfile._id);
+    if (data.status === 200) {
+      setIsFollow(true);
+      setFollowing([...following, userProfile._id]);
+    }
+  }
+  async function unfollowingUserClick() {
+    const data = await unfollowingUser(userProfile._id);
+    if (data.status === 200) {
+      setIsFollow(false);
+      setFollowing(following.filter((id) => id !== userProfile._id));
+    }
+  }
 
   if (isLoading) return "";
   return (
@@ -65,12 +89,35 @@ export default function PageProfile() {
                           navigate("/accounts/edit");
                         }}
                         name={"Edit profile"}
+                        backgroundColor={"rgb(239,239,239)"}
+                        hoverBackgroundColor={"rgb(220,220,220)"}
+                        color={"#000000"}
                       />
-                      <Button onClick={function () {}} name={"View archive"} />
+                      <Button
+                        onClick={function () {}}
+                        name={"View archive"}
+                        backgroundColor={"rgb(239,239,239)"}
+                        hoverBackgroundColor={"rgb(220,220,220)"}
+                        color={"#000000"}
+                      />
                       <IoMdSettings className="text-[28px] my-auto cursor-pointer" />
                     </>
+                  ) : !isFollow ? (
+                    <Button
+                      onClick={followingUserClick}
+                      name={"Follow"}
+                      backgroundColor={"#0099e6"}
+                      hoverBackgroundColor={""}
+                      color={"white"}
+                    />
                   ) : (
-                    ""
+                    <Button
+                      onClick={unfollowingUserClick}
+                      name={"Following"}
+                      backgroundColor={"rgb(239,239,239)"}
+                      hoverBackgroundColor={"rgb(220,220,220)"}
+                      color={"#000000"}
+                    />
                   )}
                 </div>
                 <div className="flex space-x-10 text-[17px]">

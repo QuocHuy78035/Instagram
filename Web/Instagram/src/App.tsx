@@ -17,6 +17,7 @@ import { useEffect } from "react";
 import useOpenNavigateMore from "./zustand/useOpenNavigateMore";
 import PageProfile from "./pages/PageProfile";
 import PageSetting from "./pages/PageSetting";
+import PageSuggestedUsers from "./pages/PageSuggestedUsers";
 
 export default function App() {
   const { user } = useAuthContext();
@@ -70,6 +71,10 @@ export default function App() {
           <Route
             path="/explore"
             element={user ? <PageExplore /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/explore/people"
+            element={user ? <PageSuggestedUsers /> : <Navigate to="/login" />}
           />
           <Route
             path="/reels"

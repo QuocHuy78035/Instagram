@@ -5,7 +5,15 @@ export {
   VerifyCodeAPI,
   ForgotPasswordAPI,
 } from "./authenAPI";
-export { getUser, getProfile, searchUser, updateProfile } from "./userAPI";
+export {
+  getUser,
+  getProfile,
+  searchUser,
+  updateProfile,
+  getSuggestedUsers,
+  unfollowingUser,
+  followingUser
+} from "./userAPI";
 export {
   getAllConversations,
   getConversation,

@@ -31,6 +31,8 @@ const codes: Codes = {
   227: "Search users successfully!",
   228: "Update profile successfully!",
   229: "Update password successfully!",
+  230: "Get suggested users successfully!",
+  231: "Create post successfully!",
 };
 
 export default function getMessage(textCode: number): string {

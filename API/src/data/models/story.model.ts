@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import IStoryModel from "../interfaces/story.interface";
-import { StoryName } from "../../utils/globalvariables";
+import { StoryName } from "../../helpers/modelNames";
 
 const storySchema: Schema<IStoryModel> = new Schema<IStoryModel>(
   {

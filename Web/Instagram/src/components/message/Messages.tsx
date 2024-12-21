@@ -23,7 +23,6 @@ export default function Messages(body: {
   const { userId } = useAuthContext();
 
   const { page, setPage } = usePage();
-  // const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     socket?.on("newMessage", (newMessage) => {
       newMessage.shouldShake = true;
